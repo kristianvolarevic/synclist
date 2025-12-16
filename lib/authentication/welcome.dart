@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:household_groceries/utils/utils.dart';
 import 'login.dart';
 import 'signup.dart';
 
@@ -15,7 +16,7 @@ class Welcome extends StatelessWidget {
         statusBarBrightness: Brightness.light,
       ),
       child: Scaffold(
-        backgroundColor: Colors.orangeAccent,
+        backgroundColor: AppColors.primary,
         body: SafeArea(
           child: Center(
             child: ConstrainedBox(
@@ -40,21 +41,12 @@ class Welcome extends StatelessWidget {
                     Column(
                       // Column for the text widgets
                       children: <Widget>[
-                        const Text(
-                          "Welcome",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 30,
-                          ),
-                        ),
+                        const Text("Welcome", style: AppFonts.whiteHeaderText),
                         const SizedBox(height: 20),
                         Text(
                           "Collaborate with your household members and manage your groceries efficiently!",
                           textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Colors.grey[800],
-                            fontSize: 15,
-                          ),
+                          style: AppFonts.whiteSubHeadingText,
                         ),
                       ],
                     ),
@@ -78,21 +70,16 @@ class Welcome extends StatelessWidget {
                           onPressed: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(
-                                builder: (context) => const Login(),
-                              ),
+                              slideTransitionRoute(const Login()),
                             );
                           },
+                          color: AppColors.contrast,
                           shape: RoundedRectangleBorder(
-                            side: const BorderSide(color: Colors.black),
                             borderRadius: BorderRadius.circular(50),
                           ),
                           child: const Text(
                             "Login",
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 18,
-                            ),
+                            style: AppFonts.whiteTextField,
                           ),
                         ),
                         const SizedBox(height: 20),
@@ -103,22 +90,16 @@ class Welcome extends StatelessWidget {
                           onPressed: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(
-                                builder: (context) => const Signup(),
-                              ),
+                              slideTransitionRoute(const Signup()),
                             );
                           },
-                          color: Colors.black,
+                          color: AppColors.grey800,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(50),
                           ),
                           child: const Text(
                             "Sign up",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 18,
-                            ),
+                            style: AppFonts.whiteTextField,
                           ),
                         ),
                       ],

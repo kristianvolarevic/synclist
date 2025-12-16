@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:household_groceries/utils/utils.dart';
 
 // --- FULL SIGN UP PAGE IMPLEMENTATION ---
 class Signup extends StatefulWidget {
@@ -37,6 +38,7 @@ class _SignupState extends State<Signup> {
   // Helper widget to build consistent text fields
   Widget buildInputField({
     required String label,
+    required TextStyle labelStyle,
     required IconData icon,
     required ValueKey key,
     TextInputType keyboardType = TextInputType.text,
@@ -52,6 +54,7 @@ class _SignupState extends State<Signup> {
           key: key,
           decoration: InputDecoration(
             labelText: label,
+            labelStyle: labelStyle,
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
             prefixIcon: Icon(icon),
           ),
@@ -75,8 +78,9 @@ class _SignupState extends State<Signup> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text("Sign Up"),
-          backgroundColor: Colors.orangeAccent,
-          foregroundColor: Colors.black,
+          titleTextStyle: AppFonts.whiteTitleText,
+          backgroundColor: AppColors.primary,
+          foregroundColor: Colors.white,
           elevation: 0,
           leading: IconButton(
             onPressed: () {
@@ -85,148 +89,143 @@ class _SignupState extends State<Signup> {
             icon: const Icon(Icons.arrow_back_ios, size: 20),
           ),
         ),
-        body: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 450),
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 40,
-                  vertical: 20,
-                ),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      const Text(
-                        "Create your account",
-                        style: TextStyle(
-                          fontSize: 30,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
+        body: SingleChildScrollView(
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 450),
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 40,
+                    vertical: 20,
+                  ),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        const Text(
+                          "Create your account",
+                          style: AppFonts.blackHeaderText,
                         ),
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        "Sign up now to get started!",
-                        style: TextStyle(fontSize: 15, color: Colors.grey[700]),
-                      ),
-                      const SizedBox(height: 40),
-
-                      // Full Name
-                      buildInputField(
-                        key: const ValueKey('fullname'),
-                        label: 'Full Name',
-                        icon: Icons.person_outline,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your full name.';
-                          }
-                          return null;
-                        },
-                        onSaved: (value) {
-                          _fullName = value!;
-                        },
-                      ),
-
-                      // Email
-                      buildInputField(
-                        key: const ValueKey('email'),
-                        label: 'Email Address',
-                        icon: Icons.email_outlined,
-                        keyboardType: TextInputType.emailAddress,
-                        validator: (value) {
-                          if (value == null || !value.contains('@')) {
-                            return 'Please enter a valid email address.';
-                          }
-                          return null;
-                        },
-                        onSaved: (value) {
-                          _email = value!;
-                        },
-                      ),
-
-                      // Password
-                      buildInputField(
-                        key: const ValueKey('password'),
-                        label: 'Password',
-                        icon: Icons.lock_outline,
-                        isPassword: true,
-                        validator: (value) {
-                          _password =
-                              value ??
-                              ''; // Temporarily store password for confirmation check
-                          if (value == null || value.length < 6) {
-                            return 'Password must be at least 6 characters long.';
-                          }
-                          return null;
-                        },
-                        onSaved: (value) {
-                          _password = value!;
-                        },
-                      ),
-
-                      // Confirm Password
-                      buildInputField(
-                        key: const ValueKey('confirm_password'),
-                        label: 'Confirm Password',
-                        icon: Icons.lock_reset,
-                        isPassword: true,
-                        validator: (value) {
-                          if (value != _password) {
-                            return 'Passwords do not match.';
-                          }
-                          return null;
-                        },
-                      ),
-
-                      const SizedBox(height: 40),
-
-                      // Sign Up Button
-                      MaterialButton(
-                        minWidth: double.infinity,
-                        height: 60,
-                        onPressed: _trySubmit,
-                        color: Colors.orangeAccent,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                        const SizedBox(height: 10),
+                        Text(
+                          "Sign up now to get started!",
+                          style: AppFonts.blackSubHeadingText,
                         ),
-                        child: const Text(
-                          "Sign Up",
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 18,
+                        const SizedBox(height: 40),
+
+                        // Full Name
+                        buildInputField(
+                          key: const ValueKey('fullname'),
+                          label: 'Full Name',
+                          labelStyle: AppFonts.blackTextFieldUnfocussed,
+                          icon: Icons.person_outline,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your full name.';
+                            }
+                            return null;
+                          },
+                          onSaved: (value) {
+                            _fullName = value!;
+                          },
+                        ),
+
+                        // Email
+                        buildInputField(
+                          key: const ValueKey('email'),
+                          label: 'Email Address',
+                          labelStyle: AppFonts.blackTextFieldUnfocussed,
+                          icon: Icons.email_outlined,
+                          keyboardType: TextInputType.emailAddress,
+                          validator: (value) {
+                            if (value == null || !value.contains('@')) {
+                              return 'Please enter a valid email address.';
+                            }
+                            return null;
+                          },
+                          onSaved: (value) {
+                            _email = value!;
+                          },
+                        ),
+
+                        // Password
+                        buildInputField(
+                          key: const ValueKey('password'),
+                          label: 'Password',
+                          labelStyle: AppFonts.blackTextFieldUnfocussed,
+                          icon: Icons.lock_outline,
+                          isPassword: true,
+                          validator: (value) {
+                            _password =
+                                value ??
+                                ''; // Temporarily store password for confirmation check
+                            if (value == null || value.length < 6) {
+                              return 'Password must be at least 6 characters long.';
+                            }
+                            return null;
+                          },
+                          onSaved: (value) {
+                            _password = value!;
+                          },
+                        ),
+
+                        // Confirm Password
+                        buildInputField(
+                          key: const ValueKey('confirm_password'),
+                          label: 'Confirm Password',
+                          labelStyle: AppFonts.blackTextFieldUnfocussed,
+                          icon: Icons.lock_reset,
+                          isPassword: true,
+                          validator: (value) {
+                            if (value != _password) {
+                              return 'Passwords do not match.';
+                            }
+                            return null;
+                          },
+                        ),
+
+                        const SizedBox(height: 40),
+
+                        // Sign Up Button
+                        MaterialButton(
+                          minWidth: double.infinity,
+                          height: 60,
+                          onPressed: _trySubmit,
+                          color: Colors.orangeAccent,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: const Text(
+                            "Sign Up",
+                            style: AppFonts.whiteTextField,
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 30),
+                        const SizedBox(height: 30),
 
-                      // Already have an account link
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Text(
-                            "Already have an account?",
-                            style: TextStyle(color: Colors.grey[700]),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              // Go back to the previous screen (which is likely the Welcome or Login page)
-                              Navigator.pop(context);
-                            },
-                            child: const Text(
-                              "Login",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.orangeAccent,
+                        // Already have an account link
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Text(
+                              "Already have an account?",
+                              style: AppFonts.blackSubHeadingText,
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                // Go back to the previous screen (which is likely the Welcome or Login page)
+                                Navigator.pop(context);
+                              },
+                              child: const Text(
+                                "Login",
+                                style: AppFonts.orangeLinkText,
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

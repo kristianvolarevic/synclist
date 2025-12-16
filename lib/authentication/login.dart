@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:household_groceries/utils/utils.dart';
 import 'signup.dart';
 
 class Login extends StatefulWidget {
@@ -41,8 +42,9 @@ class _LoginState extends State<Login> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text("Login"),
-          backgroundColor: Colors.orangeAccent,
-          foregroundColor: Colors.black, // ensures back button is black
+          titleTextStyle: AppFonts.whiteTitleText,
+          backgroundColor: AppColors.primary,
+          foregroundColor: Colors.white, // ensures back button is white
           elevation: 0,
           leading: IconButton(
             onPressed: () {
@@ -67,16 +69,12 @@ class _LoginState extends State<Login> {
                     children: <Widget>[
                       const Text(
                         "Login to your account",
-                        style: TextStyle(
-                          fontSize: 30,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
+                        style: AppFonts.blackHeaderText,
                       ),
                       const SizedBox(height: 10),
                       Text(
                         "Welcome back! Please enter your details.",
-                        style: TextStyle(fontSize: 15, color: Colors.grey[700]),
+                        style: AppFonts.blackSubHeadingText,
                       ),
                       const SizedBox(height: 40),
 
@@ -85,6 +83,7 @@ class _LoginState extends State<Login> {
                         key: const ValueKey('email'),
                         decoration: InputDecoration(
                           labelText: 'Email Address',
+                          labelStyle: AppFonts.blackTextFieldUnfocussed,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
@@ -108,6 +107,7 @@ class _LoginState extends State<Login> {
                         key: const ValueKey('password'),
                         decoration: InputDecoration(
                           labelText: 'Password',
+                          labelStyle: AppFonts.blackTextFieldUnfocussed,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
@@ -136,7 +136,7 @@ class _LoginState extends State<Login> {
                           },
                           child: const Text(
                             'Forgot Password?',
-                            style: TextStyle(color: Colors.orangeAccent),
+                            style: AppFonts.orangeLinkText,
                           ),
                         ),
                       ),
@@ -153,11 +153,7 @@ class _LoginState extends State<Login> {
                         ),
                         child: const Text(
                           "Login",
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 18,
-                          ),
+                          style: AppFonts.whiteTextField,
                         ),
                       ),
                       const SizedBox(height: 30),
@@ -168,24 +164,22 @@ class _LoginState extends State<Login> {
                         children: <Widget>[
                           Text(
                             "Don't have an account?",
-                            style: TextStyle(color: Colors.grey[700]),
+                            style: AppFonts.blackSubHeadingText,
                           ),
                           TextButton(
                             onPressed: () {
                               // Navigate to the Signup Page
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(
+                                slideTransitionRoute(const Signup()),
+                                /* MaterialPageRoute(
                                   builder: (context) => const Signup(),
-                                ),
+                                ), */
                               );
                             },
                             child: const Text(
                               "Sign Up",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.orangeAccent,
-                              ),
+                              style: AppFonts.orangeLinkText,
                             ),
                           ),
                         ],

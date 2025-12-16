@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'authentication/welcome.dart';
+import 'utils/licenses.dart';
 
 void main() {
+  AppLicenses.registerQuicksandLicense();
+
   runApp(const MyApp());
 }
 
