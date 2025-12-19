@@ -1,8 +1,19 @@
+// --------------------------------------------------------------------------------------------
+// IMPORTS
+// --------------------------------------------------------------------------------------------
+// Flutter Imports
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
+// App Imports
 import 'package:household_groceries/utils/utils.dart';
+
+// Firebase Imports
 import 'package:firebase_auth/firebase_auth.dart';
 
+// --------------------------------------------------------------------------------------------
+// CLASS: SIGNUP
+// --------------------------------------------------------------------------------------------
 class Signup extends StatefulWidget {
   const Signup({super.key});
 
@@ -10,52 +21,50 @@ class Signup extends StatefulWidget {
   State<Signup> createState() => _SignupState();
 }
 
+// --------------------------------------------------------------------------------------------
+// CLASS: _SIGNUPSTATE (Page Layout & Logic)
+// --------------------------------------------------------------------------------------------
 class _SignupState extends State<Signup> {
   final _formKey = GlobalKey<FormState>();
   String _fullName = '';
   String _email = '';
   String _password = '';
 
+  // ---------------------- METHOD: TRY SUBMIT ----------------------
   void _trySubmit() async {
-    final isValid = _formKey.currentState!.validate();
+    final isValid = _formKey.currentState!.validate(); // Validate form fields
     FocusScope.of(context).unfocus(); // Close keyboard
 
-    if (!isValid) return;
+    if (!isValid) return; // If form is not valid, exit the method
 
     _formKey.currentState!.save();
 
+    // ---------------------- Try Sign Up ----------------------
     try {
       UserCredential userCredential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: _email, password: _password);
 
-      final User? user = userCredential.user;
+      final User? user = userCredential.user; // Get the created user
 
       if (user != null) {
+        // If user creation is successful set their name
+        await user.updateDisplayName(_fullName);
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Sign up successful! Welcome, ${user.email}')),
         );
       }
-    } catch (e) {
-      print('Error during sign up: $e');
+    }
+    // ---------------------- Error Handling ----------------------
+    catch (e) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Sign up failed: $e')));
       return;
     }
-    // Use _fullName, _email, and _password for user registration
-    print(
-      'Registration attempted: Name: $_fullName, Email: $_email, Password: $_password',
-    );
-
-    // In a real app, you would call your registration service
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Registration successful! (Simulated)')),
-    );
-    // Optionally navigate to the main app screen after successful signup
   }
 
-  // Helper widget to build consistent text fields
+  // ---------------------- METHOD: BUILD INPUT FIELD ----------------------
   Widget buildInputField({
     required String label,
     required TextStyle labelStyle,
