@@ -23,6 +23,7 @@ class _LoginState extends State<Login> {
       _formKey.currentState!.save();
       // Use _email and _password for authentication here
       print('Login attempted with: Email: $_email, Password: $_password');
+
       // In a real app, you would call your authentication service
       // For now, we'll just show a simple snackbar confirmation
       ScaffoldMessenger.of(context).showSnackBar(

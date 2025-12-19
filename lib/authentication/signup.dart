@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:household_groceries/utils/utils.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-// --- FULL SIGN UP PAGE IMPLEMENTATION ---
 class Signup extends StatefulWidget {
   const Signup({super.key});
 
@@ -16,23 +16,43 @@ class _SignupState extends State<Signup> {
   String _email = '';
   String _password = '';
 
-  void _trySubmit() {
+  void _trySubmit() async {
     final isValid = _formKey.currentState!.validate();
     FocusScope.of(context).unfocus(); // Close keyboard
 
-    if (isValid) {
-      _formKey.currentState!.save();
-      // Use _fullName, _email, and _password for user registration
-      print(
-        'Registration attempted: Name: $_fullName, Email: $_email, Password: $_password',
-      );
+    if (!isValid) return;
 
-      // In a real app, you would call your registration service
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Registration successful! (Simulated)')),
-      );
-      // Optionally navigate to the main app screen after successful signup
+    _formKey.currentState!.save();
+
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: _email, password: _password);
+
+      final User? user = userCredential.user;
+
+      if (user != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Sign up successful! Welcome, ${user.email}')),
+        );
+      }
+    } catch (e) {
+      print('Error during sign up: $e');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Sign up failed: $e')));
+      return;
     }
+    // Use _fullName, _email, and _password for user registration
+    print(
+      'Registration attempted: Name: $_fullName, Email: $_email, Password: $_password',
+    );
+
+    // In a real app, you would call your registration service
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Registration successful! (Simulated)')),
+    );
+    // Optionally navigate to the main app screen after successful signup
   }
 
   // Helper widget to build consistent text fields

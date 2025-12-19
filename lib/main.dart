@@ -1,9 +1,18 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'authentication/welcome.dart';
 import 'utils/licenses.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize firebase
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  // Register licenses
   AppLicenses.registerQuicksandLicense();
+  AppLicenses.registerGoogleCloudLicense();
 
   runApp(const MyApp());
 }

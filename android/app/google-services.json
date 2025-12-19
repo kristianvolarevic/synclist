@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "262681398698",
+    "project_id": "household-groceries",
+    "storage_bucket": "household-groceries.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:262681398698:android:0f3f5232403ceda77eafd3",
+        "android_client_info": {
+          "package_name": "com.example.household_groceries"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDy-Wy9G9O_sA2QnCRDgGH6QzdAJgjxeIM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
