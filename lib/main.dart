@@ -11,8 +11,7 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   // Register licenses
-  AppLicenses.registerQuicksandLicense();
-  AppLicenses.registerGoogleCloudLicense();
+  AppLicenses.registerAllLicenses();
 
   runApp(const MyApp());
 }

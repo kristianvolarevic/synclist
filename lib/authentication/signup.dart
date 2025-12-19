@@ -96,6 +96,7 @@ class _SignupState extends State<Signup> {
     );
   }
 
+  // ---------------------- METHOD: BUILD ----------------------
   @override
   Widget build(BuildContext context) {
     // Status bar style for the Sign Up page (dark app bar, white icons)
@@ -105,6 +106,7 @@ class _SignupState extends State<Signup> {
         statusBarBrightness: Brightness.dark, // For iOS
       ),
       child: Scaffold(
+        // ---------------------------------------------------------------------------------------- APP BAR
         appBar: AppBar(
           title: const Text("Sign Up"),
           titleTextStyle: AppFonts.whiteTitleText,
@@ -118,6 +120,8 @@ class _SignupState extends State<Signup> {
             icon: const Icon(Icons.arrow_back_ios, size: 20),
           ),
         ),
+
+        // ---------------------------------------------------------------------------------------- BODY
         body: SingleChildScrollView(
           child: Center(
             child: ConstrainedBox(
@@ -133,18 +137,23 @@ class _SignupState extends State<Signup> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
+                        // ---------------------------------------------------------------------------------------- HEADER
                         const Text(
                           "Create your account",
                           style: AppFonts.blackHeaderText,
                         ),
+
                         const SizedBox(height: 10),
+
+                        // ---------------------------------------------------------------------------------------- SUBHEADER
                         Text(
                           "Sign up now to get started!",
                           style: AppFonts.blackSubHeadingText,
                         ),
+
                         const SizedBox(height: 40),
 
-                        // Full Name
+                        // ---------------------------------------------------------------------------------------- FULL NAME
                         buildInputField(
                           key: const ValueKey('fullname'),
                           label: 'Full Name',
@@ -161,7 +170,7 @@ class _SignupState extends State<Signup> {
                           },
                         ),
 
-                        // Email
+                        // ---------------------------------------------------------------------------------------- EMAIL
                         buildInputField(
                           key: const ValueKey('email'),
                           label: 'Email Address',
@@ -179,7 +188,7 @@ class _SignupState extends State<Signup> {
                           },
                         ),
 
-                        // Password
+                        // ---------------------------------------------------------------------------------------- PASSWORD
                         buildInputField(
                           key: const ValueKey('password'),
                           label: 'Password',
@@ -200,7 +209,7 @@ class _SignupState extends State<Signup> {
                           },
                         ),
 
-                        // Confirm Password
+                        // ---------------------------------------------------------------------------------------- CONFIRM PASSWORD
                         buildInputField(
                           key: const ValueKey('confirm_password'),
                           label: 'Confirm Password',
@@ -217,7 +226,7 @@ class _SignupState extends State<Signup> {
 
                         const SizedBox(height: 40),
 
-                        // Sign Up Button
+                        // ---------------------------------------------------------------------------------------- SIGNUP BUTTON
                         MaterialButton(
                           minWidth: double.infinity,
                           height: 60,
@@ -231,9 +240,10 @@ class _SignupState extends State<Signup> {
                             style: AppFonts.whiteTextField,
                           ),
                         ),
+
                         const SizedBox(height: 30),
 
-                        // Already have an account link
+                        // ---------------------------------------------------------------------------------------- LOGIN LINK
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
@@ -253,6 +263,7 @@ class _SignupState extends State<Signup> {
                             ),
                           ],
                         ),
+                        // ---------------------------------------------------------------------------------------- END OF COLUMN
                       ],
                     ),
                   ),

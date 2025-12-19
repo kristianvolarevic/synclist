@@ -1,12 +1,22 @@
+// --------------------------------------------------------------------------------------------
+// IMPORTS
+// --------------------------------------------------------------------------------------------
+// Flutter Imports
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
+// App Imports
 import 'package:household_groceries/utils/utils.dart';
 import 'login.dart';
 import 'signup.dart';
 
+// --------------------------------------------------------------------------------------------
+// CLASS: WELCOME
+// --------------------------------------------------------------------------------------------
 class Welcome extends StatelessWidget {
   const Welcome({super.key});
 
+  // ---------------------- METHOD: BUILD ----------------------
   @override
   Widget build(BuildContext context) {
     return AnnotatedRegion<SystemUiOverlayStyle>(
@@ -40,9 +50,12 @@ class Welcome extends StatelessWidget {
                   children: <Widget>[
                     Column(
                       // Column for the text widgets
+                      // ---------------------------------------------------------------------------------------- TITLE
                       children: <Widget>[
                         const Text("Welcome", style: AppFonts.whiteHeaderText),
                         const SizedBox(height: 20),
+
+                        // ---------------------------------------------------------------------------------------- SUBTITLE
                         Text(
                           "Collaborate with your household members and manage your groceries efficiently!",
                           textAlign: TextAlign.center,
@@ -53,9 +66,10 @@ class Welcome extends StatelessWidget {
                     Container(
                       height: MediaQuery.of(context).size.height / 3,
                       decoration: const BoxDecoration(
+                        // ---------------------------------------------------------------------------------------- LOGO IMAGE
                         image: DecorationImage(
-                          image: NetworkImage(
-                            "https://storage.googleapis.com/cms-storage-bucket/70760bf1e88b184bb1bc.png", // placeholder image
+                          image: AssetImage(
+                            "assets/images/logo.png",
                           ), // Flutter Dash image
                           fit: BoxFit.contain,
                         ),
@@ -63,7 +77,7 @@ class Welcome extends StatelessWidget {
                     ),
                     Column(
                       children: <Widget>[
-                        // Login Button
+                        // ---------------------------------------------------------------------------------------- LOGIN BUTTON
                         MaterialButton(
                           minWidth: double.infinity,
                           height: 60,
@@ -82,8 +96,10 @@ class Welcome extends StatelessWidget {
                             style: AppFonts.whiteTextField,
                           ),
                         ),
+
                         const SizedBox(height: 20),
-                        // Sign Up Button
+
+                        // ---------------------------------------------------------------------------------------- SIGNUP BUTTON
                         MaterialButton(
                           minWidth: double.infinity,
                           height: 60,
@@ -102,6 +118,7 @@ class Welcome extends StatelessWidget {
                             style: AppFonts.whiteTextField,
                           ),
                         ),
+                        // ---------------------------------------------------------------------------------------- END OF COLUMN
                       ],
                     ),
                   ],

@@ -1,8 +1,20 @@
+// --------------------------------------------------------------------------------------------
+// IMPORTS
+// --------------------------------------------------------------------------------------------
+// Flutter Imports
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
+// App Imports
 import 'package:household_groceries/utils/utils.dart';
 import 'signup.dart';
 
+// Firebase Imports
+import 'package:firebase_auth/firebase_auth.dart';
+
+// --------------------------------------------------------------------------------------------
+// CLASS: LOGIN PAGE
+// --------------------------------------------------------------------------------------------
 class Login extends StatefulWidget {
   const Login({super.key});
 
@@ -10,28 +22,49 @@ class Login extends StatefulWidget {
   State<Login> createState() => _LoginState();
 }
 
+// --------------------------------------------------------------------------------------------
+// CLASS: LOGIN PAGE STATE
+// --------------------------------------------------------------------------------------------
 class _LoginState extends State<Login> {
   final _formKey = GlobalKey<FormState>();
   String _email = '';
   String _password = '';
 
-  void _trySubmit() {
-    final isValid = _formKey.currentState!.validate();
+  // ---------------------- METHOD: TRY SUBMIT ----------------------
+  void _trySubmit() async {
+    final isValid = _formKey.currentState!.validate(); // Validate form fields
     FocusScope.of(context).unfocus(); // Close keyboard
 
-    if (isValid) {
-      _formKey.currentState!.save();
-      // Use _email and _password for authentication here
-      print('Login attempted with: Email: $_email, Password: $_password');
+    if (!isValid) return; // If form is not valid, exit the method
 
-      // In a real app, you would call your authentication service
-      // For now, we'll just show a simple snackbar confirmation
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Login successful! (Simulated)')),
-      );
+    _formKey.currentState!.save();
+
+    // ---------------------- Try Login ----------------------
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: _email, password: _password);
+
+      final User? user = userCredential.user; // Get the logged-in user
+      if (user != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Logged in successfully! Welcome back, ${user.displayName}',
+            ),
+          ),
+        );
+      }
+    }
+    // ---------------------- CATCH ERROR ----------------------
+    catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Login failed. $e')));
+      return;
     }
   }
 
+  // ---------------------- METHOD: BUILD WIDGET ----------------------
   @override
   Widget build(BuildContext context) {
     // Ensure status bar icons are dark on this white page
@@ -41,6 +74,7 @@ class _LoginState extends State<Login> {
         statusBarBrightness: Brightness.light, // For iOS
       ),
       child: Scaffold(
+        // ---------------------------------------------------------------------------------------- APP BAR
         appBar: AppBar(
           title: const Text("Login"),
           titleTextStyle: AppFonts.whiteTitleText,
@@ -54,6 +88,8 @@ class _LoginState extends State<Login> {
             icon: const Icon(Icons.arrow_back_ios, size: 20),
           ),
         ),
+
+        // ---------------------------------------------------------------------------------------- BODY
         body: SingleChildScrollView(
           child: Center(
             child: ConstrainedBox(
@@ -68,18 +104,23 @@ class _LoginState extends State<Login> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
+                      // ---------------------------------------------------------------------------------------- HEADER
                       const Text(
                         "Login to your account",
                         style: AppFonts.blackHeaderText,
                       ),
+
                       const SizedBox(height: 10),
+
+                      // ---------------------------------------------------------------------------------------- SUBHEADER
                       Text(
                         "Welcome back! Please enter your details.",
                         style: AppFonts.blackSubHeadingText,
                       ),
+
                       const SizedBox(height: 40),
 
-                      // Email Input Field
+                      // ---------------------------------------------------------------------------------------- EMAIL FIELD
                       TextFormField(
                         key: const ValueKey('email'),
                         decoration: InputDecoration(
@@ -101,9 +142,10 @@ class _LoginState extends State<Login> {
                           _email = value!;
                         },
                       ),
+
                       const SizedBox(height: 20),
 
-                      // Password Input Field
+                      // ---------------------------------------------------------------------------------------- PASSWORD FIELD
                       TextFormField(
                         key: const ValueKey('password'),
                         decoration: InputDecoration(
@@ -125,9 +167,10 @@ class _LoginState extends State<Login> {
                           _password = value!;
                         },
                       ),
+
                       const SizedBox(height: 10),
 
-                      // Forgot Password
+                      // ---------------------------------------------------------------------------------------- FORGOT PASSWORD LINK
                       Align(
                         alignment: Alignment.centerRight,
                         child: TextButton(
@@ -141,9 +184,10 @@ class _LoginState extends State<Login> {
                           ),
                         ),
                       ),
+
                       const SizedBox(height: 30),
 
-                      // Login Button
+                      // ---------------------------------------------------------------------------------------- LOGIN BUTTON
                       MaterialButton(
                         minWidth: double.infinity,
                         height: 60,
@@ -157,9 +201,10 @@ class _LoginState extends State<Login> {
                           style: AppFonts.whiteTextField,
                         ),
                       ),
+
                       const SizedBox(height: 30),
 
-                      // Don't have an account link
+                      // ---------------------------------------------------------------------------------------- SIGNUP LINK
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
@@ -185,6 +230,7 @@ class _LoginState extends State<Login> {
                           ),
                         ],
                       ),
+                      // ---------------------------------------------------------------------------------------- END OF COLUMN
                     ],
                   ),
                 ),

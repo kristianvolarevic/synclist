@@ -3,6 +3,12 @@ import 'package:flutter/foundation.dart';
 class AppLicenses {
   AppLicenses._();
 
+  static void registerAllLicenses() {
+    registerQuicksandLicense();
+    registerGoogleCloudLicense();
+    registerLogoLicense();
+  }
+
   static void registerQuicksandLicense() {
     LicenseRegistry.addLicense(() async* {
       yield LicenseEntryWithLineBreaks(
@@ -192,6 +198,18 @@ This Agreement is effective when Customer clicks to accept or otherwise agrees t
 "TSS" means the technical support service provided by Google.
 
 15. Regional Modifications. Customer agrees that the modifications described at https://cloud.google.com/terms/regional-modifications apply to the Agreement if Customer’s billing address is in the applicable region.''',
+      );
+    });
+  }
+
+  static void registerLogoLicense() {
+    LicenseRegistry.addLicense(() async* {
+      yield LicenseEntryWithLineBreaks(
+        ["Household Groceries Logo"],
+        '''The logo for this application was created by Assia Benkerroum and uploaded to Flaticon.
+
+View the original source material at the following link: https://www.flaticon.com/free-icons/shopping-list
+''',
       );
     });
   }
