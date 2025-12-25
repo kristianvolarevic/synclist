@@ -1,7 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'authentication/welcome.dart';
+import 'home.dart';
 import 'utils/licenses.dart';
 
 void main() async {
@@ -9,6 +11,11 @@ void main() async {
 
   // Initialize firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  if (FirebaseAuth.instance.currentUser != null) {
+    print("User is logged in");
+    FirebaseAuth.instance.signOut();
+  }
 
   // Register licenses
   AppLicenses.registerAllLicenses();
@@ -28,7 +35,24 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const Welcome(),
+      home: StreamBuilder<User?>(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.active) {
+            User? user = snapshot.data;
+            if (user == null) {
+              return const Welcome();
+            } else {
+              // Return the main app screen for logged-in users
+              return const Home();
+            }
+          } else {
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            );
+          }
+        },
+      ),
     );
   }
 }

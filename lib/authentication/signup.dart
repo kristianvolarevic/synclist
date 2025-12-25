@@ -3,10 +3,11 @@
 // --------------------------------------------------------------------------------------------
 // Flutter Imports
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:household_groceries/common_widgets/statusBarPage.dart';
 
 // App Imports
 import 'package:household_groceries/utils/utils.dart';
+import 'package:household_groceries/home.dart';
 
 // Firebase Imports
 import 'package:firebase_auth/firebase_auth.dart';
@@ -50,8 +51,11 @@ class _SignupState extends State<Signup> {
         // If user creation is successful set their name
         await user.updateDisplayName(_fullName);
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Sign up successful! Welcome, ${user.email}')),
+        // Navigate to Home and remove all previous routes
+        Navigator.pushAndRemoveUntil(
+          context,
+          slideTransitionRoute(const Home()),
+          (route) => false, // Remove all previous routes
         );
       }
     }
@@ -99,173 +103,157 @@ class _SignupState extends State<Signup> {
   // ---------------------- METHOD: BUILD ----------------------
   @override
   Widget build(BuildContext context) {
-    // Status bar style for the Sign Up page (dark app bar, white icons)
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: const SystemUiOverlayStyle(
-        statusBarIconBrightness: Brightness.light,
-        statusBarBrightness: Brightness.dark, // For iOS
+    return StatusBarPage(
+      title: "Sign Up",
+      leading: IconButton(
+        onPressed: () {
+          Navigator.pop(context);
+        },
+        icon: const Icon(Icons.arrow_back_ios, size: 20),
       ),
-      child: Scaffold(
-        // ---------------------------------------------------------------------------------------- APP BAR
-        appBar: AppBar(
-          title: const Text("Sign Up"),
-          titleTextStyle: AppFonts.whiteTitleText,
-          backgroundColor: AppColors.primary,
-          foregroundColor: Colors.white,
-          elevation: 0,
-          leading: IconButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            icon: const Icon(Icons.arrow_back_ios, size: 20),
-          ),
-        ),
+      body: SingleChildScrollView(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 450),
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 40,
+                  vertical: 20,
+                ),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      // ---------------------------------------------------------------------------------------- HEADER
+                      const Text(
+                        "Create your account",
+                        style: AppFonts.blackHeaderText,
+                      ),
 
-        // ---------------------------------------------------------------------------------------- BODY
-        body: SingleChildScrollView(
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 450),
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 40,
-                    vertical: 20,
-                  ),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        // ---------------------------------------------------------------------------------------- HEADER
-                        const Text(
-                          "Create your account",
-                          style: AppFonts.blackHeaderText,
+                      const SizedBox(height: 10),
+
+                      // ---------------------------------------------------------------------------------------- SUBHEADER
+                      Text(
+                        "Sign up now to get started!",
+                        style: AppFonts.blackSubHeadingText,
+                      ),
+
+                      const SizedBox(height: 40),
+
+                      // ---------------------------------------------------------------------------------------- FULL NAME
+                      buildInputField(
+                        key: const ValueKey('fullname'),
+                        label: 'Full Name',
+                        labelStyle: AppFonts.blackTextFieldUnfocussed,
+                        icon: Icons.person_outline,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your full name.';
+                          }
+                          return null;
+                        },
+                        onSaved: (value) {
+                          _fullName = value!;
+                        },
+                      ),
+
+                      // ---------------------------------------------------------------------------------------- EMAIL
+                      buildInputField(
+                        key: const ValueKey('email'),
+                        label: 'Email Address',
+                        labelStyle: AppFonts.blackTextFieldUnfocussed,
+                        icon: Icons.email_outlined,
+                        keyboardType: TextInputType.emailAddress,
+                        validator: (value) {
+                          if (value == null || !value.contains('@')) {
+                            return 'Please enter a valid email address.';
+                          }
+                          return null;
+                        },
+                        onSaved: (value) {
+                          _email = value!;
+                        },
+                      ),
+
+                      // ---------------------------------------------------------------------------------------- PASSWORD
+                      buildInputField(
+                        key: const ValueKey('password'),
+                        label: 'Password',
+                        labelStyle: AppFonts.blackTextFieldUnfocussed,
+                        icon: Icons.lock_outline,
+                        isPassword: true,
+                        validator: (value) {
+                          _password =
+                              value ??
+                              ''; // Temporarily store password for confirmation check
+                          if (value == null || value.length < 6) {
+                            return 'Password must be at least 6 characters long.';
+                          }
+                          return null;
+                        },
+                        onSaved: (value) {
+                          _password = value!;
+                        },
+                      ),
+
+                      // ---------------------------------------------------------------------------------------- CONFIRM PASSWORD
+                      buildInputField(
+                        key: const ValueKey('confirm_password'),
+                        label: 'Confirm Password',
+                        labelStyle: AppFonts.blackTextFieldUnfocussed,
+                        icon: Icons.lock_reset,
+                        isPassword: true,
+                        validator: (value) {
+                          if (value != _password) {
+                            return 'Passwords do not match.';
+                          }
+                          return null;
+                        },
+                      ),
+
+                      const SizedBox(height: 40),
+
+                      // ---------------------------------------------------------------------------------------- SIGNUP BUTTON
+                      MaterialButton(
+                        minWidth: double.infinity,
+                        height: 60,
+                        onPressed: _trySubmit,
+                        color: Colors.orangeAccent,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
                         ),
-
-                        const SizedBox(height: 10),
-
-                        // ---------------------------------------------------------------------------------------- SUBHEADER
-                        Text(
-                          "Sign up now to get started!",
-                          style: AppFonts.blackSubHeadingText,
+                        child: const Text(
+                          "Sign Up",
+                          style: AppFonts.whiteTextField,
                         ),
+                      ),
 
-                        const SizedBox(height: 40),
+                      const SizedBox(height: 30),
 
-                        // ---------------------------------------------------------------------------------------- FULL NAME
-                        buildInputField(
-                          key: const ValueKey('fullname'),
-                          label: 'Full Name',
-                          labelStyle: AppFonts.blackTextFieldUnfocussed,
-                          icon: Icons.person_outline,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter your full name.';
-                            }
-                            return null;
-                          },
-                          onSaved: (value) {
-                            _fullName = value!;
-                          },
-                        ),
-
-                        // ---------------------------------------------------------------------------------------- EMAIL
-                        buildInputField(
-                          key: const ValueKey('email'),
-                          label: 'Email Address',
-                          labelStyle: AppFonts.blackTextFieldUnfocussed,
-                          icon: Icons.email_outlined,
-                          keyboardType: TextInputType.emailAddress,
-                          validator: (value) {
-                            if (value == null || !value.contains('@')) {
-                              return 'Please enter a valid email address.';
-                            }
-                            return null;
-                          },
-                          onSaved: (value) {
-                            _email = value!;
-                          },
-                        ),
-
-                        // ---------------------------------------------------------------------------------------- PASSWORD
-                        buildInputField(
-                          key: const ValueKey('password'),
-                          label: 'Password',
-                          labelStyle: AppFonts.blackTextFieldUnfocussed,
-                          icon: Icons.lock_outline,
-                          isPassword: true,
-                          validator: (value) {
-                            _password =
-                                value ??
-                                ''; // Temporarily store password for confirmation check
-                            if (value == null || value.length < 6) {
-                              return 'Password must be at least 6 characters long.';
-                            }
-                            return null;
-                          },
-                          onSaved: (value) {
-                            _password = value!;
-                          },
-                        ),
-
-                        // ---------------------------------------------------------------------------------------- CONFIRM PASSWORD
-                        buildInputField(
-                          key: const ValueKey('confirm_password'),
-                          label: 'Confirm Password',
-                          labelStyle: AppFonts.blackTextFieldUnfocussed,
-                          icon: Icons.lock_reset,
-                          isPassword: true,
-                          validator: (value) {
-                            if (value != _password) {
-                              return 'Passwords do not match.';
-                            }
-                            return null;
-                          },
-                        ),
-
-                        const SizedBox(height: 40),
-
-                        // ---------------------------------------------------------------------------------------- SIGNUP BUTTON
-                        MaterialButton(
-                          minWidth: double.infinity,
-                          height: 60,
-                          onPressed: _trySubmit,
-                          color: Colors.orangeAccent,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+                      // ---------------------------------------------------------------------------------------- LOGIN LINK
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Text(
+                            "Already have an account?",
+                            style: AppFonts.blackSubHeadingText,
                           ),
-                          child: const Text(
-                            "Sign Up",
-                            style: AppFonts.whiteTextField,
+                          TextButton(
+                            onPressed: () {
+                              // Go back to the previous screen (which is likely the Welcome or Login page)
+                              Navigator.pop(context);
+                            },
+                            child: const Text(
+                              "Login",
+                              style: AppFonts.orangeLinkText,
+                            ),
                           ),
-                        ),
-
-                        const SizedBox(height: 30),
-
-                        // ---------------------------------------------------------------------------------------- LOGIN LINK
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Text(
-                              "Already have an account?",
-                              style: AppFonts.blackSubHeadingText,
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                // Go back to the previous screen (which is likely the Welcome or Login page)
-                                Navigator.pop(context);
-                              },
-                              child: const Text(
-                                "Login",
-                                style: AppFonts.orangeLinkText,
-                              ),
-                            ),
-                          ],
-                        ),
-                        // ---------------------------------------------------------------------------------------- END OF COLUMN
-                      ],
-                    ),
+                        ],
+                      ),
+                      // ---------------------------------------------------------------------------------------- END OF COLUMN
+                    ],
                   ),
                 ),
               ),

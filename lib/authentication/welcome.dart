@@ -21,9 +21,8 @@ class Welcome extends StatelessWidget {
   Widget build(BuildContext context) {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness: Brightness.light,
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.dark, // For iOS
       ),
       child: Scaffold(
         backgroundColor: AppColors.primary,
