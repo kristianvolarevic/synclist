@@ -12,11 +12,6 @@ void main() async {
   // Initialize firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  if (FirebaseAuth.instance.currentUser != null) {
-    print("User is logged in");
-    FirebaseAuth.instance.signOut();
-  }
-
   // Register licenses
   AppLicenses.registerAllLicenses();
 

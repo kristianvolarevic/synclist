@@ -5,6 +5,9 @@
 import 'package:flutter/material.dart';
 import 'package:household_groceries/common_widgets/statusBarPage.dart';
 
+// App Imports
+import 'package:household_groceries/utils/utils.dart';
+
 // --------------------------------------------------------------------------------------------
 // CLASS: HOME
 // --------------------------------------------------------------------------------------------
@@ -30,7 +33,33 @@ class _HomeState extends State<Home> {
         icon: const Icon(Icons.account_circle, size: 30),
       ),
       body: Scaffold(
-        body: const Center(child: Text("Welcome to the Home Screen!")),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 40.0,
+              vertical: 20.0,
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                SizedBox(
+                  height: 75,
+                  width: 75,
+                  child: FittedBox(
+                    child: FloatingActionButton.large(
+                      foregroundColor: AppColors.primary,
+                      backgroundColor: AppColors.contrast,
+                      onPressed: () {
+                        print("FAB Pressed");
+                      },
+                      child: Icon(Icons.add),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
