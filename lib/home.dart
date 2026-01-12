@@ -42,15 +42,51 @@ class _HomeState extends State<Home> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
+                // ---------------------------------------------------------------------------------------- FAB
                 SizedBox(
                   height: 75,
                   width: 75,
                   child: FittedBox(
                     child: FloatingActionButton.large(
-                      foregroundColor: AppColors.primary,
+                      foregroundColor: Colors.white, // Match background color
                       backgroundColor: AppColors.contrast,
                       onPressed: () {
-                        print("FAB Pressed");
+                        // ---------------------------------------------------------------------------------------- ADD NEW LIST DIALOG
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text("Create New List"),
+                              content: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                // ---------------------------------------------------------------------------------------- FIELDS
+                                children: [
+                                  const TextField(
+                                    decoration: InputDecoration(
+                                      hintText: "Enter list name...",
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              // ---------------------------------------------------------------------------------------- ACTIONS
+                              actions: <Widget>[
+                                TextButton(
+                                  child: const Text("Cancel"),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                                TextButton(
+                                  child: const Text("Create"),
+                                  onPressed: () {
+                                    // Logic to add the item goes here
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
                       },
                       child: Icon(Icons.add),
                     ),
