@@ -14,8 +14,7 @@ void main() async {
 
   // Register licenses
   AppLicenses.registerAllLicenses();
-  FirebaseAuth.instance
-      .signOut(); // Sign out any existing user for testing purposes
+
   runApp(const MyApp());
 }
 

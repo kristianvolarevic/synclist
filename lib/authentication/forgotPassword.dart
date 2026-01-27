@@ -59,6 +59,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     }
   }
 
+  // ---------------------- METHOD: SHOW SUCCESS DIALOG ----------------------
   void _showSuccessDialog(String email) {
     showDialog(
       context: context,

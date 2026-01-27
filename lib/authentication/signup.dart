@@ -3,6 +3,7 @@
 // --------------------------------------------------------------------------------------------
 // Flutter Imports
 import 'package:flutter/material.dart';
+import 'dart:async';
 import 'package:household_groceries/common_widgets/statusBarPage.dart';
 
 // App Imports
@@ -30,6 +31,12 @@ class _SignupState extends State<Signup> {
   String _fullName = '';
   String _email = '';
   String _password = '';
+  Timer? _timer;
+
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
 
   // ---------------------- METHOD: TRY SUBMIT ----------------------
   void _trySubmit() async {
@@ -48,15 +55,28 @@ class _SignupState extends State<Signup> {
       final User? user = userCredential.user; // Get the created user
 
       if (user != null) {
-        // If user creation is successful set their name
-        await user.updateDisplayName(_fullName);
+        await user.sendEmailVerification();
+        _showVerificationDialog(_email);
 
-        // Navigate to Home and remove all previous routes
-        Navigator.pushAndRemoveUntil(
-          context,
-          slideTransitionRoute(const Home()),
-          (route) => false, // Remove all previous routes
-        );
+        // Check every 3 seconds if email is verified
+        _timer = Timer.periodic(const Duration(seconds: 3), (timer) async {
+          await FirebaseAuth.instance.currentUser?.reload();
+          final User? currentUser = FirebaseAuth.instance.currentUser;
+
+          if (currentUser == null) return;
+
+          if (currentUser.emailVerified != false) {
+            timer.cancel();
+            currentUser.updateDisplayName(_fullName);
+
+            // Navigate to Home and remove all previous routes
+            Navigator.pushAndRemoveUntil(
+              context,
+              slideTransitionRoute(const Home()),
+              (route) => false, // Remove all previous routes
+            );
+          }
+        });
       }
     }
     // ---------------------- Error Handling ----------------------
@@ -66,6 +86,29 @@ class _SignupState extends State<Signup> {
       ).showSnackBar(SnackBar(content: Text('Sign up failed: $e')));
       return;
     }
+  }
+
+  // ---------------------- METHOD: SHOW SUCCESS DIALOG ----------------------
+  void _showVerificationDialog(String email) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        title: Text("Email Sent", style: AppFonts.blackHeaderText),
+        content: Text(
+          "A verification link has been sent to $email. Please check your inbox and spam folder.",
+          style: AppFonts.blackSubHeadingText,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context); // Close dialog
+            },
+            child: Text("Close", style: AppFonts.orangeLinkText),
+          ),
+        ],
+      ),
+    );
   }
 
   // ---------------------- METHOD: BUILD INPUT FIELD ----------------------
