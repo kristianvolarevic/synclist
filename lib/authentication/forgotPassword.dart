@@ -5,32 +5,29 @@
 import 'package:flutter/material.dart';
 
 // App Imports
-import 'package:household_groceries/utils/utils.dart';
-import 'signup.dart';
-import 'package:household_groceries/authentication/forgotPassword.dart';
 import 'package:household_groceries/common_widgets/statusBarPage.dart';
-import 'package:household_groceries/home.dart';
+import 'package:household_groceries/utils/utils.dart';
 
 // Firebase Imports
 import 'package:firebase_auth/firebase_auth.dart';
 
 // --------------------------------------------------------------------------------------------
-// CLASS: LOGIN PAGE
+// CLASS: FORGOT PASSWORD PAGE
 // --------------------------------------------------------------------------------------------
-class Login extends StatefulWidget {
-  const Login({super.key});
+class ForgotPassword extends StatefulWidget {
+  const ForgotPassword({super.key});
 
   @override
-  State<Login> createState() => _LoginState();
+  State<ForgotPassword> createState() => _ForgotPasswordState();
 }
 
 // --------------------------------------------------------------------------------------------
-// CLASS: LOGIN PAGE STATE
+// CLASS: FORGOT PASSWORD PAGE STATE
 // --------------------------------------------------------------------------------------------
-class _LoginState extends State<Login> {
+class _ForgotPasswordState extends State<ForgotPassword> {
   final _formKey = GlobalKey<FormState>();
   String _email = '';
-  String _password = '';
+  bool _showResendLink = false;
 
   // ---------------------- METHOD: TRY SUBMIT ----------------------
   void _trySubmit() async {
@@ -41,19 +38,16 @@ class _LoginState extends State<Login> {
 
     _formKey.currentState!.save();
 
-    // ---------------------- Try Login ----------------------
+    // ---------------------- Try Sending Link ----------------------
     try {
-      UserCredential userCredential = await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: _email, password: _password);
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: _email);
 
-      final User? user = userCredential.user; // Get the logged-in user
-      if (user != null) {
-        // Navigate to the main app screen upon successful login
-        Navigator.pushAndRemoveUntil(
-          context,
-          slideTransitionRoute(const Home()),
-          (route) => false, // Remove all previous routes
-        );
+      if (mounted) {
+        _showSuccessDialog(_email);
+
+        setState(() {
+          _showResendLink = true;
+        });
       }
     }
     // ---------------------- CATCH ERROR ----------------------
@@ -65,11 +59,33 @@ class _LoginState extends State<Login> {
     }
   }
 
+  void _showSuccessDialog(String email) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        title: Text("Email Sent", style: AppFonts.blackHeaderText),
+        content: Text(
+          "A password reset link has been sent to $email. Please check your inbox and spam folder.",
+          style: AppFonts.blackSubHeadingText,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context); // Close dialog
+            },
+            child: Text("Close", style: AppFonts.orangeLinkText),
+          ),
+        ],
+      ),
+    );
+  }
+
   // ---------------------- METHOD: BUILD WIDGET ----------------------
   @override
   Widget build(BuildContext context) {
     return StatusBarPage(
-      title: 'Login',
+      title: "Forgot Password",
       leading: IconButton(
         onPressed: () {
           Navigator.pop(context);
@@ -89,7 +105,7 @@ class _LoginState extends State<Login> {
                   children: <Widget>[
                     // ---------------------------------------------------------------------------------------- HEADER
                     const Text(
-                      "Login to your account",
+                      "Reset your password",
                       style: AppFonts.blackHeaderText,
                     ),
 
@@ -97,7 +113,7 @@ class _LoginState extends State<Login> {
 
                     // ---------------------------------------------------------------------------------------- SUBHEADER
                     Text(
-                      "Welcome back! Please enter your details.",
+                      "Enter your email address and we'll send you a link to reset your password.",
                       style: AppFonts.blackSubHeadingText,
                     ),
 
@@ -128,51 +144,23 @@ class _LoginState extends State<Login> {
 
                     const SizedBox(height: 20),
 
-                    // ---------------------------------------------------------------------------------------- PASSWORD FIELD
-                    TextFormField(
-                      key: const ValueKey('password'),
-                      decoration: InputDecoration(
-                        labelText: 'Password',
-                        labelStyle: AppFonts.blackTextFieldUnfocussed,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        prefixIcon: const Icon(Icons.lock_outline),
-                      ),
-                      obscureText: true,
-                      validator: (value) {
-                        if (value == null || value.length < 6) {
-                          return 'Password must be at least 6 characters long.';
-                        }
-                        return null;
-                      },
-                      onSaved: (value) {
-                        _password = value!;
-                      },
-                    ),
-
-                    const SizedBox(height: 10),
-
-                    // ---------------------------------------------------------------------------------------- FORGOT PASSWORD LINK
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            slideTransitionRoute(const ForgotPassword()),
-                          );
-                        },
-                        child: const Text(
-                          'Forgot Password?',
-                          style: AppFonts.orangeLinkText,
+                    // ---------------------------------------------------------------------------------------- RESEND LINK
+                    if (_showResendLink)
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton(
+                          onPressed: () {
+                            _trySubmit();
+                          },
+                          child: const Text(
+                            'Resend Link',
+                            style: AppFonts.orangeLinkText,
+                          ),
                         ),
                       ),
-                    ),
 
                     const SizedBox(height: 30),
 
-                    // ---------------------------------------------------------------------------------------- LOGIN BUTTON
                     MaterialButton(
                       minWidth: double.infinity,
                       height: 60,
@@ -182,40 +170,12 @@ class _LoginState extends State<Login> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: const Text(
-                        "Login",
+                        "Send Link",
                         style: AppFonts.whiteTextField,
                       ),
                     ),
 
                     const SizedBox(height: 30),
-
-                    // ---------------------------------------------------------------------------------------- SIGNUP LINK
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Text(
-                          "Don't have an account?",
-                          style: AppFonts.blackSubHeadingText,
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            // Navigate to the Signup Page
-                            Navigator.push(
-                              context,
-                              slideTransitionRoute(const Signup()),
-                              /* MaterialPageRoute(
-                                  builder: (context) => const Signup(),
-                                ), */
-                            );
-                          },
-                          child: const Text(
-                            "Sign Up",
-                            style: AppFonts.orangeLinkText,
-                          ),
-                        ),
-                      ],
-                    ),
-                    // ---------------------------------------------------------------------------------------- END OF COLUMN
                   ],
                 ),
               ),
