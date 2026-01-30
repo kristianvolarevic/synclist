@@ -9,10 +9,6 @@ import 'package:household_groceries/utils/utils.dart';
 import 'signup.dart';
 import 'package:household_groceries/authentication/forgotPassword.dart';
 import 'package:household_groceries/common_widgets/statusBarPage.dart';
-import 'package:household_groceries/home.dart';
-
-// Firebase Imports
-import 'package:firebase_auth/firebase_auth.dart';
 
 // --------------------------------------------------------------------------------------------
 // CLASS: LOGIN PAGE
@@ -43,24 +39,15 @@ class _LoginState extends State<Login> {
 
     // ---------------------- Try Login ----------------------
     try {
-      UserCredential userCredential = await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: _email, password: _password);
+      FirebaseController firebaseController = FirebaseController();
 
-      final User? user = userCredential.user; // Get the logged-in user
-      if (user != null) {
-        // Navigate to the main app screen upon successful login
-        Navigator.pushAndRemoveUntil(
-          context,
-          slideTransitionRoute(const Home()),
-          (route) => false, // Remove all previous routes
-        );
-      }
+      await firebaseController.login(_email, _password, context);
     }
     // ---------------------- CATCH ERROR ----------------------
     catch (e) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Login failed. $e')));
+      ).showSnackBar(SnackBar(content: Text(e.toString())));
       return;
     }
   }

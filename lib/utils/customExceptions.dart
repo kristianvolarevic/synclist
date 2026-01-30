@@ -1,0 +1,30 @@
+enum ExceptionType {
+  wrongEmailOrPassword,
+  userNotFound,
+  contextNotFound,
+  emailAlreadyInUse,
+}
+
+class CustomExceptions implements Exception {
+  final ExceptionType type;
+
+  CustomExceptions(this.type);
+
+  String get message {
+    switch (type) {
+      case ExceptionType.wrongEmailOrPassword:
+        return 'Email or password is incorrect.';
+      case ExceptionType.userNotFound:
+        return 'No user found for the provided email.';
+      case ExceptionType.contextNotFound:
+        return 'The provided context is no longer valid.';
+      case ExceptionType.emailAlreadyInUse:
+        return 'The email address is already in use by another account.';
+    }
+  }
+
+  @override
+  String toString() {
+    return message;
+  }
+}

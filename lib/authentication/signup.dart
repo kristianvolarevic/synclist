@@ -49,66 +49,17 @@ class _SignupState extends State<Signup> {
 
     // ---------------------- Try Sign Up ----------------------
     try {
-      UserCredential userCredential = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(email: _email, password: _password);
+      FirebaseController firebaseController = FirebaseController();
 
-      final User? user = userCredential.user; // Get the created user
-
-      if (user != null) {
-        await user.sendEmailVerification();
-        _showVerificationDialog(_email);
-
-        // Check every 3 seconds if email is verified
-        _timer = Timer.periodic(const Duration(seconds: 3), (timer) async {
-          await FirebaseAuth.instance.currentUser?.reload();
-          final User? currentUser = FirebaseAuth.instance.currentUser;
-
-          if (currentUser == null) return;
-
-          if (currentUser.emailVerified != false) {
-            timer.cancel();
-            currentUser.updateDisplayName(_fullName);
-
-            // Navigate to Home and remove all previous routes
-            Navigator.pushAndRemoveUntil(
-              context,
-              slideTransitionRoute(const Home()),
-              (route) => false, // Remove all previous routes
-            );
-          }
-        });
-      }
+      await firebaseController.signUp(_email, _password, _fullName, context);
     }
     // ---------------------- Error Handling ----------------------
     catch (e) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Sign up failed: $e')));
+      ).showSnackBar(SnackBar(content: Text(e.toString())));
       return;
     }
-  }
-
-  // ---------------------- METHOD: SHOW SUCCESS DIALOG ----------------------
-  void _showVerificationDialog(String email) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => AlertDialog(
-        title: Text("Email Sent", style: AppFonts.blackHeaderText),
-        content: Text(
-          "A verification link has been sent to $email. Please check your inbox and spam folder.",
-          style: AppFonts.blackSubHeadingText,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context); // Close dialog
-            },
-            child: Text("Close", style: AppFonts.orangeLinkText),
-          ),
-        ],
-      ),
-    );
   }
 
   // ---------------------- METHOD: BUILD INPUT FIELD ----------------------

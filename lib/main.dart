@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'authentication/welcome.dart';
 import 'home.dart';
 import 'utils/licenses.dart';
+import 'package:household_groceries/utils/utils.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,10 +36,13 @@ class MyApp extends StatelessWidget {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.active) {
             User? user = snapshot.data;
-            if (user == null) {
+            bool isVerified = FirebaseController().isUserVerified(user);
+
+            if (!isVerified) {
+              // Not verified users go to Welcome screen
               return const Welcome();
             } else {
-              // Return the main app screen for logged-in users
+              // Verified users go to Home screen
               return const Home();
             }
           } else {

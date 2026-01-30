@@ -8,6 +8,9 @@ import 'package:household_groceries/common_widgets/statusBarPage.dart';
 // App Imports
 import 'package:household_groceries/utils/utils.dart';
 
+// Firebase Imports
+import 'package:firebase_auth/firebase_auth.dart';
+
 // --------------------------------------------------------------------------------------------
 // CLASS: HOME
 // --------------------------------------------------------------------------------------------
@@ -22,6 +25,16 @@ class Home extends StatefulWidget {
 // CLASS: _HOME STATE (Page Layout & Logic)
 // --------------------------------------------------------------------------------------------
 class _HomeState extends State<Home> {
+  _addNewList() {
+    // Logic to add a new list goes here
+    try {} catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to add new list. $e')));
+      return;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return StatusBarPage(
@@ -80,7 +93,7 @@ class _HomeState extends State<Home> {
                                   child: const Text("Create"),
                                   onPressed: () {
                                     // Logic to add the item goes here
-                                    Navigator.of(context).pop();
+                                    _addNewList();
                                   },
                                 ),
                               ],
