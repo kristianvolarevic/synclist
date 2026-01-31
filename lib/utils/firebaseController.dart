@@ -8,15 +8,24 @@ import 'dart:async';
 // App Imports
 import 'package:household_groceries/home.dart';
 import 'package:household_groceries/utils/utils.dart';
+import 'package:household_groceries/models/shoppingList.dart';
 
 // Firebase Imports
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+// --------------------------------------------------------------------------------------------
+// CLASS: FIREBASE CONTROLLER
+// --------------------------------------------------------------------------------------------
 class FirebaseController {
   final db = FirebaseFirestore.instance;
   final auth = FirebaseAuth.instance;
 
+  // --------------------------------------------------------------------------------------------
+  // AUTHENTICATION METHODS
+  // --------------------------------------------------------------------------------------------
+
+  // ---------------------- METHOD: LOGIN ----------------------
   Future<void> login(
     String email,
     String password,
@@ -59,6 +68,7 @@ class FirebaseController {
     }
   }
 
+  // ---------------------- METHOD: SIGN UP ----------------------
   Future<void> signUp(
     String email,
     String password,
@@ -90,6 +100,12 @@ class FirebaseController {
 
       user.updateDisplayName(fullName);
 
+      db.collection('users').doc(user.uid).set({
+        'fullName': fullName,
+        'email': email,
+        'lists': [],
+      });
+
       // Check every 3 seconds if email is verified
       startTimer(context);
     } catch (e) {
@@ -97,11 +113,21 @@ class FirebaseController {
     }
   }
 
+  // ---------------------- METHOD: IS USER VERIFIED ----------------------
   bool isUserVerified(User? user) {
     if (user == null) {
       return false;
     }
 
+    // Check that the user still exists
+    user.reload();
+    final currentUser = auth.currentUser;
+    if (currentUser == null) {
+      auth.signOut();
+      return false;
+    }
+
+    // Check if email is verified
     if (!user.emailVerified) {
       return false;
     }
@@ -109,6 +135,35 @@ class FirebaseController {
     return true;
   }
 
+  // --------------------------------------------------------------------------------------------
+  // LIST METHODS
+  // --------------------------------------------------------------------------------------------
+  Future<void> addNewList(String listName) async {
+    try {
+      // Create the list
+      ShoppingList newList = ShoppingList(
+        id: '',
+        name: listName,
+        owner: auth.currentUser!.uid,
+      );
+
+      // Add the list to Firestore
+      final docRef = await db.collection('lists').add(newList.toMap());
+
+      // Store the list in the users collection under the current user
+      await db.collection('users').doc(auth.currentUser!.uid).update({
+        'lists': FieldValue.arrayUnion([docRef.id]),
+      });
+    } catch (e) {
+      throw CustomExceptions(ExceptionType.failedToAddToDatabase);
+    }
+  }
+
+  // --------------------------------------------------------------------------------------------
+  // HELPER METHODS
+  // --------------------------------------------------------------------------------------------
+
+  // ---------------------- METHOD: START TIMER ----------------------
   void startTimer(BuildContext context) {
     // Check every 3 seconds if email is verified
     Timer.periodic(const Duration(seconds: 3), (timer) async {
@@ -136,6 +191,7 @@ class FirebaseController {
     });
   }
 
+  // ---------------------- METHOD: SHOW CUSTOM DIALOG ----------------------
   void showCustomDialog(String title, String text, BuildContext context) {
     showDialog(
       context: context,

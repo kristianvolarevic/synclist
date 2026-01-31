@@ -3,6 +3,7 @@ enum ExceptionType {
   userNotFound,
   contextNotFound,
   emailAlreadyInUse,
+  failedToAddToDatabase,
 }
 
 class CustomExceptions implements Exception {
@@ -20,6 +21,8 @@ class CustomExceptions implements Exception {
         return 'The provided context is no longer valid.';
       case ExceptionType.emailAlreadyInUse:
         return 'The email address is already in use by another account.';
+      case ExceptionType.failedToAddToDatabase:
+        return 'Failed to add data to the database.';
     }
   }
 

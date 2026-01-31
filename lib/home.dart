@@ -8,9 +8,6 @@ import 'package:household_groceries/common_widgets/statusBarPage.dart';
 // App Imports
 import 'package:household_groceries/utils/utils.dart';
 
-// Firebase Imports
-import 'package:firebase_auth/firebase_auth.dart';
-
 // --------------------------------------------------------------------------------------------
 // CLASS: HOME
 // --------------------------------------------------------------------------------------------
@@ -25,12 +22,30 @@ class Home extends StatefulWidget {
 // CLASS: _HOME STATE (Page Layout & Logic)
 // --------------------------------------------------------------------------------------------
 class _HomeState extends State<Home> {
-  _addNewList() {
-    // Logic to add a new list goes here
-    try {} catch (e) {
+  final _formKey = GlobalKey<FormState>();
+  String _listName = '';
+
+  // ---------------------- METHOD: ADD NEW LIST ----------------------
+  _addNewList() async {
+    final isVali9d = _formKey.currentState!.validate();
+    FocusScope.of(context).unfocus(); // Close keyboard
+
+    if (!isVali9d) return; // If form is not valid, exit the method
+    _formKey.currentState!.save();
+
+    // ---------------------- Try Adding List ----------------------
+    try {
+      await FirebaseController().addNewList(_listName);
+
+      Navigator.of(context).pop(); // Close the dialog
+
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Failed to add new list. $e')));
+      ).showSnackBar(SnackBar(content: Text("List added successfully!")));
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.toString())));
       return;
     }
   }
@@ -70,17 +85,24 @@ class _HomeState extends State<Home> {
                           builder: (BuildContext context) {
                             return AlertDialog(
                               title: const Text("Create New List"),
-                              content: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                // ---------------------------------------------------------------------------------------- FIELDS
-                                children: [
-                                  const TextField(
-                                    decoration: InputDecoration(
-                                      hintText: "Enter list name...",
-                                    ),
+                              content: Form(
+                                key: _formKey,
+                                child: TextFormField(
+                                  decoration: const InputDecoration(
+                                    hintText: "Enter list name...",
                                   ),
-                                ],
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Please enter a list name';
+                                    }
+                                    return null;
+                                  },
+                                  onSaved: (value) {
+                                    _listName = value!;
+                                  },
+                                ),
                               ),
+
                               // ---------------------------------------------------------------------------------------- ACTIONS
                               actions: <Widget>[
                                 TextButton(

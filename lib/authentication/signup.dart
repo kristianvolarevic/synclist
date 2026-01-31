@@ -8,10 +8,6 @@ import 'package:household_groceries/common_widgets/statusBarPage.dart';
 
 // App Imports
 import 'package:household_groceries/utils/utils.dart';
-import 'package:household_groceries/home.dart';
-
-// Firebase Imports
-import 'package:firebase_auth/firebase_auth.dart';
 
 // --------------------------------------------------------------------------------------------
 // CLASS: SIGNUP
