@@ -7,6 +7,7 @@ import 'dart:async';
 
 // App Imports
 import 'package:household_groceries/home.dart';
+import 'package:household_groceries/models/user.dart';
 import 'package:household_groceries/utils/utils.dart';
 import 'package:household_groceries/models/shoppingList.dart';
 
@@ -135,9 +136,25 @@ class FirebaseController {
     return true;
   }
 
+  // ---------------------- METHOD: Fetch User Details ----------------------
+  Future<UserDetails?> fetchUserDetails(String userID) async {
+    final userDoc = await db.collection('users').doc(userID).get();
+
+    if (!userDoc.exists) {
+      throw CustomExceptions(ExceptionType.userNotFound);
+    }
+
+    final data = userDoc.data()!;
+    UserDetails user = UserDetails.fromMap(userID, data);
+
+    return user;
+  }
+
   // --------------------------------------------------------------------------------------------
   // LIST METHODS
   // --------------------------------------------------------------------------------------------
+
+  // ---------------------- METHOD: Add New List ----------------------
   Future<void> addNewList(String listName) async {
     try {
       // Create the list
@@ -156,6 +173,34 @@ class FirebaseController {
       });
     } catch (e) {
       throw CustomExceptions(ExceptionType.failedToAddToDatabase);
+    }
+  }
+
+  // ---------------------- METHOD: Fetch Users Lists ----------------------
+  Future<List<ShoppingList>> fetchUserLists() async {
+    try {
+      final userDoc = await db
+          .collection('users')
+          .doc(auth.currentUser!.uid)
+          .get();
+
+      if (!userDoc.exists) {
+        throw CustomExceptions(ExceptionType.userNotFound);
+      }
+
+      List<dynamic> listIds = userDoc.data()?['lists'] ?? [];
+      List<ShoppingList> userLists = [];
+
+      for (String listId in listIds) {
+        final listDoc = await db.collection('lists').doc(listId).get();
+        if (listDoc.exists) {
+          userLists.add(ShoppingList.fromMap(listDoc.id, listDoc.data()!));
+        }
+      }
+
+      return userLists;
+    } catch (e) {
+      throw CustomExceptions(ExceptionType.failedToFetchFromDatabase);
     }
   }
 

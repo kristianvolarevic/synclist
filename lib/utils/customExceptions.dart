@@ -4,6 +4,7 @@ enum ExceptionType {
   contextNotFound,
   emailAlreadyInUse,
   failedToAddToDatabase,
+  failedToFetchFromDatabase,
 }
 
 class CustomExceptions implements Exception {
@@ -23,6 +24,8 @@ class CustomExceptions implements Exception {
         return 'The email address is already in use by another account.';
       case ExceptionType.failedToAddToDatabase:
         return 'Failed to add data to the database.';
+      case ExceptionType.failedToFetchFromDatabase:
+        return 'Failed to fetch data from the database.';
     }
   }
 

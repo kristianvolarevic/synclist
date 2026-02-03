@@ -30,6 +30,14 @@ class AppFonts {
     color: Colors.black,
   );
 
+  // Black card header text style
+  static const TextStyle blackCardHeaderText = TextStyle(
+    fontSize: 20,
+    fontFamily: primaryFont,
+    fontWeight: FontWeight.bold,
+    color: Colors.black,
+  );
+
   // White header text style
   static const TextStyle whiteHeaderText = TextStyle(
     fontSize: 30,
@@ -41,6 +49,14 @@ class AppFonts {
   // Black sub-heading text style
   static const TextStyle blackSubHeadingText = TextStyle(
     fontSize: 15,
+    fontFamily: primaryFont,
+    fontWeight: FontWeight.w600,
+    color: AppColors.grey700,
+  );
+
+  // Black card sub-heading text style
+  static const TextStyle blackCardSubHeadingText = TextStyle(
+    fontSize: 12,
     fontFamily: primaryFont,
     fontWeight: FontWeight.w600,
     color: AppColors.grey700,
