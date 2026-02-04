@@ -5,6 +5,7 @@ import 'package:household_groceries/utils/utils.dart';
 class StatusBarPage extends StatelessWidget {
   final String title;
   final IconButton leading;
+  final Widget? trailing;
   final Widget body;
 
   const StatusBarPage({
@@ -12,6 +13,7 @@ class StatusBarPage extends StatelessWidget {
     required this.title,
     required this.leading,
     required this.body,
+    this.trailing,
   });
 
   @override
@@ -30,6 +32,7 @@ class StatusBarPage extends StatelessWidget {
           foregroundColor: Colors.white,
           elevation: 0,
           leading: leading,
+          actions: [if (trailing != null) trailing!],
         ),
         body: body,
       ),

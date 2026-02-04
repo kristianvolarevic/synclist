@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 
 // App Imports
-import 'package:household_groceries/home.dart';
+import 'package:household_groceries/home/home.dart';
 import 'package:household_groceries/models/user.dart';
 import 'package:household_groceries/utils/utils.dart';
 import 'package:household_groceries/models/shoppingList.dart';

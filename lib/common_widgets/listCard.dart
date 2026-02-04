@@ -4,6 +4,7 @@
 
 // Flutter Imports
 import 'package:flutter/material.dart';
+import 'package:household_groceries/list/listPage.dart';
 
 // App Imports
 import 'package:household_groceries/models/shoppingList.dart';
@@ -21,7 +22,13 @@ class ListCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialButton(
       onPressed: () {
-        print("List card pressed: ${list.name}");
+        Navigator.push(
+          context,
+          slideTransitionRoute(ListPage(list: list)),
+          /* MaterialPageRoute(
+                                  builder: (context) => const Signup(),
+                                ), */
+        );
       },
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),

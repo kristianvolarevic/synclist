@@ -3,7 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'authentication/welcome.dart';
-import 'home.dart';
+import 'home/home.dart';
 import 'utils/licenses.dart';
 import 'package:household_groceries/utils/utils.dart';
 
