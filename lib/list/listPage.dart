@@ -7,6 +7,13 @@ import 'package:flutter/material.dart';
 // App Imports
 import 'package:household_groceries/models/shoppingList.dart';
 import 'package:household_groceries/common_widgets/statusBarPage.dart';
+import 'package:household_groceries/utils/utils.dart';
+import 'package:household_groceries/list/categories/categories.dart';
+
+// --------------------------------------------------------------------------------------------
+// ENUM: LIST OPTIONS
+// --------------------------------------------------------------------------------------------
+enum ListOptions { categories, share, clearSelected, clearAll, settings }
 
 // --------------------------------------------------------------------------------------------
 // CLASS: LIST PAGE
@@ -31,20 +38,57 @@ class _ListPageState extends State<ListPage> {
         },
         icon: const Icon(Icons.arrow_back_ios, size: 20),
       ),
-      trailing: PopupMenuButton<String>(
-        onSelected: (String value) {
-          // Handle menu item selection
+      // ---------------------------------------------------------------------------------------- Right side menu for list options
+      trailing: PopupMenuButton<ListOptions>(
+        onSelected: (ListOptions value) {
+          switch (value) {
+            case ListOptions.categories:
+              // Handle Categories action
+              Navigator.push(
+                context,
+                slideTransitionRoute(Categories(list: widget.list)),
+                /* MaterialPageRoute(
+                                  builder: (context) => const Signup(),
+                                ), */
+              );
+              break;
+            case ListOptions.share:
+              // Handle Share action
+              break;
+            case ListOptions.clearSelected:
+              // Handle Clear Selected action
+              break;
+            case ListOptions.clearAll:
+              // Handle Clear All action
+              break;
+            case ListOptions.settings:
+              // Handle Settings action
+              break;
+          }
         },
         itemBuilder: (BuildContext context) {
-          return {
-            'Categories',
-            'Share',
-            'Clear Selected',
-            'Clear All',
-            'Settings',
-          }.map((String choice) {
-            return PopupMenuItem<String>(value: choice, child: Text(choice));
-          }).toList();
+          return [
+            const PopupMenuItem<ListOptions>(
+              value: ListOptions.categories,
+              child: Text('Categories'),
+            ),
+            const PopupMenuItem<ListOptions>(
+              value: ListOptions.share,
+              child: Text('Share'),
+            ),
+            const PopupMenuItem<ListOptions>(
+              value: ListOptions.clearSelected,
+              child: Text('Clear Selected'),
+            ),
+            const PopupMenuItem<ListOptions>(
+              value: ListOptions.clearAll,
+              child: Text('Clear All'),
+            ),
+            const PopupMenuItem<ListOptions>(
+              value: ListOptions.settings,
+              child: Text('Settings'),
+            ),
+          ];
         },
       ),
       body: Scaffold(body: Center(child: Text('This is the List Page'))),

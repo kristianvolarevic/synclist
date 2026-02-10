@@ -20,56 +20,31 @@ class ListCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialButton(
-      onPressed: () {
-        Navigator.push(
-          context,
-          slideTransitionRoute(ListPage(list: list)),
-          /* MaterialPageRoute(
-                                  builder: (context) => const Signup(),
-                                ), */
-        );
-      },
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black12,
-              blurRadius: 4,
-              offset: Offset(0, 2),
-            ),
-          ],
-          border: Border.all(color: Colors.black, width: 2),
-        ),
-        child: Center(
-          child: Column(
-            children: [
-              Text(list.name, style: AppFonts.blackCardHeaderText),
-              const SizedBox(height: 10),
-              FutureBuilder(
-                future: FirebaseController().fetchUserDetails(list.owner),
-                builder: (context, asyncSnapshot) {
-                  if (asyncSnapshot.connectionState ==
-                      ConnectionState.waiting) {
-                    return const Text(
-                      'Loading owner...',
-                      style: AppFonts.blackCardSubHeadingText,
-                    );
-                  }
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      color: Colors.white38,
+      child: ListTile(
+        title: Text(list.name, style: AppFonts.blackCardHeaderText),
+        subtitle: FutureBuilder(
+          future: FirebaseController().fetchUserDetails(list.owner),
+          builder: (context, asyncSnapshot) {
+            if (asyncSnapshot.connectionState == ConnectionState.waiting) {
+              return const Text(
+                'Loading owner...',
+                style: AppFonts.blackCardSubHeadingText,
+              );
+            }
 
-                  final userName = asyncSnapshot.data?.fullName ?? "Unknown";
-                  return Text(
-                    'Owner: $userName',
-                    style: AppFonts.blackCardSubHeadingText,
-                  );
-                },
-              ),
-            ],
-          ),
+            final userName = asyncSnapshot.data?.fullName ?? "Unknown";
+            return Text(
+              'Owner: $userName',
+              style: AppFonts.blackCardSubHeadingText,
+            );
+          },
         ),
+        onTap: () {
+          Navigator.push(context, slideTransitionRoute(ListPage(list: list)));
+        },
       ),
     );
   }

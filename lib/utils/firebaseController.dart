@@ -10,6 +10,7 @@ import 'package:household_groceries/home/home.dart';
 import 'package:household_groceries/models/user.dart';
 import 'package:household_groceries/utils/utils.dart';
 import 'package:household_groceries/models/shoppingList.dart';
+import 'package:household_groceries/models/category.dart';
 
 // Firebase Imports
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -199,6 +200,51 @@ class FirebaseController {
       }
 
       return userLists;
+    } catch (e) {
+      throw CustomExceptions(ExceptionType.failedToFetchFromDatabase);
+    }
+  }
+
+  // --------------------------------------------------------------------------------------------
+  // CATEGORY METHODS
+  // --------------------------------------------------------------------------------------------
+  // ---------------------- METHOD: Add New Category ----------------------
+  Future<void> addNewCategory(String categoryName, ShoppingList list) async {
+    try {
+      // Create the category
+      Category newCategory = Category(id: '', name: categoryName);
+
+      // Add the category to Firestore
+      final docRef = await db
+          .collection('lists')
+          .doc(list.id)
+          .collection('categories')
+          .add(newCategory.toMap());
+
+      // Store the category in the list document under the current list
+      await db.collection('lists').doc(list.id).update({
+        'categoryIds': FieldValue.arrayUnion([docRef.id]),
+      });
+    } catch (e) {
+      throw CustomExceptions(ExceptionType.failedToAddToDatabase);
+    }
+  }
+
+  // ---------------------- METHOD: Fetch Categories For List ----------------------
+  Future<List<Category>> fetchCategoriesForList(ShoppingList list) async {
+    try {
+      final categoriesSnapshot = await db
+          .collection('lists')
+          .doc(list.id)
+          .collection('categories')
+          .get();
+
+      List<Category> categories = [];
+      for (final doc in categoriesSnapshot.docs) {
+        categories.add(Category.fromMap(doc.id, doc.data()));
+      }
+
+      return categories;
     } catch (e) {
       throw CustomExceptions(ExceptionType.failedToFetchFromDatabase);
     }

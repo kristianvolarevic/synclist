@@ -3,80 +3,84 @@
 // --------------------------------------------------------------------------------------------
 // Flutter Imports
 import 'package:flutter/material.dart';
-import 'package:household_groceries/common_widgets/statusBarPage.dart';
-import 'package:household_groceries/home/addListDialog.dart';
-import 'package:household_groceries/models/shoppingList.dart';
 
 // App Imports
+import 'package:household_groceries/common_widgets/statusBarPage.dart';
+import 'package:household_groceries/list/categories/categoryCard.dart';
+import 'package:household_groceries/models/shoppingList.dart';
+import 'package:household_groceries/models/category.dart';
 import 'package:household_groceries/utils/utils.dart';
-import 'package:household_groceries/common_widgets/listCard.dart';
+import 'package:household_groceries/list/categories/addCategoryDialog.dart';
 
 // --------------------------------------------------------------------------------------------
-// CLASS: HOME
+// CLASS: LIST PAGE
 // --------------------------------------------------------------------------------------------
-class Home extends StatefulWidget {
-  const Home({super.key});
+class Categories extends StatefulWidget {
+  final ShoppingList list;
+
+  const Categories({super.key, required this.list});
 
   @override
-  State<Home> createState() => _HomeState();
+  State<Categories> createState() => _CategoriesState();
 }
 
-// --------------------------------------------------------------------------------------------
-// CLASS: _HOME STATE (Page Layout & Logic)
-// --------------------------------------------------------------------------------------------
-class _HomeState extends State<Home> {
-  final _formKey = GlobalKey<FormState>();
+class _CategoriesState extends State<Categories> {
+  List<Category> _categories = [];
   bool _isLoading = true;
-  List<ShoppingList> _shoppingLists = [];
 
-  initState() {
+  @override
+  void initState() {
     super.initState();
-    _fetchLists();
-    print('fetching lists...');
+    _fetchCategories();
   }
 
-  _fetchLists() async {
+  _fetchCategories() async {
     setState(() {
       _isLoading = true;
     });
 
     try {
-      _shoppingLists = await FirebaseController().fetchUserLists();
+      _categories = await FirebaseController().fetchCategoriesForList(
+        widget.list,
+      );
       setState(() {
         _isLoading = false;
-      }); // Update UI after fetching lists
+      });
     } catch (e) {
-      print('Error fetching lists: $e');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Error fetching categories: $e")));
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return StatusBarPage(
-      title: "Home",
+      title: 'Categories',
       leading: IconButton(
         onPressed: () {
-          print("Profile button pressed");
+          Navigator.pop(context);
         },
-        icon: const Icon(Icons.account_circle, size: 30),
+        icon: const Icon(Icons.arrow_back_ios, size: 20),
       ),
       body: Scaffold(
         body: _isLoading
             ? const Center(
                 child: CircularProgressIndicator(color: AppColors.primary),
               )
-            : _shoppingLists.isEmpty
+            : _categories.isEmpty
             ? const Center(
                 child: Text(
-                  "No lists yet. Click the + button to add one!",
+                  "No categories yet. Click the + button to add one!",
                   style: AppFonts.blackSubHeadingText,
+                  textAlign: TextAlign.center,
                 ),
               )
             : ListView.builder(
-                itemCount: _shoppingLists.length,
+                itemCount: _categories.length,
                 itemBuilder: (context, index) {
-                  final list = _shoppingLists[index];
-                  return ListCard(list: list);
+                  final category = _categories[index];
+                  return CategoryCard(category: category);
                 },
               ),
 
@@ -90,10 +94,16 @@ class _HomeState extends State<Home> {
               backgroundColor: AppColors.contrast,
               onPressed: () {
                 // ---------------------------------------------------------------------------------------- ADD NEW LIST DIALOG
-                showDialog(
+                /* showDialog(
                   context: context,
                   builder: (BuildContext context) {
                     return AddListDialog(fetchLists: _fetchLists);
+                  },
+                ); */
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AddCategoryDialog(list: widget.list);
                   },
                 );
               },
