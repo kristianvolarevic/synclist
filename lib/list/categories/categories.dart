@@ -3,6 +3,7 @@
 // --------------------------------------------------------------------------------------------
 // Flutter Imports
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // App Imports
 import 'package:household_groceries/common_widgets/statusBarPage.dart';
@@ -40,9 +41,14 @@ class _CategoriesState extends State<Categories> {
     });
 
     try {
-      _categories = await FirebaseController().fetchCategoriesForList(
-        widget.list,
+      final List<Category> UnsortedCategories = await FirebaseController()
+          .fetchCategoriesForList(widget.list);
+
+      _categories = await SharedPreferencesController().fetchCategoriesOrder(
+        _categories,
+        widget.list.id,
       );
+
       setState(() {
         _isLoading = false;
       });
@@ -76,11 +82,24 @@ class _CategoriesState extends State<Categories> {
                   textAlign: TextAlign.center,
                 ),
               )
-            : ListView.builder(
+            : ReorderableListView.builder(
                 itemCount: _categories.length,
+                onReorder: (oldIndex, newIndex) {
+                  setState(() {
+                    if (newIndex > oldIndex) {
+                      newIndex -= 1;
+                    }
+                    final Category item = _categories.removeAt(oldIndex);
+                    _categories.insert(newIndex, item);
+                  });
+                },
                 itemBuilder: (context, index) {
                   final category = _categories[index];
-                  return CategoryCard(category: category);
+                  return CategoryCard(
+                    key: ValueKey(category.id),
+                    category: category,
+                    index: index,
+                  );
                 },
               ),
 
@@ -103,7 +122,10 @@ class _CategoriesState extends State<Categories> {
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
-                    return AddCategoryDialog(list: widget.list);
+                    return AddCategoryDialog(
+                      list: widget.list,
+                      fetchCategories: _fetchCategories,
+                    );
                   },
                 );
               },

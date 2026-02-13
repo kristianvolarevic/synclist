@@ -4,7 +4,6 @@
 
 // Flutter Imports
 import 'package:flutter/material.dart';
-import 'package:household_groceries/list/listPage.dart';
 
 // App Imports
 import 'package:household_groceries/models/category.dart';
@@ -15,8 +14,9 @@ import 'package:household_groceries/utils/utils.dart';
 // --------------------------------------------------------------------------------------------
 class CategoryCard extends StatelessWidget {
   final Category category;
+  final int index;
 
-  const CategoryCard({super.key, required this.category});
+  const CategoryCard({super.key, required this.category, required this.index});
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +25,10 @@ class CategoryCard extends StatelessWidget {
       color: Colors.white38,
       child: ListTile(
         title: Text(category.name, style: AppFonts.blackCardHeaderText),
+        trailing: ReorderableDragStartListener(
+          index: index,
+          child: const Icon(Icons.drag_handle),
+        ),
       ),
     );
   }

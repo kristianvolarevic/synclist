@@ -4,8 +4,13 @@ import 'package:household_groceries/utils/firebaseController.dart';
 
 class AddCategoryDialog extends StatefulWidget {
   final ShoppingList list;
+  final VoidCallback fetchCategories;
 
-  AddCategoryDialog({super.key, required this.list});
+  AddCategoryDialog({
+    super.key,
+    required this.list,
+    required this.fetchCategories,
+  });
 
   @override
   State<AddCategoryDialog> createState() => _AddCategoryDialogState();
@@ -32,6 +37,8 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text("Category added successfully!")));
+
+      widget.fetchCategories();
     } catch (e) {
       ScaffoldMessenger.of(
         context,
