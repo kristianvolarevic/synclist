@@ -3,13 +3,13 @@
 // --------------------------------------------------------------------------------------------
 // Flutter Imports
 import 'package:flutter/material.dart';
-import 'package:household_groceries/common_widgets/statusBarPage.dart';
-import 'package:household_groceries/home/addListDialog.dart';
-import 'package:household_groceries/models/shoppingList.dart';
+import 'package:household_groceries/common_widgets/status_bar_page.dart';
+import 'package:household_groceries/home/add_list_dialog.dart';
+import 'package:household_groceries/models/shopping_list.dart';
 
 // App Imports
 import 'package:household_groceries/utils/utils.dart';
-import 'package:household_groceries/common_widgets/listCard.dart';
+import 'package:household_groceries/common_widgets/list_card.dart';
 
 // --------------------------------------------------------------------------------------------
 // CLASS: HOME
@@ -25,17 +25,16 @@ class Home extends StatefulWidget {
 // CLASS: _HOME STATE (Page Layout & Logic)
 // --------------------------------------------------------------------------------------------
 class _HomeState extends State<Home> {
-  final _formKey = GlobalKey<FormState>();
   bool _isLoading = true;
   List<ShoppingList> _shoppingLists = [];
 
+  @override
   initState() {
     super.initState();
     _fetchLists();
-    print('fetching lists...');
   }
 
-  _fetchLists() async {
+  void _fetchLists() async {
     setState(() {
       _isLoading = true;
     });
@@ -46,7 +45,17 @@ class _HomeState extends State<Home> {
         _isLoading = false;
       }); // Update UI after fetching lists
     } catch (e) {
-      print('Error fetching lists: $e');
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        _isLoading = false;
+      });
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.toString())));
     }
   }
 

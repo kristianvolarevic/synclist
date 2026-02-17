@@ -6,9 +6,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 // App Imports
 import 'package:household_groceries/models/category.dart';
-import 'package:household_groceries/utils/customExceptions.dart';
+import 'package:household_groceries/utils/custom_exceptions.dart';
 
 class SharedPreferencesController {
+  // --------------------------------------------------------------------------------------------
+  // SHARED PREFERENCES METHODS
+  // --------------------------------------------------------------------------------------------
+
+  // ---------------------- METHOD: FETCH CATEGORIES ORDER ----------------------
   Future<List<Category>> fetchCategoriesOrder(
     List<Category> categories,
     String listId,
@@ -17,14 +22,14 @@ class SharedPreferencesController {
       // Get instance of shared prefences
       final prefs = await SharedPreferences.getInstance();
       List<Category> sortedCategories = categories;
-      print('test');
 
-      List<String>? savedOrder = prefs.getStringList('order_${listId}');
+      List<String>? savedOrder = prefs.getStringList('order_$listId');
 
       if (savedOrder == null) {
         // Save the current order
-        print("error here");
-        throw CustomExceptions(ExceptionType.failedToFetchFromDatabase);
+        saveCategoriesOrder(sortedCategories, listId);
+
+        return sortedCategories;
       } else {
         sortedCategories.sort((a, b) {
           int indexA = savedOrder.indexOf(a.id);
@@ -38,8 +43,22 @@ class SharedPreferencesController {
         return sortedCategories;
       }
     } catch (e) {
-      print(e);
       throw CustomExceptions(ExceptionType.failedToFetchFromDatabase);
+    }
+  }
+
+  // ---------------------- METHOD: SAVE CATEGORIES ORDER ----------------------
+  Future<void> saveCategoriesOrder(
+    List<Category> categories,
+    String listId,
+  ) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      List<String> categoryIDs = categories.map((c) => c.id).toList();
+
+      await prefs.setStringList('order_$listId', categoryIDs);
+    } catch (e) {
+      throw CustomExceptions(ExceptionType.failedToAddToDatabase);
     }
   }
 }

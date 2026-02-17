@@ -5,7 +5,7 @@
 import 'package:flutter/material.dart';
 
 // App Imports
-import 'package:household_groceries/common_widgets/statusBarPage.dart';
+import 'package:household_groceries/common_widgets/status_bar_page.dart';
 import 'package:household_groceries/utils/utils.dart';
 
 // Firebase Imports
@@ -52,9 +52,13 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     }
     // ---------------------- CATCH ERROR ----------------------
     catch (e) {
+      if (!mounted) {
+        return;
+      }
+
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Login failed. $e')));
+      ).showSnackBar(SnackBar(content: Text('Failed to send reset email. $e')));
       return;
     }
   }

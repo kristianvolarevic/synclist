@@ -3,15 +3,14 @@
 // --------------------------------------------------------------------------------------------
 // Flutter Imports
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 // App Imports
-import 'package:household_groceries/common_widgets/statusBarPage.dart';
-import 'package:household_groceries/list/categories/categoryCard.dart';
-import 'package:household_groceries/models/shoppingList.dart';
+import 'package:household_groceries/common_widgets/status_bar_page.dart';
+import 'package:household_groceries/list/categories/category_card.dart';
+import 'package:household_groceries/models/shopping_list.dart';
 import 'package:household_groceries/models/category.dart';
 import 'package:household_groceries/utils/utils.dart';
-import 'package:household_groceries/list/categories/addCategoryDialog.dart';
+import 'package:household_groceries/list/categories/add_category_dialog.dart';
 
 // --------------------------------------------------------------------------------------------
 // CLASS: LIST PAGE
@@ -35,17 +34,17 @@ class _CategoriesState extends State<Categories> {
     _fetchCategories();
   }
 
-  _fetchCategories() async {
+  void _fetchCategories() async {
     setState(() {
       _isLoading = true;
     });
 
     try {
-      final List<Category> UnsortedCategories = await FirebaseController()
+      final List<Category> unsortedCategories = await FirebaseController()
           .fetchCategoriesForList(widget.list);
 
       _categories = await SharedPreferencesController().fetchCategoriesOrder(
-        _categories,
+        unsortedCategories,
         widget.list.id,
       );
 
@@ -53,6 +52,14 @@ class _CategoriesState extends State<Categories> {
         _isLoading = false;
       });
     } catch (e) {
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        _isLoading = false;
+      });
+
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text("Error fetching categories: $e")));
@@ -92,6 +99,12 @@ class _CategoriesState extends State<Categories> {
                     final Category item = _categories.removeAt(oldIndex);
                     _categories.insert(newIndex, item);
                   });
+
+                  // Save the new order to shared preferences
+                  SharedPreferencesController().saveCategoriesOrder(
+                    _categories,
+                    widget.list.id,
+                  );
                 },
                 itemBuilder: (context, index) {
                   final category = _categories[index];

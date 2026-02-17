@@ -1,67 +1,65 @@
 import 'package:flutter/material.dart';
-import 'package:household_groceries/models/shoppingList.dart';
-import 'package:household_groceries/utils/firebaseController.dart';
+import 'package:household_groceries/utils/firebase_controller.dart';
 
-class AddCategoryDialog extends StatefulWidget {
-  final ShoppingList list;
-  final VoidCallback fetchCategories;
+class AddListDialog extends StatefulWidget {
+  final VoidCallback fetchLists;
 
-  AddCategoryDialog({
-    super.key,
-    required this.list,
-    required this.fetchCategories,
-  });
+  const AddListDialog({super.key, required this.fetchLists});
 
   @override
-  State<AddCategoryDialog> createState() => _AddCategoryDialogState();
+  State<AddListDialog> createState() => _AddListDialogState();
 }
 
-class _AddCategoryDialogState extends State<AddCategoryDialog> {
+class _AddListDialogState extends State<AddListDialog> {
   final _formKey = GlobalKey<FormState>();
-  String _categoryName = '';
+  String _listName = '';
 
-  // ---------------------- METHOD: ADD NEW CATEGORY ----------------------
-  _addNewCategory() async {
+  // ---------------------- METHOD: ADD NEW LIST ----------------------
+  void _addNewList() async {
     final isValid = _formKey.currentState!.validate();
     FocusScope.of(context).unfocus(); // Close keyboard
 
     if (!isValid) return; // If form is not valid, exit the method
     _formKey.currentState!.save();
 
-    // ---------------------- Try Adding Category ----------------------
+    // ---------------------- Try Adding List ----------------------
     try {
-      await FirebaseController().addNewCategory(_categoryName, widget.list);
+      await FirebaseController().addNewList(_listName);
 
+      if (!mounted) {
+        return;
+      }
       Navigator.of(context).pop(); // Close the dialog
 
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text("Category added successfully!")));
+      ).showSnackBar(SnackBar(content: Text("List added successfully!")));
 
-      widget.fetchCategories();
+      widget.fetchLists();
     } catch (e) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(e.toString())));
+      return;
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text("Add New Category"),
+      title: const Text("Create New List"),
       content: Form(
         key: _formKey,
         child: TextFormField(
-          decoration: const InputDecoration(hintText: "Enter category name..."),
+          decoration: const InputDecoration(hintText: "Enter list name..."),
           validator: (value) {
             if (value == null || value.isEmpty) {
-              return 'Please enter a category name';
+              return 'Please enter a list name';
             }
             return null;
           },
           onSaved: (value) {
-            _categoryName = value!;
+            _listName = value!;
           },
         ),
       ),
@@ -78,7 +76,7 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
           child: const Text("Create"),
           onPressed: () {
             // Logic to add the item goes here
-            _addNewCategory();
+            _addNewList();
           },
         ),
       ],

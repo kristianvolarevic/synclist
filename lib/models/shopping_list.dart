@@ -1,5 +1,3 @@
-import 'package:household_groceries/models/category.dart';
-
 class ShoppingList {
   String id;
   String name;

@@ -5,8 +5,8 @@
 import 'package:flutter/material.dart';
 
 // App Imports
-import 'package:household_groceries/models/shoppingList.dart';
-import 'package:household_groceries/common_widgets/statusBarPage.dart';
+import 'package:household_groceries/models/shopping_list.dart';
+import 'package:household_groceries/common_widgets/status_bar_page.dart';
 import 'package:household_groceries/utils/utils.dart';
 import 'package:household_groceries/list/categories/categories.dart';
 

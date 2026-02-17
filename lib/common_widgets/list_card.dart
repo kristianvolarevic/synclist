@@ -4,10 +4,10 @@
 
 // Flutter Imports
 import 'package:flutter/material.dart';
-import 'package:household_groceries/list/listPage.dart';
+import 'package:household_groceries/list/list_page.dart';
 
 // App Imports
-import 'package:household_groceries/models/shoppingList.dart';
+import 'package:household_groceries/models/shopping_list.dart';
 import 'package:household_groceries/utils/utils.dart';
 
 // --------------------------------------------------------------------------------------------

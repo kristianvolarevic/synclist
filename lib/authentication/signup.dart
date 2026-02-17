@@ -4,7 +4,7 @@
 // Flutter Imports
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:household_groceries/common_widgets/statusBarPage.dart';
+import 'package:household_groceries/common_widgets/status_bar_page.dart';
 
 // App Imports
 import 'package:household_groceries/utils/utils.dart';
@@ -29,6 +29,7 @@ class _SignupState extends State<Signup> {
   String _password = '';
   Timer? _timer;
 
+  @override
   void dispose() {
     _timer?.cancel();
     super.dispose();
@@ -51,6 +52,10 @@ class _SignupState extends State<Signup> {
     }
     // ---------------------- Error Handling ----------------------
     catch (e) {
+      if (!mounted) {
+        return;
+      }
+
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(e.toString())));

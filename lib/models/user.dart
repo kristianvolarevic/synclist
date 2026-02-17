@@ -1,4 +1,4 @@
-import 'shoppingList.dart';
+import 'shopping_list.dart';
 
 class UserDetails {
   String id;

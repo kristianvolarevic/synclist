@@ -7,8 +7,8 @@ import 'package:flutter/material.dart';
 // App Imports
 import 'package:household_groceries/utils/utils.dart';
 import 'signup.dart';
-import 'package:household_groceries/authentication/forgotPassword.dart';
-import 'package:household_groceries/common_widgets/statusBarPage.dart';
+import 'package:household_groceries/authentication/forgot_password.dart';
+import 'package:household_groceries/common_widgets/status_bar_page.dart';
 
 // --------------------------------------------------------------------------------------------
 // CLASS: LOGIN PAGE
@@ -45,6 +45,10 @@ class _LoginState extends State<Login> {
     }
     // ---------------------- CATCH ERROR ----------------------
     catch (e) {
+      if (!mounted) {
+        return;
+      }
+
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(e.toString())));

@@ -9,7 +9,7 @@ import 'dart:async';
 import 'package:household_groceries/home/home.dart';
 import 'package:household_groceries/models/user.dart';
 import 'package:household_groceries/utils/utils.dart';
-import 'package:household_groceries/models/shoppingList.dart';
+import 'package:household_groceries/models/shopping_list.dart';
 import 'package:household_groceries/models/category.dart';
 
 // Firebase Imports
