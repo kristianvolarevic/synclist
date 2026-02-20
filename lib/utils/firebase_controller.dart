@@ -7,6 +7,7 @@ import 'dart:async';
 
 // App Imports
 import 'package:household_groceries/home/home.dart';
+import 'package:household_groceries/models/item.dart';
 import 'package:household_groceries/models/user.dart';
 import 'package:household_groceries/utils/utils.dart';
 import 'package:household_groceries/models/shopping_list.dart';
@@ -215,16 +216,11 @@ class FirebaseController {
       Category newCategory = Category(id: '', name: categoryName);
 
       // Add the category to Firestore
-      final docRef = await db
+      await db
           .collection('lists')
           .doc(list.id)
           .collection('categories')
           .add(newCategory.toMap());
-
-      // Store the category in the list document under the current list
-      await db.collection('lists').doc(list.id).update({
-        'categoryIds': FieldValue.arrayUnion([docRef.id]),
-      });
     } catch (e) {
       throw CustomExceptions(ExceptionType.failedToAddToDatabase);
     }
@@ -247,6 +243,23 @@ class FirebaseController {
       return categories;
     } catch (e) {
       throw CustomExceptions(ExceptionType.failedToFetchFromDatabase);
+    }
+  }
+
+  // --------------------------------------------------------------------------------------------
+  // ITEM METHODS
+  // --------------------------------------------------------------------------------------------
+  // ---------------------- METHOD: Add New Item ----------------------
+  Future<void> addNewItem(Item item, ShoppingList list) async {
+    try {
+      // Add the item to Firestore
+      await db
+          .collection('lists')
+          .doc(list.id)
+          .collection('items')
+          .add(item.toMap());
+    } catch (e) {
+      throw CustomExceptions(ExceptionType.failedToAddToDatabase);
     }
   }
 
