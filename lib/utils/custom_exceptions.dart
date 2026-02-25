@@ -5,6 +5,7 @@ enum ExceptionType {
   emailAlreadyInUse,
   failedToAddToDatabase,
   failedToFetchFromDatabase,
+  failedToUpdateDatabase,
 }
 
 class CustomExceptions implements Exception {
@@ -26,6 +27,8 @@ class CustomExceptions implements Exception {
         return 'Failed to add data to the database.';
       case ExceptionType.failedToFetchFromDatabase:
         return 'Failed to fetch data from the database.';
+      case ExceptionType.failedToUpdateDatabase:
+        return 'Failed to update data in the database.';
     }
   }
 

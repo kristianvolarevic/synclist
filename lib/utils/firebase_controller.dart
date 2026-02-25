@@ -263,6 +263,44 @@ class FirebaseController {
     }
   }
 
+  // ---------------------- METHOD: Fetch Items For List ----------------------
+  Future<List<Item>> fetchItemsForList(ShoppingList list) async {
+    try {
+      final itemsSnapshot = await db
+          .collection('lists')
+          .doc(list.id)
+          .collection('items')
+          .get();
+
+      List<Item> items = [];
+      for (final doc in itemsSnapshot.docs) {
+        items.add(Item.fromMap(doc.id, doc.data()));
+      }
+
+      return items;
+    } catch (e) {
+      throw CustomExceptions(ExceptionType.failedToFetchFromDatabase);
+    }
+  }
+
+  // ---------------------- METHOD: Update Item Collected Status ----------------------
+  Future<void> updateItemCollectedStatus(
+    ShoppingList list,
+    Item item,
+    bool isCollected,
+  ) async {
+    try {
+      await db
+          .collection('lists')
+          .doc(list.id)
+          .collection('items')
+          .doc(item.id)
+          .update({'isCollected': isCollected});
+    } catch (e) {
+      throw CustomExceptions(ExceptionType.failedToUpdateDatabase);
+    }
+  }
+
   // --------------------------------------------------------------------------------------------
   // HELPER METHODS
   // --------------------------------------------------------------------------------------------

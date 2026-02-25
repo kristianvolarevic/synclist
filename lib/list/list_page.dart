@@ -3,13 +3,16 @@
 // --------------------------------------------------------------------------------------------
 // Flutter Imports
 import 'package:flutter/material.dart';
+import 'package:household_groceries/models/category.dart';
 
 // App Imports
 import 'package:household_groceries/models/shopping_list.dart';
 import 'package:household_groceries/common_widgets/status_bar_page.dart';
 import 'package:household_groceries/utils/utils.dart';
 import 'package:household_groceries/list/categories/categories.dart';
+import 'package:household_groceries/models/item.dart';
 import 'package:household_groceries/list/add_item_dialog.dart';
+import 'package:household_groceries/list/item_card.dart';
 
 // --------------------------------------------------------------------------------------------
 // ENUM: LIST OPTIONS
@@ -29,10 +32,61 @@ class ListPage extends StatefulWidget {
 }
 
 class _ListPageState extends State<ListPage> {
+  bool _isLoading = true;
+  List<Item> _items = [];
+  List<Category> _categories = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchItems();
+    _fetchCategories();
+  }
+
   // ---------------------- METHOD: FETCH ITEMS ----------------------
   void _fetchItems() async {
-    debugPrint("Fetching items for list: ${widget.list.name}");
-    // TODO: Implement actual list refresh logic here
+    try {
+      final items = await FirebaseController().fetchItemsForList(widget.list);
+      setState(() {
+        _items = items;
+        _isLoading = false;
+      });
+    } catch (e) {
+      debugPrint("Error fetching items: $e");
+    }
+  }
+
+  void _fetchCategories() async {
+    try {
+      List<Category> categories = await FirebaseController()
+          .fetchCategoriesForList(widget.list);
+
+      categories = await SharedPreferencesController().fetchCategoriesOrder(
+        categories,
+        widget.list.id,
+      );
+
+      setState(() {
+        _categories = categories;
+      });
+    } catch (e) {
+      debugPrint("Error fetching categories: $e");
+    }
+  }
+
+  void _handleChecked(Item item, bool? isChecked) async {
+    try {
+      await FirebaseController().updateItemCollectedStatus(
+        widget.list,
+        item,
+        isChecked ?? false,
+      );
+      setState(() {
+        item.isCollected = isChecked ?? false;
+      });
+    } catch (e) {
+      debugPrint("Error updating item status: $e");
+    }
   }
 
   // ---------------------- METHOD: HANDLE MENU SELECTION ----------------------
@@ -72,7 +126,53 @@ class _ListPageState extends State<ListPage> {
       trailing: _buildPopupMenu(),
 
       body: Scaffold(
-        body: const Center(child: Text('This is the List Page')),
+        body: _isLoading
+            ? const Center(
+                child: CircularProgressIndicator(color: AppColors.primary),
+              )
+            : _items.isEmpty
+            ? const Center(
+                child: Text(
+                  "No items yet. Click the + button to add one!",
+                  style: AppFonts.blackSubHeadingText,
+                ),
+              )
+            : ListView.builder(
+                itemCount: _categories.length,
+                itemBuilder: (context, categoryIndex) {
+                  final category = _categories[categoryIndex];
+                  final categoryItems = _items
+                      .where((item) => item.categoryId == category.id)
+                      .toList();
+
+                  if (categoryItems.isEmpty) {
+                    return const SizedBox.shrink();
+                  }
+
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        child: Text(
+                          category.name,
+                          style: AppFonts.blackCardHeaderText,
+                        ),
+                      ),
+                      ...categoryItems.map((item) {
+                        return ItemCard(
+                          item: item,
+                          onChecked: (isChecked) =>
+                              _handleChecked(item, isChecked),
+                        );
+                      }),
+                    ],
+                  );
+                },
+              ),
 
         // ---------------------- FLOATING ACTION BUTTON ----------------------
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
