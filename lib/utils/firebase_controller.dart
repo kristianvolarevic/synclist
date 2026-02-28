@@ -301,6 +301,75 @@ class FirebaseController {
     }
   }
 
+  Future<void> deleteItem(ShoppingList list, Item item) async {
+    try {
+      await db
+          .collection('lists')
+          .doc(list.id)
+          .collection('items')
+          .doc(item.id)
+          .delete();
+    } catch (e) {
+      throw CustomExceptions(ExceptionType.failedToDeleteFromDatabase);
+    }
+  }
+
+  Future<void> clearSelectedItems(ShoppingList list) async {
+    try {
+      final itemsSnapshot = await db
+          .collection('lists')
+          .doc(list.id)
+          .collection('items')
+          .where('isCollected', isEqualTo: true)
+          .get();
+
+      for (final doc in itemsSnapshot.docs) {
+        await db
+            .collection('lists')
+            .doc(list.id)
+            .collection('items')
+            .doc(doc.id)
+            .delete();
+      }
+    } catch (e) {
+      throw CustomExceptions(ExceptionType.failedToDeleteFromDatabase);
+    }
+  }
+
+  Future<void> clearAllItems(ShoppingList list) async {
+    try {
+      final itemsSnapshot = await db
+          .collection('lists')
+          .doc(list.id)
+          .collection('items')
+          .get();
+
+      for (final doc in itemsSnapshot.docs) {
+        await db
+            .collection('lists')
+            .doc(list.id)
+            .collection('items')
+            .doc(doc.id)
+            .delete();
+      }
+    } catch (e) {
+      throw CustomExceptions(ExceptionType.failedToDeleteFromDatabase);
+    }
+  }
+
+  Future<void> updateItem(Item item, ShoppingList list) async {
+    try {
+      await db
+          .collection('lists')
+          .doc(list.id)
+          .collection('items')
+          .doc(item.id)
+          .update(item.toMap());
+    } catch (e) {
+      throw CustomExceptions(ExceptionType.failedToUpdateDatabase);
+    }
+  }
+
   // --------------------------------------------------------------------------------------------
   // HELPER METHODS
   // --------------------------------------------------------------------------------------------

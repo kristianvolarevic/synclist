@@ -2,6 +2,7 @@
 // IMPORTS
 // --------------------------------------------------------------------------------------------
 // Flutter Imports
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:household_groceries/models/category.dart';
 
@@ -89,8 +90,19 @@ class _ListPageState extends State<ListPage> {
     }
   }
 
+  void _handleDelete(Item item) async {
+    try {
+      await FirebaseController().deleteItem(widget.list, item);
+      setState(() {
+        _items.removeWhere((i) => i.id == item.id);
+      });
+    } catch (e) {
+      debugPrint("Error deleting item: $e");
+    }
+  }
+
   // ---------------------- METHOD: HANDLE MENU SELECTION ----------------------
-  void _handleMenuSelection(ListOptions value) {
+  void _handleMenuSelection(ListOptions value) async {
     switch (value) {
       case ListOptions.categories:
         Navigator.push(
@@ -102,10 +114,12 @@ class _ListPageState extends State<ListPage> {
         // TODO: Handle Share
         break;
       case ListOptions.clearSelected:
-        // TODO: Handle Clear Selected
+        await FirebaseController().clearSelectedItems(widget.list);
+        _fetchItems();
         break;
       case ListOptions.clearAll:
-        // TODO: Handle Clear All
+        await FirebaseController().clearAllItems(widget.list);
+        _fetchItems();
         break;
       case ListOptions.settings:
         // TODO: Handle Settings
@@ -165,8 +179,11 @@ class _ListPageState extends State<ListPage> {
                       ...categoryItems.map((item) {
                         return ItemCard(
                           item: item,
+                          list: widget.list,
                           onChecked: (isChecked) =>
                               _handleChecked(item, isChecked),
+                          onDelete: () => _handleDelete(item),
+                          fetchItems: _fetchItems,
                         );
                       }),
                     ],

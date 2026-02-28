@@ -18,4 +18,7 @@ class AppColors {
 
   static const Color grey700 = Color.fromRGBO(97, 97, 97, 1); // Grey 700
   static const Color grey800 = Color.fromRGBO(66, 66, 66, 1); // Grey 800
+
+  static const Color cardColor =
+      Colors.black12; // Semi-transparent black for cards
 }

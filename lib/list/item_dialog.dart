@@ -2,31 +2,35 @@
 // IMPORTS
 // --------------------------------------------------------------------------------------------
 // Flutter Imports
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 
 // App Imports
-import 'package:household_groceries/models/category.dart';
 import 'package:household_groceries/models/item.dart';
+import 'package:household_groceries/models/category.dart';
 import 'package:household_groceries/models/shopping_list.dart';
-import 'package:household_groceries/utils/firebase_controller.dart';
-import 'package:household_groceries/utils/shared_preferences_controller.dart';
 import 'package:household_groceries/utils/utils.dart';
 
-class AddItemDialog extends StatefulWidget {
+class ItemDialog extends StatefulWidget {
+  final Item item;
   final ShoppingList list;
+  final VoidCallback onDelete;
   final VoidCallback fetchItems;
 
-  const AddItemDialog({
+  const ItemDialog({
     super.key,
+    required this.item,
     required this.list,
+    required this.onDelete,
     required this.fetchItems,
   });
 
   @override
-  State<AddItemDialog> createState() => _AddItemDialogState();
+  State<ItemDialog> createState() => _ItemDialogState();
 }
 
-class _AddItemDialogState extends State<AddItemDialog> {
+class _ItemDialogState extends State<ItemDialog> {
   final _formKey = GlobalKey<FormState>();
 
   // ---------------------- STATE VARIABLES ----------------------
@@ -42,6 +46,16 @@ class _AddItemDialogState extends State<AddItemDialog> {
   @override
   void initState() {
     super.initState();
+
+    setState(() {
+      _itemName = widget.item.name;
+      _selectedCategoryId = widget.item.categoryId;
+      _isQuantityBased = widget.item.isQuantityBased;
+      _amount = widget.item.isQuantityBased
+          ? widget.item.quantity.ceilToDouble()
+          : widget.item.weight;
+    });
+
     _loadCategories();
   }
 
@@ -58,47 +72,48 @@ class _AddItemDialogState extends State<AddItemDialog> {
       }
     } catch (e) {
       debugPrint("Error loading categories: $e");
-      if (mounted) setState(() => _isLoading = false);
     }
   }
 
-  // ---------------------- METHOD: ADD NEW ITEM ----------------------
-  Future<void> _addNewItem() async {
+  // ---------------------- METHOD: UPDATE ITEM ----------------------
+  Future<void> _updateItem() async {
     if (!_formKey.currentState!.validate()) return;
 
     _formKey.currentState!.save();
 
-    final newItem = Item(
-      id: '', // Firestore will generate this
+    final updatedItem = Item(
+      id: widget.item.id,
       name: _itemName,
       categoryId: _selectedCategoryId!,
       isQuantityBased: _isQuantityBased,
       quantity: _isQuantityBased ? _amount.toInt() : 0,
       weight: !_isQuantityBased ? _amount : 0.0,
+      isCollected: widget.item.isCollected,
     );
 
     try {
-      await FirebaseController().addNewItem(newItem, widget.list);
+      await FirebaseController().updateItem(updatedItem, widget.list);
 
       if (!mounted) return;
 
       Navigator.of(context).pop();
       widget.fetchItems();
     } catch (e) {
-      debugPrint("Error adding item: $e");
+      debugPrint("Error updating item: $e");
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text("Error: ${e.toString()}")));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Failed to update item. Please try again."),
+          ),
+        );
       }
     }
   }
 
-  // ---------------------- BUILD METHOD ----------------------
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text("Add New Item"),
+      title: const Text("Edit Item"),
       content: _isLoading
           ? const SizedBox(
               height: 100,
@@ -112,6 +127,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
                   children: [
                     // Item Name Field
                     TextFormField(
+                      initialValue: _itemName,
                       decoration: const InputDecoration(labelText: "Item Name"),
                       validator: (value) =>
                           (value == null || value.isEmpty) ? 'Required' : null,
@@ -149,6 +165,9 @@ class _AddItemDialogState extends State<AddItemDialog> {
 
                     // Dynamic Number Field
                     TextFormField(
+                      initialValue: _isQuantityBased
+                          ? _amount.toInt().toString()
+                          : _amount.toStringAsFixed(3),
                       key: ValueKey(_isQuantityBased),
                       decoration: InputDecoration(
                         labelText: _isQuantityBased ? "Quantity" : "Weight",
@@ -157,7 +176,6 @@ class _AddItemDialogState extends State<AddItemDialog> {
                       keyboardType: const TextInputType.numberWithOptions(
                         decimal: true,
                       ),
-                      initialValue: _isQuantityBased ? "1" : "0.0",
                       onSaved: (value) =>
                           _amount = double.tryParse(value ?? '0') ?? 0,
                     ),
@@ -167,10 +185,20 @@ class _AddItemDialogState extends State<AddItemDialog> {
             ),
       actions: [
         TextButton(
+          onPressed: () {
+            widget.onDelete();
+            Navigator.pop(context);
+          },
+          child: const Text("Delete"),
+        ),
+        TextButton(
           onPressed: () => Navigator.pop(context),
           child: const Text("Cancel"),
         ),
-        ElevatedButton(onPressed: _addNewItem, child: const Text("Create")),
+        TextButton(
+          onPressed: () => _updateItem(),
+          child: const Text("Confirm"),
+        ),
       ],
     );
   }

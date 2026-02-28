@@ -20,14 +20,29 @@ class CategoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      color: Colors.white38,
-      child: ListTile(
-        title: Text(category.name, style: AppFonts.blackCardHeaderText),
-        trailing: ReorderableDragStartListener(
-          index: index,
-          child: const Icon(Icons.drag_handle),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: Dismissible(
+          key: Key(category.id),
+          direction: DismissDirection.endToStart,
+          background: Container(
+            alignment: Alignment.centerRight,
+            padding: const EdgeInsets.only(right: 20),
+            decoration: BoxDecoration(color: Colors.redAccent),
+            child: const Icon(Icons.delete, color: Colors.white),
+          ),
+          child: Container(
+            decoration: BoxDecoration(color: AppColors.cardColor),
+            child: ListTile(
+              title: Text(category.name, style: AppFonts.blackCardHeaderText),
+              trailing: ReorderableDragStartListener(
+                index: index,
+                child: const Icon(Icons.drag_handle),
+              ),
+            ),
+          ),
         ),
       ),
     );

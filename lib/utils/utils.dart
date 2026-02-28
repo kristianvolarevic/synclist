@@ -4,3 +4,4 @@ export 'transitions.dart';
 export 'firebase_controller.dart';
 export 'shared_preferences_controller.dart';
 export 'custom_exceptions.dart';
+export 'helper_functions.dart';

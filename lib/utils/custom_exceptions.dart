@@ -6,6 +6,7 @@ enum ExceptionType {
   failedToAddToDatabase,
   failedToFetchFromDatabase,
   failedToUpdateDatabase,
+  failedToDeleteFromDatabase,
 }
 
 class CustomExceptions implements Exception {
@@ -29,6 +30,8 @@ class CustomExceptions implements Exception {
         return 'Failed to fetch data from the database.';
       case ExceptionType.failedToUpdateDatabase:
         return 'Failed to update data in the database.';
+      case ExceptionType.failedToDeleteFromDatabase:
+        return 'Failed to delete data from the database.';
     }
   }
 
