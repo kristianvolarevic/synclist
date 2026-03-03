@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:household_groceries/utils/firebase_controller.dart';
+import 'package:household_groceries/utils/utils.dart';
 
 class AddListDialog extends StatefulWidget {
   final VoidCallback fetchLists;
@@ -31,16 +31,11 @@ class _AddListDialogState extends State<AddListDialog> {
       }
       Navigator.of(context).pop(); // Close the dialog
 
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("List added successfully!")));
+      showMessage(context, "List added successfully!");
 
       widget.fetchLists();
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(e.toString())));
-      return;
+      showMessage(context, "Unable to add new list: ${e.toString()}");
     }
   }
 

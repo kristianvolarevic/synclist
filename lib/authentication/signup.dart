@@ -56,10 +56,7 @@ class _SignupState extends State<Signup> {
         return;
       }
 
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(e.toString())));
-      return;
+      showMessage(context, "Error signing up: ${e.toString()}");
     }
   }
 

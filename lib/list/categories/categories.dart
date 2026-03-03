@@ -39,30 +39,14 @@ class _CategoriesState extends State<Categories> {
       _isLoading = true;
     });
 
-    try {
-      final List<Category> unsortedCategories = await FirebaseController()
-          .fetchCategoriesForList(widget.list);
+    final categories = await loadCategories(context, widget.list);
 
-      _categories = await SharedPreferencesController().fetchCategoriesOrder(
-        unsortedCategories,
-        widget.list.id,
-      );
+    setState(() {
+      _isLoading = false;
+    });
 
-      setState(() {
-        _isLoading = false;
-      });
-    } catch (e) {
-      if (!mounted) {
-        return;
-      }
-
-      setState(() {
-        _isLoading = false;
-      });
-
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Error fetching categories: $e")));
+    if (categories != null) {
+      _categories = categories;
     }
   }
 
@@ -111,6 +95,7 @@ class _CategoriesState extends State<Categories> {
                   return CategoryCard(
                     key: ValueKey(category.id),
                     category: category,
+                    list: widget.list,
                     index: index,
                   );
                 },

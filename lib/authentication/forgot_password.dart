@@ -56,10 +56,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
         return;
       }
 
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Failed to send reset email. $e')));
-      return;
+      showMessage(context, "Failed to send reset email: ${e.toString()}");
     }
   }
 

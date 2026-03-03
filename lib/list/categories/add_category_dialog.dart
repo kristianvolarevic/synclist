@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:household_groceries/models/shopping_list.dart';
-import 'package:household_groceries/utils/firebase_controller.dart';
+import 'package:household_groceries/utils/utils.dart';
 
 class AddCategoryDialog extends StatefulWidget {
   final ShoppingList list;
@@ -38,15 +38,11 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
 
       Navigator.of(context).pop(); // Close the dialog
 
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Category added successfully!")));
+      showMessage(context, "Category added successfully.");
 
       widget.fetchCategories();
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(e.toString())));
+      showMessage(context, "Could not add category: ${e.toString()}");
     }
   }
 

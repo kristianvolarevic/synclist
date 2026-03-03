@@ -7,16 +7,38 @@ import 'package:flutter/material.dart';
 
 // App Imports
 import 'package:household_groceries/models/category.dart';
+import 'package:household_groceries/models/shopping_list.dart';
 import 'package:household_groceries/utils/utils.dart';
+import 'package:household_groceries/common_widgets/warning_dialog.dart';
 
 // --------------------------------------------------------------------------------------------
 // CLASS: CATEGORY CARD
 // --------------------------------------------------------------------------------------------
 class CategoryCard extends StatelessWidget {
   final Category category;
+  final ShoppingList list;
   final int index;
 
-  const CategoryCard({super.key, required this.category, required this.index});
+  const CategoryCard({
+    super.key,
+    required this.category,
+    required this.list,
+    required this.index,
+  });
+
+  void _handleDelete(BuildContext context) async {
+    try {
+      await FirebaseController().deleteCategoryForList(category, list);
+
+      if (context.mounted) {
+        showMessage(context, "Category Successfully Delted");
+      }
+    } catch (e) {
+      if (context.mounted) {
+        showMessage(context, "Unable to delete category: ${e.toString()}");
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +49,24 @@ class CategoryCard extends StatelessWidget {
         child: Dismissible(
           key: Key(category.id),
           direction: DismissDirection.endToStart,
+          confirmDismiss: (direction) async {
+            final bool? confirmed = await showDialog<bool>(
+              context: context,
+              builder: (BuildContext context) {
+                return WarningDialog(
+                  warningMessage:
+                      "Are you sure you want to delete this category: ${category.name}",
+                );
+              },
+            );
+
+            if (confirmed == true && context.mounted) {
+              _handleDelete(context);
+              return true;
+            }
+
+            return false;
+          },
           background: Container(
             alignment: Alignment.centerRight,
             padding: const EdgeInsets.only(right: 20),

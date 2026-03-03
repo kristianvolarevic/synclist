@@ -10,6 +10,7 @@ import 'package:household_groceries/models/item.dart';
 import 'package:household_groceries/models/shopping_list.dart';
 import 'package:household_groceries/utils/utils.dart';
 import 'package:household_groceries/list/item_dialog.dart';
+import 'package:household_groceries/common_widgets/warning_dialog.dart';
 
 // --------------------------------------------------------------------------------------------
 // CLASS: ITEM CARD
@@ -18,7 +19,6 @@ class ItemCard extends StatelessWidget {
   final Item item;
   final ShoppingList list;
   final Function(bool?) onChecked;
-  final VoidCallback onDelete;
   final VoidCallback fetchItems;
 
   const ItemCard({
@@ -26,7 +26,6 @@ class ItemCard extends StatelessWidget {
     required this.item,
     required this.list,
     required this.onChecked,
-    required this.onDelete,
     required this.fetchItems,
   });
 
@@ -45,9 +44,25 @@ class ItemCard extends StatelessWidget {
         child: Dismissible(
           key: Key(item.id),
           direction: DismissDirection.endToStart,
-          onDismissed: (direction) {
-            onDelete();
+          confirmDismiss: (direction) async {
+            final bool? confirmed = await showDialog<bool>(
+              context: context,
+              builder: (BuildContext context) {
+                return WarningDialog(
+                  warningMessage:
+                      "Are you sure you want to delete this item: ${item.name}",
+                );
+              },
+            );
+
+            if (confirmed == true && context.mounted) {
+              handleDeleteItem(context, list, item);
+              return true;
+            }
+
+            return false;
           },
+
           background: Container(
             alignment: Alignment.centerRight,
             padding: const EdgeInsets.only(right: 20),
@@ -74,7 +89,6 @@ class ItemCard extends StatelessWidget {
                     return ItemDialog(
                       item: item,
                       list: list,
-                      onDelete: onDelete,
                       fetchItems: fetchItems,
                     );
                   },

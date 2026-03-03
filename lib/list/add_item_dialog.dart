@@ -8,8 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:household_groceries/models/category.dart';
 import 'package:household_groceries/models/item.dart';
 import 'package:household_groceries/models/shopping_list.dart';
-import 'package:household_groceries/utils/firebase_controller.dart';
-import 'package:household_groceries/utils/shared_preferences_controller.dart';
 import 'package:household_groceries/utils/utils.dart';
 
 class AddItemDialog extends StatefulWidget {
@@ -47,19 +45,15 @@ class _AddItemDialogState extends State<AddItemDialog> {
 
   // ---------------------- METHOD: LOAD CATEGORIES ----------------------
   Future<void> _loadCategories() async {
-    try {
-      final categories = await loadCategories(widget.list);
+    final categories = await loadCategories(context, widget.list);
 
-      if (mounted) {
-        setState(() {
-          _categories = categories;
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      debugPrint("Error loading categories: $e");
-      if (mounted) setState(() => _isLoading = false);
+    if (!mounted || categories == null) {
+      return;
     }
+    setState(() {
+      _categories = categories;
+      _isLoading = false;
+    });
   }
 
   // ---------------------- METHOD: ADD NEW ITEM ----------------------

@@ -53,9 +53,7 @@ class _HomeState extends State<Home> {
         _isLoading = false;
       });
 
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(e.toString())));
+      showMessage(context, "Unable to fetch lists: ${e.toString()}");
     }
   }
 

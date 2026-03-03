@@ -24,10 +24,7 @@ class FirebaseController {
   final db = FirebaseFirestore.instance;
   final auth = FirebaseAuth.instance;
 
-  // --------------------------------------------------------------------------------------------
-  // AUTHENTICATION METHODS
-  // --------------------------------------------------------------------------------------------
-
+  // ----------------------------------------------------------- AUTHENTICATION METHODS -------------------------------------------------------------------------------
   // ---------------------- METHOD: LOGIN ----------------------
   Future<void> login(
     String email,
@@ -152,9 +149,7 @@ class FirebaseController {
     return user;
   }
 
-  // --------------------------------------------------------------------------------------------
-  // LIST METHODS
-  // --------------------------------------------------------------------------------------------
+  // ----------------------------------------------------------- LIST METHODS -------------------------------------------------------------------------------
 
   // ---------------------- METHOD: Add New List ----------------------
   Future<void> addNewList(String listName) async {
@@ -206,9 +201,23 @@ class FirebaseController {
     }
   }
 
-  // --------------------------------------------------------------------------------------------
-  // CATEGORY METHODS
-  // --------------------------------------------------------------------------------------------
+  // ---------------------- METHOD: Delete List ----------------------
+  Future<void> deleteList(ShoppingList list) async {
+    try {
+      await db.collection("lists").doc(list.id).delete();
+
+      // Also remove from users list
+      await db.collection("users").doc(auth.currentUser!.uid).update({
+        'lists': FieldValue.arrayRemove([list.id]),
+      });
+    } catch (e) {
+      throw CustomExceptions(ExceptionType.failedToDeleteFromDatabase);
+    }
+  }
+
+  // ----------------------------------------------------------- CATEGORY METHODS -------------------------------------------------------------------------------
+  // ---------------------- METHOD: Add New Category ----------------------
+
   // ---------------------- METHOD: Add New Category ----------------------
   Future<void> addNewCategory(String categoryName, ShoppingList list) async {
     try {
@@ -223,6 +232,23 @@ class FirebaseController {
           .add(newCategory.toMap());
     } catch (e) {
       throw CustomExceptions(ExceptionType.failedToAddToDatabase);
+    }
+  }
+
+  // ---------------------- METHOD: Delete Category For List ----------------------
+  Future<void> deleteCategoryForList(
+    Category category,
+    ShoppingList list,
+  ) async {
+    try {
+      await db
+          .collection('lists')
+          .doc(list.id)
+          .collection('categories')
+          .doc(category.id)
+          .delete();
+    } catch (e) {
+      throw CustomExceptions(ExceptionType.failedToDeleteFromDatabase);
     }
   }
 
@@ -246,9 +272,8 @@ class FirebaseController {
     }
   }
 
-  // --------------------------------------------------------------------------------------------
-  // ITEM METHODS
-  // --------------------------------------------------------------------------------------------
+  // ----------------------------------------------------------- ITEM METHODS -------------------------------------------------------------------------------
+
   // ---------------------- METHOD: Add New Item ----------------------
   Future<void> addNewItem(Item item, ShoppingList list) async {
     try {
@@ -301,6 +326,7 @@ class FirebaseController {
     }
   }
 
+  // ---------------------- METHOD: Delete Item ----------------------
   Future<void> deleteItem(ShoppingList list, Item item) async {
     try {
       await db
@@ -314,6 +340,21 @@ class FirebaseController {
     }
   }
 
+  // ---------------------- METHOD: Update Item ----------------------
+  Future<void> updateItem(Item item, ShoppingList list) async {
+    try {
+      await db
+          .collection('lists')
+          .doc(list.id)
+          .collection('items')
+          .doc(item.id)
+          .update(item.toMap());
+    } catch (e) {
+      throw CustomExceptions(ExceptionType.failedToUpdateDatabase);
+    }
+  }
+
+  // ---------------------- METHOD: Clear Selected Items ----------------------
   Future<void> clearSelectedItems(ShoppingList list) async {
     try {
       final itemsSnapshot = await db
@@ -336,6 +377,7 @@ class FirebaseController {
     }
   }
 
+  // ---------------------- METHOD: Clear All Items ----------------------
   Future<void> clearAllItems(ShoppingList list) async {
     try {
       final itemsSnapshot = await db
@@ -357,22 +399,7 @@ class FirebaseController {
     }
   }
 
-  Future<void> updateItem(Item item, ShoppingList list) async {
-    try {
-      await db
-          .collection('lists')
-          .doc(list.id)
-          .collection('items')
-          .doc(item.id)
-          .update(item.toMap());
-    } catch (e) {
-      throw CustomExceptions(ExceptionType.failedToUpdateDatabase);
-    }
-  }
-
-  // --------------------------------------------------------------------------------------------
-  // HELPER METHODS
-  // --------------------------------------------------------------------------------------------
+  // ----------------------------------------------------------- HELPER METHODS -------------------------------------------------------------------------------
 
   // ---------------------- METHOD: START TIMER ----------------------
   void startTimer(BuildContext context) {

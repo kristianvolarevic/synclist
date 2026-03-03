@@ -2,7 +2,6 @@
 // IMPORTS
 // --------------------------------------------------------------------------------------------
 // Flutter Imports
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:household_groceries/models/category.dart';
 
@@ -53,26 +52,22 @@ class _ListPageState extends State<ListPage> {
         _isLoading = false;
       });
     } catch (e) {
-      debugPrint("Error fetching items: $e");
+      if (mounted) {
+        showMessage(context, "Error fetching items: ${e.toString}");
+      }
     }
   }
 
   void _fetchCategories() async {
-    try {
-      List<Category> categories = await FirebaseController()
-          .fetchCategoriesForList(widget.list);
+    final categories = await loadCategories(context, widget.list);
 
-      categories = await SharedPreferencesController().fetchCategoriesOrder(
-        categories,
-        widget.list.id,
-      );
-
-      setState(() {
-        _categories = categories;
-      });
-    } catch (e) {
-      debugPrint("Error fetching categories: $e");
+    if (categories == null) {
+      return;
     }
+
+    setState(() {
+      _categories = categories;
+    });
   }
 
   void _handleChecked(Item item, bool? isChecked) async {
@@ -86,18 +81,9 @@ class _ListPageState extends State<ListPage> {
         item.isCollected = isChecked ?? false;
       });
     } catch (e) {
-      debugPrint("Error updating item status: $e");
-    }
-  }
-
-  void _handleDelete(Item item) async {
-    try {
-      await FirebaseController().deleteItem(widget.list, item);
-      setState(() {
-        _items.removeWhere((i) => i.id == item.id);
-      });
-    } catch (e) {
-      debugPrint("Error deleting item: $e");
+      if (mounted) {
+        showMessage(context, "Error updating item status: ${e.toString}");
+      }
     }
   }
 
@@ -182,7 +168,6 @@ class _ListPageState extends State<ListPage> {
                           list: widget.list,
                           onChecked: (isChecked) =>
                               _handleChecked(item, isChecked),
-                          onDelete: () => _handleDelete(item),
                           fetchItems: _fetchItems,
                         );
                       }),

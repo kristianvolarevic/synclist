@@ -49,10 +49,7 @@ class _LoginState extends State<Login> {
         return;
       }
 
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(e.toString())));
-      return;
+      showMessage(context, "Error logging in: ${e.toString()}");
     }
   }
 

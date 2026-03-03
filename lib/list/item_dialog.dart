@@ -2,8 +2,6 @@
 // IMPORTS
 // --------------------------------------------------------------------------------------------
 // Flutter Imports
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 
 // App Imports
@@ -15,14 +13,12 @@ import 'package:household_groceries/utils/utils.dart';
 class ItemDialog extends StatefulWidget {
   final Item item;
   final ShoppingList list;
-  final VoidCallback onDelete;
   final VoidCallback fetchItems;
 
   const ItemDialog({
     super.key,
     required this.item,
     required this.list,
-    required this.onDelete,
     required this.fetchItems,
   });
 
@@ -62,16 +58,23 @@ class _ItemDialogState extends State<ItemDialog> {
   // ---------------------- METHOD: LOAD CATEGORIES ----------------------
   Future<void> _loadCategories() async {
     try {
-      final categories = await loadCategories(widget.list);
+      final categories = await loadCategories(context, widget.list);
 
-      if (mounted) {
-        setState(() {
-          _categories = categories;
-          _isLoading = false;
-        });
+      if (!mounted || categories == null) {
+        return;
       }
+      setState(() {
+        _categories = categories;
+        _isLoading = false;
+      });
     } catch (e) {
-      debugPrint("Error loading categories: $e");
+      if (!mounted) {
+        return;
+      }
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.toString())));
     }
   }
 
@@ -99,13 +102,8 @@ class _ItemDialogState extends State<ItemDialog> {
       Navigator.of(context).pop();
       widget.fetchItems();
     } catch (e) {
-      debugPrint("Error updating item: $e");
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Failed to update item. Please try again."),
-          ),
-        );
+        showMessage(context, "Failed to update item: ${e.toString}");
       }
     }
   }
@@ -186,7 +184,7 @@ class _ItemDialogState extends State<ItemDialog> {
       actions: [
         TextButton(
           onPressed: () {
-            widget.onDelete();
+            handleDeleteItem(context, widget.list, widget.item);
             Navigator.pop(context);
           },
           child: const Text("Delete"),
