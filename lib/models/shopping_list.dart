@@ -2,6 +2,8 @@ class ShoppingList {
   String id;
   String name;
   String owner;
+  String code = '';
+  bool isShared = false;
 
   ShoppingList({required this.id, required this.name, required this.owner});
 

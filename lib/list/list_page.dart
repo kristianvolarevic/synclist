@@ -3,16 +3,17 @@
 // --------------------------------------------------------------------------------------------
 // Flutter Imports
 import 'package:flutter/material.dart';
-import 'package:household_groceries/models/category.dart';
 
 // App Imports
 import 'package:household_groceries/models/shopping_list.dart';
 import 'package:household_groceries/common_widgets/status_bar_page.dart';
 import 'package:household_groceries/utils/utils.dart';
 import 'package:household_groceries/list/categories/categories.dart';
+import 'package:household_groceries/models/category.dart';
 import 'package:household_groceries/models/item.dart';
 import 'package:household_groceries/list/add_item_dialog.dart';
 import 'package:household_groceries/list/item_card.dart';
+import 'package:household_groceries/list/share/list_share.dart';
 
 // --------------------------------------------------------------------------------------------
 // ENUM: LIST OPTIONS
@@ -97,7 +98,10 @@ class _ListPageState extends State<ListPage> {
         );
         break;
       case ListOptions.share:
-        // TODO: Handle Share
+        Navigator.push(
+          context,
+          slideTransitionRoute(ListShare(list: widget.list)),
+        );
         break;
       case ListOptions.clearSelected:
         await FirebaseController().clearSelectedItems(widget.list);

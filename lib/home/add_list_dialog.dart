@@ -42,11 +42,14 @@ class _AddListDialogState extends State<AddListDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text("Create New List"),
+      title: const Text("Create New List", style: AppFonts.blackHeaderText),
       content: Form(
         key: _formKey,
         child: TextFormField(
-          decoration: const InputDecoration(hintText: "Enter list name..."),
+          decoration: const InputDecoration(
+            labelText: "List Name",
+            labelStyle: AppFonts.blackSubHeadingText,
+          ),
           validator: (value) {
             if (value == null || value.isEmpty) {
               return 'Please enter a list name';
@@ -56,18 +59,27 @@ class _AddListDialogState extends State<AddListDialog> {
           onSaved: (value) {
             _listName = value!;
           },
+          style: AppFonts.blackSubHeadingText,
         ),
       ),
 
       // ---------------------------------------------------------------------------------------- ACTIONS
       actions: <Widget>[
         TextButton(
+          style: TextButton.styleFrom(
+            textStyle: AppFonts.blackSubHeadingText,
+            foregroundColor: AppColors.primary,
+          ),
           child: const Text("Cancel"),
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
-        TextButton(
+        ElevatedButton(
+          style: TextButton.styleFrom(
+            textStyle: AppFonts.blackSubHeadingText,
+            foregroundColor: AppColors.primary,
+          ),
           child: const Text("Create"),
           onPressed: () {
             // Logic to add the item goes here

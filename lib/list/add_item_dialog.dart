@@ -92,7 +92,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text("Add New Item"),
+      title: const Text("Add New Item", style: AppFonts.blackHeaderText),
       content: _isLoading
           ? const SizedBox(
               height: 100,
@@ -106,16 +106,24 @@ class _AddItemDialogState extends State<AddItemDialog> {
                   children: [
                     // Item Name Field
                     TextFormField(
-                      decoration: const InputDecoration(labelText: "Item Name"),
+                      decoration: const InputDecoration(
+                        labelText: "Item Name",
+                        labelStyle: AppFonts.blackSubHeadingText,
+                      ),
                       validator: (value) =>
                           (value == null || value.isEmpty) ? 'Required' : null,
                       onSaved: (value) => _itemName = value!,
+                      style: AppFonts.blackSubHeadingText,
                     ),
                     const SizedBox(height: 16),
 
                     // Category Dropdown
                     DropdownButtonFormField<String>(
-                      decoration: const InputDecoration(labelText: "Category"),
+                      decoration: const InputDecoration(
+                        labelText: "Category",
+                        labelStyle: AppFonts.blackSubHeadingText,
+                      ),
+
                       initialValue: _selectedCategoryId,
                       items: _categories.map((cat) {
                         return DropdownMenuItem(
@@ -127,6 +135,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
                           setState(() => _selectedCategoryId = val),
                       validator: (val) =>
                           val == null ? 'Please select a category' : null,
+                      style: AppFonts.blackSubHeadingText,
                     ),
                     const SizedBox(height: 16),
 
@@ -134,8 +143,10 @@ class _AddItemDialogState extends State<AddItemDialog> {
                     SwitchListTile(
                       title: Text(
                         _isQuantityBased ? "Mode: Quantity" : "Mode: Weight",
+                        style: AppFonts.blackSubHeadingText,
                       ),
                       value: _isQuantityBased,
+                      activeThumbColor: AppColors.contrast,
                       onChanged: (val) =>
                           setState(() => _isQuantityBased = val),
                       contentPadding: EdgeInsets.zero,
@@ -144,9 +155,12 @@ class _AddItemDialogState extends State<AddItemDialog> {
                     // Dynamic Number Field
                     TextFormField(
                       key: ValueKey(_isQuantityBased),
+                      style: AppFonts.blackSubHeadingText,
                       decoration: InputDecoration(
                         labelText: _isQuantityBased ? "Quantity" : "Weight",
                         suffixText: _isQuantityBased ? "pcs" : "kg",
+                        labelStyle: AppFonts.blackSubHeadingText,
+                        suffixStyle: AppFonts.blackSubHeadingText,
                       ),
                       keyboardType: const TextInputType.numberWithOptions(
                         decimal: true,
@@ -162,9 +176,20 @@ class _AddItemDialogState extends State<AddItemDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
+          style: TextButton.styleFrom(
+            textStyle: AppFonts.blackSubHeadingText,
+            foregroundColor: AppColors.primary,
+          ),
           child: const Text("Cancel"),
         ),
-        ElevatedButton(onPressed: _addNewItem, child: const Text("Create")),
+        ElevatedButton(
+          onPressed: _addNewItem,
+          style: TextButton.styleFrom(
+            textStyle: AppFonts.blackSubHeadingText,
+            foregroundColor: AppColors.primary,
+          ),
+          child: const Text("Create"),
+        ),
       ],
     );
   }

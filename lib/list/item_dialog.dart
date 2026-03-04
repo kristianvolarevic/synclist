@@ -111,7 +111,7 @@ class _ItemDialogState extends State<ItemDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text("Edit Item"),
+      title: const Text("Edit Item", style: AppFonts.blackHeaderText),
       content: _isLoading
           ? const SizedBox(
               height: 100,
@@ -126,16 +126,23 @@ class _ItemDialogState extends State<ItemDialog> {
                     // Item Name Field
                     TextFormField(
                       initialValue: _itemName,
-                      decoration: const InputDecoration(labelText: "Item Name"),
+                      decoration: const InputDecoration(
+                        labelText: "Item Name",
+                        labelStyle: AppFonts.blackSubHeadingText,
+                      ),
                       validator: (value) =>
                           (value == null || value.isEmpty) ? 'Required' : null,
                       onSaved: (value) => _itemName = value!,
+                      style: AppFonts.blackSubHeadingText,
                     ),
                     const SizedBox(height: 16),
 
                     // Category Dropdown
                     DropdownButtonFormField<String>(
-                      decoration: const InputDecoration(labelText: "Category"),
+                      decoration: const InputDecoration(
+                        labelText: "Category",
+                        hintStyle: AppFonts.blackSubHeadingText,
+                      ),
                       initialValue: _selectedCategoryId,
                       items: _categories.map((cat) {
                         return DropdownMenuItem(
@@ -147,6 +154,7 @@ class _ItemDialogState extends State<ItemDialog> {
                           setState(() => _selectedCategoryId = val),
                       validator: (val) =>
                           val == null ? 'Please select a category' : null,
+                      style: AppFonts.blackSubHeadingText,
                     ),
                     const SizedBox(height: 16),
 
@@ -154,8 +162,10 @@ class _ItemDialogState extends State<ItemDialog> {
                     SwitchListTile(
                       title: Text(
                         _isQuantityBased ? "Mode: Quantity" : "Mode: Weight",
+                        style: AppFonts.blackSubHeadingText,
                       ),
                       value: _isQuantityBased,
+                      activeThumbColor: AppColors.contrast,
                       onChanged: (val) =>
                           setState(() => _isQuantityBased = val),
                       contentPadding: EdgeInsets.zero,
@@ -167,9 +177,12 @@ class _ItemDialogState extends State<ItemDialog> {
                           ? _amount.toInt().toString()
                           : _amount.toStringAsFixed(3),
                       key: ValueKey(_isQuantityBased),
+                      style: AppFonts.blackSubHeadingText,
                       decoration: InputDecoration(
                         labelText: _isQuantityBased ? "Quantity" : "Weight",
                         suffixText: _isQuantityBased ? "pcs" : "kg",
+                        labelStyle: AppFonts.blackSubHeadingText,
+                        suffixStyle: AppFonts.blackSubHeadingText,
                       ),
                       keyboardType: const TextInputType.numberWithOptions(
                         decimal: true,
@@ -187,14 +200,26 @@ class _ItemDialogState extends State<ItemDialog> {
             handleDeleteItem(context, widget.list, widget.item);
             Navigator.pop(context);
           },
+          style: TextButton.styleFrom(
+            textStyle: AppFonts.blackSubHeadingText,
+            foregroundColor: AppColors.primary,
+          ),
           child: const Text("Delete"),
         ),
         TextButton(
           onPressed: () => Navigator.pop(context),
+          style: TextButton.styleFrom(
+            textStyle: AppFonts.blackSubHeadingText,
+            foregroundColor: AppColors.primary,
+          ),
           child: const Text("Cancel"),
         ),
-        TextButton(
+        ElevatedButton(
           onPressed: () => _updateItem(),
+          style: TextButton.styleFrom(
+            textStyle: AppFonts.blackSubHeadingText,
+            foregroundColor: AppColors.primary,
+          ),
           child: const Text("Confirm"),
         ),
       ],

@@ -49,11 +49,14 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text("Add New Category"),
+      title: const Text("Add New Category", style: AppFonts.blackHeaderText),
       content: Form(
         key: _formKey,
         child: TextFormField(
-          decoration: const InputDecoration(hintText: "Enter category name..."),
+          decoration: const InputDecoration(
+            labelText: "Category Name",
+            labelStyle: AppFonts.blackSubHeadingText,
+          ),
           validator: (value) {
             if (value == null || value.isEmpty) {
               return 'Please enter a category name';
@@ -63,18 +66,27 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
           onSaved: (value) {
             _categoryName = value!;
           },
+          style: AppFonts.blackSubHeadingText,
         ),
       ),
 
       // ---------------------------------------------------------------------------------------- ACTIONS
       actions: <Widget>[
         TextButton(
-          child: const Text("Cancel"),
+          style: TextButton.styleFrom(
+            textStyle: AppFonts.blackSubHeadingText,
+            foregroundColor: AppColors.primary,
+          ),
           onPressed: () {
             Navigator.of(context).pop();
           },
+          child: const Text("Cancel"),
         ),
-        TextButton(
+        ElevatedButton(
+          style: TextButton.styleFrom(
+            textStyle: AppFonts.blackSubHeadingText,
+            foregroundColor: AppColors.primary,
+          ),
           child: const Text("Create"),
           onPressed: () {
             // Logic to add the item goes here

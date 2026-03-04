@@ -4,6 +4,7 @@
 // Flutter Imports
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'dart:math';
 
 // App Imports
 import 'package:household_groceries/home/home.dart';
@@ -23,6 +24,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 class FirebaseController {
   final db = FirebaseFirestore.instance;
   final auth = FirebaseAuth.instance;
+
+  final userCollection = 'users';
+  final listCollection = 'lists';
+  final categoriesCollection = 'categories';
+  final itemsCollection = 'items';
+  final shareCollection = 'share_codes';
 
   // ----------------------------------------------------------- AUTHENTICATION METHODS -------------------------------------------------------------------------------
   // ---------------------- METHOD: LOGIN ----------------------
@@ -100,7 +107,7 @@ class FirebaseController {
 
       user.updateDisplayName(fullName);
 
-      db.collection('users').doc(user.uid).set({
+      db.collection(userCollection).doc(user.uid).set({
         'fullName': fullName,
         'email': email,
         'lists': [],
@@ -137,7 +144,7 @@ class FirebaseController {
 
   // ---------------------- METHOD: Fetch User Details ----------------------
   Future<UserDetails?> fetchUserDetails(String userID) async {
-    final userDoc = await db.collection('users').doc(userID).get();
+    final userDoc = await db.collection(userCollection).doc(userID).get();
 
     if (!userDoc.exists) {
       throw CustomExceptions(ExceptionType.userNotFound);
@@ -162,10 +169,10 @@ class FirebaseController {
       );
 
       // Add the list to Firestore
-      final docRef = await db.collection('lists').add(newList.toMap());
+      final docRef = await db.collection(listCollection).add(newList.toMap());
 
       // Store the list in the users collection under the current user
-      await db.collection('users').doc(auth.currentUser!.uid).update({
+      await db.collection(userCollection).doc(auth.currentUser!.uid).update({
         'lists': FieldValue.arrayUnion([docRef.id]),
       });
     } catch (e) {
@@ -177,7 +184,7 @@ class FirebaseController {
   Future<List<ShoppingList>> fetchUserLists() async {
     try {
       final userDoc = await db
-          .collection('users')
+          .collection(userCollection)
           .doc(auth.currentUser!.uid)
           .get();
 
@@ -189,7 +196,7 @@ class FirebaseController {
       List<ShoppingList> userLists = [];
 
       for (String listId in listIds) {
-        final listDoc = await db.collection('lists').doc(listId).get();
+        final listDoc = await db.collection(listCollection).doc(listId).get();
         if (listDoc.exists) {
           userLists.add(ShoppingList.fromMap(listDoc.id, listDoc.data()!));
         }
@@ -204,10 +211,10 @@ class FirebaseController {
   // ---------------------- METHOD: Delete List ----------------------
   Future<void> deleteList(ShoppingList list) async {
     try {
-      await db.collection("lists").doc(list.id).delete();
+      await db.collection(listCollection).doc(list.id).delete();
 
       // Also remove from users list
-      await db.collection("users").doc(auth.currentUser!.uid).update({
+      await db.collection(userCollection).doc(auth.currentUser!.uid).update({
         'lists': FieldValue.arrayRemove([list.id]),
       });
     } catch (e) {
@@ -226,9 +233,9 @@ class FirebaseController {
 
       // Add the category to Firestore
       await db
-          .collection('lists')
+          .collection(listCollection)
           .doc(list.id)
-          .collection('categories')
+          .collection(categoriesCollection)
           .add(newCategory.toMap());
     } catch (e) {
       throw CustomExceptions(ExceptionType.failedToAddToDatabase);
@@ -242,9 +249,9 @@ class FirebaseController {
   ) async {
     try {
       await db
-          .collection('lists')
+          .collection(listCollection)
           .doc(list.id)
-          .collection('categories')
+          .collection(categoriesCollection)
           .doc(category.id)
           .delete();
     } catch (e) {
@@ -256,9 +263,9 @@ class FirebaseController {
   Future<List<Category>> fetchCategoriesForList(ShoppingList list) async {
     try {
       final categoriesSnapshot = await db
-          .collection('lists')
+          .collection(listCollection)
           .doc(list.id)
-          .collection('categories')
+          .collection(categoriesCollection)
           .get();
 
       List<Category> categories = [];
@@ -279,9 +286,9 @@ class FirebaseController {
     try {
       // Add the item to Firestore
       await db
-          .collection('lists')
+          .collection(listCollection)
           .doc(list.id)
-          .collection('items')
+          .collection(itemsCollection)
           .add(item.toMap());
     } catch (e) {
       throw CustomExceptions(ExceptionType.failedToAddToDatabase);
@@ -292,9 +299,9 @@ class FirebaseController {
   Future<List<Item>> fetchItemsForList(ShoppingList list) async {
     try {
       final itemsSnapshot = await db
-          .collection('lists')
+          .collection(listCollection)
           .doc(list.id)
-          .collection('items')
+          .collection(itemsCollection)
           .get();
 
       List<Item> items = [];
@@ -316,9 +323,9 @@ class FirebaseController {
   ) async {
     try {
       await db
-          .collection('lists')
+          .collection(listCollection)
           .doc(list.id)
-          .collection('items')
+          .collection(itemsCollection)
           .doc(item.id)
           .update({'isCollected': isCollected});
     } catch (e) {
@@ -330,9 +337,9 @@ class FirebaseController {
   Future<void> deleteItem(ShoppingList list, Item item) async {
     try {
       await db
-          .collection('lists')
+          .collection(listCollection)
           .doc(list.id)
-          .collection('items')
+          .collection(itemsCollection)
           .doc(item.id)
           .delete();
     } catch (e) {
@@ -344,9 +351,9 @@ class FirebaseController {
   Future<void> updateItem(Item item, ShoppingList list) async {
     try {
       await db
-          .collection('lists')
+          .collection(listCollection)
           .doc(list.id)
-          .collection('items')
+          .collection(itemsCollection)
           .doc(item.id)
           .update(item.toMap());
     } catch (e) {
@@ -358,17 +365,17 @@ class FirebaseController {
   Future<void> clearSelectedItems(ShoppingList list) async {
     try {
       final itemsSnapshot = await db
-          .collection('lists')
+          .collection(listCollection)
           .doc(list.id)
-          .collection('items')
+          .collection(itemsCollection)
           .where('isCollected', isEqualTo: true)
           .get();
 
       for (final doc in itemsSnapshot.docs) {
         await db
-            .collection('lists')
+            .collection(listCollection)
             .doc(list.id)
-            .collection('items')
+            .collection(itemsCollection)
             .doc(doc.id)
             .delete();
       }
@@ -381,16 +388,16 @@ class FirebaseController {
   Future<void> clearAllItems(ShoppingList list) async {
     try {
       final itemsSnapshot = await db
-          .collection('lists')
+          .collection(listCollection)
           .doc(list.id)
-          .collection('items')
+          .collection(itemsCollection)
           .get();
 
       for (final doc in itemsSnapshot.docs) {
         await db
-            .collection('lists')
+            .collection(listCollection)
             .doc(list.id)
-            .collection('items')
+            .collection(itemsCollection)
             .doc(doc.id)
             .delete();
       }
@@ -447,5 +454,39 @@ class FirebaseController {
         ],
       ),
     );
+  }
+
+  // ---------------------- METHOD: GENERATE UNIQUE CODE ----------------------
+  Future<String> generateUniqueCode(ShoppingList list) async {
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789";
+    final random = Random();
+    bool isUnique = false;
+    String code = '';
+
+    // Generate the code and check if it exists
+    while (!isUnique) {
+      code = List.generate(
+        6,
+        (index) => chars[random.nextInt(chars.length)],
+      ).join();
+
+      final doc = await db.collection(shareCollection).doc(code).get();
+      if (!doc.exists) {
+        isUnique = true;
+      }
+    }
+
+    // Save the code in firebase
+    await db.collection(shareCollection).doc(code).set({
+      'targetListId': list.id,
+    });
+
+    // Update the shopping list to contain the code
+    await db.collection(listCollection).doc(list.id).update({
+      'shareCode': code,
+      'isShared': true,
+    });
+
+    return code;
   }
 }
