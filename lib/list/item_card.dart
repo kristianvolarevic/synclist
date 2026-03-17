@@ -19,14 +19,12 @@ class ItemCard extends StatelessWidget {
   final Item item;
   final ShoppingList list;
   final Function(bool?) onChecked;
-  final VoidCallback fetchItems;
 
   const ItemCard({
     super.key,
     required this.item,
     required this.list,
     required this.onChecked,
-    required this.fetchItems,
   });
 
   @override
@@ -86,11 +84,7 @@ class ItemCard extends StatelessWidget {
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
-                    return ItemDialog(
-                      item: item,
-                      list: list,
-                      fetchItems: fetchItems,
-                    );
+                    return ItemDialog(item: item, list: list);
                   },
                 );
               },

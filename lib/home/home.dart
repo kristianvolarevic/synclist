@@ -5,7 +5,6 @@
 import 'package:flutter/material.dart';
 import 'package:household_groceries/common_widgets/status_bar_page.dart';
 import 'package:household_groceries/home/add_list_dialog.dart';
-import 'package:household_groceries/models/shopping_list.dart';
 
 // App Imports
 import 'package:household_groceries/utils/utils.dart';
@@ -25,36 +24,9 @@ class Home extends StatefulWidget {
 // CLASS: _HOME STATE (Page Layout & Logic)
 // --------------------------------------------------------------------------------------------
 class _HomeState extends State<Home> {
-  bool _isLoading = true;
-  List<ShoppingList> _shoppingLists = [];
-
   @override
   initState() {
     super.initState();
-    _fetchLists();
-  }
-
-  void _fetchLists() async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      _shoppingLists = await FirebaseController().fetchUserLists();
-      setState(() {
-        _isLoading = false;
-      }); // Update UI after fetching lists
-    } catch (e) {
-      if (!mounted) {
-        return;
-      }
-
-      setState(() {
-        _isLoading = false;
-      });
-
-      showMessage(context, "Unable to fetch lists: ${e.toString()}");
-    }
   }
 
   @override
@@ -68,25 +40,40 @@ class _HomeState extends State<Home> {
         icon: const Icon(Icons.account_circle, size: 30),
       ),
       body: Scaffold(
-        body: _isLoading
-            ? const Center(
+        body: StreamBuilder(
+          stream: FirebaseController().userListsStream(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
                 child: CircularProgressIndicator(color: AppColors.primary),
-              )
-            : _shoppingLists.isEmpty
-            ? const Center(
+              );
+            }
+
+            if (snapshot.hasError) {
+              return Center(child: Text("Error: ${snapshot.error}"));
+            }
+
+            final allLists = snapshot.data ?? [];
+
+            if (allLists.isEmpty) {
+              return const Center(
                 child: Text(
                   "No lists yet. Click the + button to add one!",
                   style: AppFonts.blackSubHeadingText,
                 ),
-              )
-            : ListView.builder(
-                itemCount: _shoppingLists.length,
-                itemBuilder: (context, index) {
-                  final list = _shoppingLists[index];
-                  return ListCard(list: list);
-                },
-              ),
+              );
+            }
 
+            return ListView.builder(
+              itemCount: allLists.length,
+              itemBuilder: (context, index) {
+                return ListCard(
+                  list: allLists[index],
+                ); // Now receives a ShoppingList object
+              },
+            );
+          },
+        ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         floatingActionButton: SizedBox(
           width: 75,
@@ -100,7 +87,7 @@ class _HomeState extends State<Home> {
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
-                    return AddListDialog(fetchLists: _fetchLists);
+                    return AddListDialog();
                   },
                 );
               },

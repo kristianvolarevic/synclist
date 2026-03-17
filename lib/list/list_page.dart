@@ -2,6 +2,7 @@
 // IMPORTS
 // --------------------------------------------------------------------------------------------
 // Flutter Imports
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 // App Imports
@@ -18,7 +19,7 @@ import 'package:household_groceries/list/share/list_share.dart';
 // --------------------------------------------------------------------------------------------
 // ENUM: LIST OPTIONS
 // --------------------------------------------------------------------------------------------
-enum ListOptions { categories, share, clearSelected, clearAll, settings }
+enum ListOptions { categories, share, clearSelected, clearAll, settings, leave }
 
 // --------------------------------------------------------------------------------------------
 // CLASS: LIST PAGE
@@ -33,30 +34,12 @@ class ListPage extends StatefulWidget {
 }
 
 class _ListPageState extends State<ListPage> {
-  bool _isLoading = true;
-  List<Item> _items = [];
   List<Category> _categories = [];
 
   @override
   void initState() {
     super.initState();
-    _fetchItems();
     _fetchCategories();
-  }
-
-  // ---------------------- METHOD: FETCH ITEMS ----------------------
-  void _fetchItems() async {
-    try {
-      final items = await FirebaseController().fetchItemsForList(widget.list);
-      setState(() {
-        _items = items;
-        _isLoading = false;
-      });
-    } catch (e) {
-      if (mounted) {
-        showMessage(context, "Error fetching items: ${e.toString}");
-      }
-    }
   }
 
   void _fetchCategories() async {
@@ -100,19 +83,21 @@ class _ListPageState extends State<ListPage> {
       case ListOptions.share:
         Navigator.push(
           context,
-          slideTransitionRoute(ListShare(list: widget.list)),
+          slideTransitionRoute(ListShare(listId: widget.list.id)),
         );
         break;
       case ListOptions.clearSelected:
         await FirebaseController().clearSelectedItems(widget.list);
-        _fetchItems();
         break;
       case ListOptions.clearAll:
         await FirebaseController().clearAllItems(widget.list);
-        _fetchItems();
         break;
       case ListOptions.settings:
         // TODO: Handle Settings
+        break;
+      case ListOptions.leave:
+        Navigator.pop(context);
+        await FirebaseController().leaveListWithId(widget.list.id);
         break;
     }
   }
@@ -130,56 +115,70 @@ class _ListPageState extends State<ListPage> {
       trailing: _buildPopupMenu(),
 
       body: Scaffold(
-        body: _isLoading
-            ? const Center(
+        body: StreamBuilder<List<Item>>(
+          stream: FirebaseController().itemsStream(widget.list),
+          builder: (context, snapshot) {
+            // 1. Handle Loading
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
                 child: CircularProgressIndicator(color: AppColors.primary),
-              )
-            : _items.isEmpty
-            ? const Center(
+              );
+            }
+
+            // 2. Handle Errors
+            if (snapshot.hasError) {
+              return Center(child: Text("Error: ${snapshot.error}"));
+            }
+
+            // 3. Handle Data
+            final allItems = snapshot.data ?? [];
+
+            if (allItems.isEmpty) {
+              return const Center(
                 child: Text(
-                  "No items yet. Click the + button to add one!",
+                  "No items yet. Click the + button!",
                   style: AppFonts.blackSubHeadingText,
                 ),
-              )
-            : ListView.builder(
-                itemCount: _categories.length,
-                itemBuilder: (context, categoryIndex) {
-                  final category = _categories[categoryIndex];
-                  final categoryItems = _items
-                      .where((item) => item.categoryId == category.id)
-                      .toList();
+              );
+            }
 
-                  if (categoryItems.isEmpty) {
-                    return const SizedBox.shrink();
-                  }
+            return ListView.builder(
+              itemCount: _categories.length,
+              itemBuilder: (context, categoryIndex) {
+                final category = _categories[categoryIndex];
+                final categoryItems = allItems
+                    .where((item) => item.categoryId == category.id)
+                    .toList();
 
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
-                        ),
-                        child: Text(
-                          category.name,
-                          style: AppFonts.blackCardHeaderText,
-                        ),
+                if (categoryItems.isEmpty) return const SizedBox.shrink();
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
                       ),
-                      ...categoryItems.map((item) {
-                        return ItemCard(
-                          item: item,
-                          list: widget.list,
-                          onChecked: (isChecked) =>
-                              _handleChecked(item, isChecked),
-                          fetchItems: _fetchItems,
-                        );
-                      }),
-                    ],
-                  );
-                },
-              ),
-
+                      child: Text(
+                        category.name,
+                        style: AppFonts.blackCardHeaderText,
+                      ),
+                    ),
+                    ...categoryItems.map((item) {
+                      return ItemCard(
+                        item: item,
+                        list: widget.list,
+                        onChecked: (isChecked) =>
+                            _handleChecked(item, isChecked),
+                      );
+                    }),
+                  ],
+                );
+              },
+            );
+          },
+        ),
         // ---------------------- FLOATING ACTION BUTTON ----------------------
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         floatingActionButton: FloatingActionButton.large(
@@ -189,10 +188,7 @@ class _ListPageState extends State<ListPage> {
             showDialog(
               context: context,
               builder: (BuildContext context) {
-                return AddItemDialog(
-                  list: widget.list,
-                  fetchItems: _fetchItems,
-                );
+                return AddItemDialog(list: widget.list);
               },
             );
           },
@@ -207,15 +203,20 @@ class _ListPageState extends State<ListPage> {
     return PopupMenuButton<ListOptions>(
       onSelected: _handleMenuSelection,
       itemBuilder: (BuildContext context) {
+        final isOwner =
+            FirebaseController().auth.currentUser!.uid == widget.list.owner;
+
         return [
           const PopupMenuItem<ListOptions>(
             value: ListOptions.categories,
             child: Text('Categories'),
           ),
-          const PopupMenuItem<ListOptions>(
-            value: ListOptions.share,
-            child: Text('Share'),
-          ),
+
+          if (isOwner)
+            const PopupMenuItem<ListOptions>(
+              value: ListOptions.share,
+              child: Text('Share'),
+            ),
           const PopupMenuItem<ListOptions>(
             value: ListOptions.clearSelected,
             child: Text('Clear Selected'),
@@ -224,10 +225,16 @@ class _ListPageState extends State<ListPage> {
             value: ListOptions.clearAll,
             child: Text('Clear All'),
           ),
-          const PopupMenuItem<ListOptions>(
-            value: ListOptions.settings,
-            child: Text('Settings'),
-          ),
+          if (isOwner)
+            const PopupMenuItem<ListOptions>(
+              value: ListOptions.settings,
+              child: Text('Settings'),
+            ),
+          if (!isOwner)
+            const PopupMenuItem<ListOptions>(
+              value: ListOptions.leave,
+              child: Text('Leave'),
+            ),
         ];
       },
     );

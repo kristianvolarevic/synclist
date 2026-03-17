@@ -156,6 +156,46 @@ class FirebaseController {
     return user;
   }
 
+  Stream<List<ShoppingList>> userListsStream() {
+    final userId = auth.currentUser?.uid;
+    if (userId == null) {
+      throw CustomExceptions(ExceptionType.userNotFound);
+    }
+
+    return db.collection(userCollection).doc(userId).snapshots().asyncMap((
+      userDoc,
+    ) async {
+      if (!userDoc.exists) return [];
+
+      final listIds = List<String>.from(userDoc.data()?['lists'] ?? []);
+      if (listIds.isEmpty) return [];
+
+      List<ShoppingList> lists = [];
+      for (String id in listIds) {
+        final doc = await db.collection(listCollection).doc(id).get();
+        if (doc.exists) {
+          lists.add(ShoppingList.fromMap(doc.id, doc.data()!));
+        }
+      }
+      return lists;
+    });
+
+    /* return db.collection(userCollection).doc(userId).snapshots().map((doc) {
+      if (!doc.exists) {
+        throw CustomExceptions(ExceptionType.userNotFound);
+      }
+      return UserDetails.fromMap(doc.id, doc.data()!);
+    }); */
+  }
+
+  Future<void> updateUser(UserDetails user) async {
+    try {
+      await db.collection(userCollection).doc(user.id).update(user.toMap());
+    } catch (e) {
+      throw CustomExceptions(ExceptionType.failedToUpdateDatabase);
+    }
+  }
+
   // ----------------------------------------------------------- LIST METHODS -------------------------------------------------------------------------------
 
   // ---------------------- METHOD: Add New List ----------------------
@@ -178,6 +218,15 @@ class FirebaseController {
     } catch (e) {
       throw CustomExceptions(ExceptionType.failedToAddToDatabase);
     }
+  }
+
+  Stream<ShoppingList> streamSingleList(String listId) {
+    return db.collection(listCollection).doc(listId).snapshots().map((doc) {
+      if (!doc.exists) {
+        throw CustomExceptions(ExceptionType.failedToFetchFromDatabase);
+      }
+      return ShoppingList.fromMap(doc.id, doc.data()!);
+    });
   }
 
   // ---------------------- METHOD: Fetch Users Lists ----------------------
@@ -222,6 +271,66 @@ class FirebaseController {
     }
   }
 
+  Future<ShoppingList> fetchListWithId(String listId) async {
+    try {
+      final docRef = await db.collection(listCollection).doc(listId).get();
+
+      if (!docRef.exists) {
+        throw Error();
+      }
+
+      final data = docRef.data()!;
+      ShoppingList list = ShoppingList.fromMap(listId, data);
+
+      return list;
+    } catch (e) {
+      throw CustomExceptions(ExceptionType.failedToFetchFromDatabase);
+    }
+  }
+
+  Future<void> joinListWithId(String listId) async {
+    try {
+      final list = await fetchListWithId(listId);
+      final userId = auth.currentUser?.uid;
+
+      if (userId == null) {
+        throw Error();
+      }
+
+      // Add user to the list
+      list.joinedUsers.add(userId);
+      await db.collection(listCollection).doc(list.id).update(list.toMap());
+
+      // Add list to the user
+      await db.collection(userCollection).doc(auth.currentUser!.uid).update({
+        'lists': FieldValue.arrayUnion([list.id]),
+      });
+    } catch (e) {
+      CustomExceptions(ExceptionType.failedToUpdateDatabase);
+    }
+  }
+
+  Future<void> leaveListWithId(String listId) async {
+    try {
+      final list = await fetchListWithId(listId);
+      final userId = auth.currentUser?.uid;
+
+      if (userId == null) {
+        throw Error();
+      }
+
+      // Remove user from the list
+      list.joinedUsers.remove(userId);
+      await db.collection(listCollection).doc(list.id).update(list.toMap());
+
+      // Remove list from the user
+      await db.collection(userCollection).doc(auth.currentUser!.uid).update({
+        'lists': FieldValue.arrayRemove([list.id]),
+      });
+    } catch (e) {
+      CustomExceptions(ExceptionType.failedToUpdateDatabase);
+    }
+  }
   // ----------------------------------------------------------- CATEGORY METHODS -------------------------------------------------------------------------------
   // ---------------------- METHOD: Add New Category ----------------------
 
@@ -406,6 +515,19 @@ class FirebaseController {
     }
   }
 
+  Stream<List<Item>> itemsStream(ShoppingList list) {
+    return db
+        .collection(listCollection)
+        .doc(list.id)
+        .collection(itemsCollection)
+        .snapshots()
+        .map((snapshot) {
+          return snapshot.docs
+              .map((doc) => Item.fromMap(doc.id, doc.data()))
+              .toList();
+        });
+  }
+
   // ----------------------------------------------------------- HELPER METHODS -------------------------------------------------------------------------------
 
   // ---------------------- METHOD: START TIMER ----------------------
@@ -487,6 +609,52 @@ class FirebaseController {
       'isShared': true,
     });
 
+    list.code = code;
+    list.isShared = true;
+
     return code;
+  }
+
+  Future<void> deleteUniqueCode(ShoppingList list) async {
+    try {
+      // Delete code
+      await db.collection(shareCollection).doc(list.code).delete();
+
+      // Remove share information from list
+      await db.collection(listCollection).doc(list.id).update({
+        'shareCode': '',
+        'isShared': false,
+        'joinedUsers': [],
+      });
+
+      // Remove list from all users
+      for (String userId in list.joinedUsers) {
+        await db.collection(userCollection).doc(userId).update({
+          'lists': FieldValue.arrayRemove([list.id]),
+        });
+      }
+    } catch (e) {
+      throw CustomExceptions(ExceptionType.failedToDeleteFromDatabase);
+    }
+  }
+
+  Future<String> getListIdFromCode(String code) async {
+    try {
+      String cleanCode = code.trim().toUpperCase();
+
+      DocumentSnapshot doc = await db
+          .collection(shareCollection)
+          .doc(cleanCode)
+          .get();
+
+      if (!doc.exists) {
+        throw Error();
+      }
+
+      final data = doc.data() as Map<String, dynamic>;
+      return data['targetListId'] as String;
+    } catch (e) {
+      throw CustomExceptions(ExceptionType.failedToFetchFromDatabase);
+    }
   }
 }

@@ -12,13 +12,8 @@ import 'package:household_groceries/utils/utils.dart';
 
 class AddItemDialog extends StatefulWidget {
   final ShoppingList list;
-  final VoidCallback fetchItems;
 
-  const AddItemDialog({
-    super.key,
-    required this.list,
-    required this.fetchItems,
-  });
+  const AddItemDialog({super.key, required this.list});
 
   @override
   State<AddItemDialog> createState() => _AddItemDialogState();
@@ -77,7 +72,6 @@ class _AddItemDialogState extends State<AddItemDialog> {
       if (!mounted) return;
 
       Navigator.of(context).pop();
-      widget.fetchItems();
     } catch (e) {
       debugPrint("Error adding item: $e");
       if (mounted) {

@@ -13,14 +13,8 @@ import 'package:household_groceries/utils/utils.dart';
 class ItemDialog extends StatefulWidget {
   final Item item;
   final ShoppingList list;
-  final VoidCallback fetchItems;
 
-  const ItemDialog({
-    super.key,
-    required this.item,
-    required this.list,
-    required this.fetchItems,
-  });
+  const ItemDialog({super.key, required this.item, required this.list});
 
   @override
   State<ItemDialog> createState() => _ItemDialogState();
@@ -100,7 +94,6 @@ class _ItemDialogState extends State<ItemDialog> {
       if (!mounted) return;
 
       Navigator.of(context).pop();
-      widget.fetchItems();
     } catch (e) {
       if (mounted) {
         showMessage(context, "Failed to update item: ${e.toString}");
