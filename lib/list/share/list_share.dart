@@ -42,6 +42,39 @@ class _ListShareState extends State<ListShare> {
     }
   }
 
+  void _removeUser(String userId, String name) async {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Remove User"),
+        content: Text("Are you sure you want to remove $name from this list?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(context); // Close dialog
+              setState(() => _isLoading = true);
+              try {
+                await FirebaseController().removeUserFromList(
+                  widget.listId,
+                  userId,
+                );
+              } catch (e) {
+                showMessage(context, "Could not remove user.");
+              } finally {
+                setState(() => _isLoading = false);
+              }
+            },
+            child: const Text("Remove", style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return StatusBarPage(
@@ -141,6 +174,14 @@ class _ListShareState extends State<ListShare> {
                             title: Text(
                               user!.fullName,
                               style: AppFonts.blackCardSubHeadingText,
+                            ),
+                            trailing: IconButton(
+                              icon: const Icon(
+                                Icons.person_remove_outlined,
+                                color: Colors.redAccent,
+                              ),
+                              onPressed: () =>
+                                  _removeUser(userId, user.fullName),
                             ),
                           );
                         },

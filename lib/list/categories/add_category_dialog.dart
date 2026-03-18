@@ -4,13 +4,8 @@ import 'package:household_groceries/utils/utils.dart';
 
 class AddCategoryDialog extends StatefulWidget {
   final ShoppingList list;
-  final VoidCallback fetchCategories;
 
-  const AddCategoryDialog({
-    super.key,
-    required this.list,
-    required this.fetchCategories,
-  });
+  const AddCategoryDialog({super.key, required this.list});
 
   @override
   State<AddCategoryDialog> createState() => _AddCategoryDialogState();
@@ -39,8 +34,6 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
       Navigator.of(context).pop(); // Close the dialog
 
       showMessage(context, "Category added successfully.");
-
-      widget.fetchCategories();
     } catch (e) {
       showMessage(context, "Could not add category: ${e.toString()}");
     }

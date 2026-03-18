@@ -34,24 +34,9 @@ class ListPage extends StatefulWidget {
 }
 
 class _ListPageState extends State<ListPage> {
-  List<Category> _categories = [];
-
   @override
   void initState() {
     super.initState();
-    _fetchCategories();
-  }
-
-  void _fetchCategories() async {
-    final categories = await loadCategories(context, widget.list);
-
-    if (categories == null) {
-      return;
-    }
-
-    setState(() {
-      _categories = categories;
-    });
   }
 
   void _handleChecked(Item item, bool? isChecked) async {
@@ -104,97 +89,152 @@ class _ListPageState extends State<ListPage> {
 
   @override
   Widget build(BuildContext context) {
-    return StatusBarPage(
-      title: widget.list.name,
-      leading: IconButton(
-        onPressed: () => Navigator.pop(context),
-        icon: const Icon(Icons.arrow_back_ios, size: 20),
-      ),
+    final currentUserId = FirebaseController().auth.currentUser!.uid;
 
-      // ---------------------- Right side menu for list options ----------------------
-      trailing: _buildPopupMenu(),
+    return StreamBuilder(
+      stream: FirebaseController().streamSingleList(widget.list.id),
+      builder: (context, listSnapshot) {
+        if (listSnapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(color: AppColors.primary),
+          );
+        }
 
-      body: Scaffold(
-        body: StreamBuilder<List<Item>>(
-          stream: FirebaseController().itemsStream(widget.list),
-          builder: (context, snapshot) {
-            // 1. Handle Loading
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: CircularProgressIndicator(color: AppColors.primary),
-              );
-            }
+        if (!listSnapshot.hasData) return const SizedBox.shrink();
 
-            // 2. Handle Errors
-            if (snapshot.hasError) {
-              return Center(child: Text("Error: ${snapshot.error}"));
-            }
+        final liveList = listSnapshot.data!;
 
-            // 3. Handle Data
-            final allItems = snapshot.data ?? [];
+        // KICK LOGIC
+        final isOwner = liveList.owner == currentUserId;
+        final isJoined = liveList.joinedUsers.contains(currentUserId);
 
-            if (allItems.isEmpty) {
-              return const Center(
-                child: Text(
-                  "No items yet. Click the + button!",
-                  style: AppFonts.blackSubHeadingText,
-                ),
-              );
-            }
+        if (!isOwner && !isJoined) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            Navigator.of(context).popUntil((route) => route.isFirst);
+            showMessage(context, "You no longer have access to this list.");
+          });
+          const SizedBox.shrink();
+        }
 
-            return ListView.builder(
-              itemCount: _categories.length,
-              itemBuilder: (context, categoryIndex) {
-                final category = _categories[categoryIndex];
-                final categoryItems = allItems
-                    .where((item) => item.categoryId == category.id)
-                    .toList();
+        // List Page
+        return StatusBarPage(
+          title: widget.list.name,
+          leading: IconButton(
+            onPressed: () => Navigator.pop(context),
+            icon: const Icon(Icons.arrow_back_ios, size: 20),
+          ),
 
-                if (categoryItems.isEmpty) return const SizedBox.shrink();
+          // ---------------------- Right side menu for list options ----------------------
+          trailing: _buildPopupMenu(),
 
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
-                      child: Text(
-                        category.name,
-                        style: AppFonts.blackCardHeaderText,
-                      ),
-                    ),
-                    ...categoryItems.map((item) {
-                      return ItemCard(
-                        item: item,
-                        list: widget.list,
-                        onChecked: (isChecked) =>
-                            _handleChecked(item, isChecked),
+          body: Scaffold(
+            body: StreamBuilder(
+              stream: FirebaseController().categoriesStream(widget.list),
+              builder: (context, categorySnapshot) {
+                if (!categorySnapshot.hasData) {
+                  return const Center(
+                    child: CircularProgressIndicator(color: AppColors.primary),
+                  );
+                }
+
+                final categories = categorySnapshot.data!;
+
+                return StreamBuilder<List<Item>>(
+                  stream: FirebaseController().itemsStream(widget.list),
+                  builder: (context, snapshot) {
+                    // 1. Handle Loading
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(
+                        child: CircularProgressIndicator(
+                          color: AppColors.primary,
+                        ),
                       );
-                    }),
-                  ],
+                    }
+
+                    // 2. Handle Errors
+                    if (snapshot.hasError) {
+                      return Center(child: Text("Error: ${snapshot.error}"));
+                    }
+
+                    // 3. Check if user has access
+                    final currentUser =
+                        FirebaseController().auth.currentUser!.uid;
+                    if (!widget.list.joinedUsers.contains(currentUser) &&
+                        widget.list.owner != currentUser) {
+                      Navigator.pop(context);
+                    }
+
+                    // 4. Handle Data
+                    final allItems = snapshot.data ?? [];
+
+                    if (allItems.isEmpty) {
+                      return const Center(
+                        child: Text(
+                          "No items yet. Click the + button!",
+                          style: AppFonts.blackSubHeadingText,
+                        ),
+                      );
+                    }
+
+                    return ListView.builder(
+                      itemCount: categories.length,
+                      itemBuilder: (context, categoryIndex) {
+                        final category = categories[categoryIndex];
+                        final categoryItems = allItems
+                            .where((item) => item.categoryId == category.id)
+                            .toList();
+
+                        if (categoryItems.isEmpty)
+                          return const SizedBox.shrink();
+
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 8,
+                              ),
+                              child: Text(
+                                category.name,
+                                style: AppFonts.blackCardHeaderText,
+                              ),
+                            ),
+                            ...categoryItems.map((item) {
+                              return ItemCard(
+                                item: item,
+                                list: widget.list,
+                                onChecked: (isChecked) =>
+                                    _handleChecked(item, isChecked),
+                              );
+                            }),
+                          ],
+                        );
+                      },
+                    );
+                  },
                 );
               },
-            );
-          },
-        ),
-        // ---------------------- FLOATING ACTION BUTTON ----------------------
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: FloatingActionButton.large(
-          foregroundColor: Colors.white,
-          backgroundColor: AppColors.contrast,
-          onPressed: () {
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AddItemDialog(list: widget.list);
+            ),
+            // ---------------------- FLOATING ACTION BUTTON ----------------------
+            floatingActionButtonLocation:
+                FloatingActionButtonLocation.centerFloat,
+            floatingActionButton: FloatingActionButton.large(
+              foregroundColor: Colors.white,
+              backgroundColor: AppColors.contrast,
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AddItemDialog(list: widget.list);
+                  },
+                );
               },
-            );
-          },
-          child: const Icon(Icons.add),
-        ),
-      ),
+              child: const Icon(Icons.add),
+            ),
+          ),
+        );
+      },
     );
   }
 

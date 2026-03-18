@@ -2,6 +2,7 @@
 // IMPORTS
 // --------------------------------------------------------------------------------------------
 // Flutter Imports
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 // App Imports
@@ -25,31 +26,6 @@ class Categories extends StatefulWidget {
 }
 
 class _CategoriesState extends State<Categories> {
-  List<Category> _categories = [];
-  bool _isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _fetchCategories();
-  }
-
-  void _fetchCategories() async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    final categories = await loadCategories(context, widget.list);
-
-    setState(() {
-      _isLoading = false;
-    });
-
-    if (categories != null) {
-      _categories = categories;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return StatusBarPage(
@@ -60,77 +36,86 @@ class _CategoriesState extends State<Categories> {
         },
         icon: const Icon(Icons.arrow_back_ios, size: 20),
       ),
-      body: Scaffold(
-        body: _isLoading
-            ? const Center(
-                child: CircularProgressIndicator(color: AppColors.primary),
-              )
-            : _categories.isEmpty
-            ? const Center(
-                child: Text(
-                  "No categories yet. Click the + button to add one!",
-                  style: AppFonts.blackSubHeadingText,
-                  textAlign: TextAlign.center,
-                ),
-              )
-            : ReorderableListView.builder(
-                itemCount: _categories.length,
-                onReorder: (oldIndex, newIndex) {
-                  setState(() {
-                    if (newIndex > oldIndex) {
-                      newIndex -= 1;
-                    }
-                    final Category item = _categories.removeAt(oldIndex);
-                    _categories.insert(newIndex, item);
-                  });
+      body: StreamBuilder(
+        stream: FirebaseController().categoriesStream(widget.list),
+        builder: (context, categorySnapshot) {
+          if (categorySnapshot.connectionState == ConnectionState.waiting ||
+              !categorySnapshot.hasData) {
+            const Center(
+              child: CircularProgressIndicator(color: AppColors.primary),
+            );
+          }
 
-                  // Save the new order to shared preferences
-                  SharedPreferencesController().saveCategoriesOrder(
-                    _categories,
-                    widget.list.id,
-                  );
-                },
-                itemBuilder: (context, index) {
-                  final category = _categories[index];
-                  return CategoryCard(
-                    key: ValueKey(category.id),
-                    category: category,
-                    list: widget.list,
-                    index: index,
-                  );
-                },
+          final categories = categorySnapshot.data!;
+          if (categories.isEmpty) {
+            const Center(
+              child: Text(
+                "No categories yet. Click the + button to add one!",
+                style: AppFonts.blackSubHeadingText,
+                textAlign: TextAlign.center,
               ),
+            );
+          }
 
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: SizedBox(
-          width: 75,
-          height: 75,
-          child: FittedBox(
-            child: FloatingActionButton.large(
-              foregroundColor: Colors.white, // Match background color
-              backgroundColor: AppColors.contrast,
-              onPressed: () {
-                // ---------------------------------------------------------------------------------------- ADD NEW LIST DIALOG
-                /* showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AddListDialog(fetchLists: _fetchLists);
-                  },
-                ); */
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AddCategoryDialog(
-                      list: widget.list,
-                      fetchCategories: _fetchCategories,
-                    );
-                  },
+          return Scaffold(
+            body: ReorderableListView.builder(
+              itemCount: categories.length,
+              onReorder: (oldIndex, newIndex) {
+                setState(() {
+                  if (newIndex > oldIndex) {
+                    newIndex -= 1;
+                  }
+                  final Category item = categories.removeAt(oldIndex);
+                  categories.insert(newIndex, item);
+                });
+
+                // Save the new order to shared preferences
+                SharedPreferencesController().saveCategoriesOrder(
+                  categories,
+                  widget.list.id,
                 );
               },
-              child: Icon(Icons.add),
+              itemBuilder: (context, index) {
+                final category = categories[index];
+                return CategoryCard(
+                  key: ValueKey(category.id),
+                  category: category,
+                  list: widget.list,
+                  index: index,
+                );
+              },
             ),
-          ),
-        ),
+
+            floatingActionButtonLocation:
+                FloatingActionButtonLocation.centerFloat,
+            floatingActionButton: SizedBox(
+              width: 75,
+              height: 75,
+              child: FittedBox(
+                child: FloatingActionButton.large(
+                  foregroundColor: Colors.white, // Match background color
+                  backgroundColor: AppColors.contrast,
+                  onPressed: () {
+                    // ---------------------------------------------------------------------------------------- ADD NEW LIST DIALOG
+                    /* showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AddListDialog(fetchLists: _fetchLists);
+                      },
+                    ); */
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AddCategoryDialog(list: widget.list);
+                      },
+                    );
+                  },
+                  child: Icon(Icons.add),
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }

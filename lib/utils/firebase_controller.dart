@@ -331,6 +331,22 @@ class FirebaseController {
       CustomExceptions(ExceptionType.failedToUpdateDatabase);
     }
   }
+
+  // ---------------------- METHOD: Remove User From List ----------------------
+  Future<void> removeUserFromList(String listId, String userId) async {
+    try {
+      await db.collection(listCollection).doc(listId).update({
+        'joinedUsers': FieldValue.arrayRemove([userId]),
+      });
+
+      await db.collection(userCollection).doc(userId).update({
+        'lists': FieldValue.arrayRemove([listId]),
+      });
+    } catch (e) {
+      throw CustomExceptions(ExceptionType.failedToDeleteFromDatabase);
+    }
+  }
+
   // ----------------------------------------------------------- CATEGORY METHODS -------------------------------------------------------------------------------
   // ---------------------- METHOD: Add New Category ----------------------
 
@@ -386,6 +402,20 @@ class FirebaseController {
     } catch (e) {
       throw CustomExceptions(ExceptionType.failedToFetchFromDatabase);
     }
+  }
+
+  // ---------------------- METHOD: Categories Stream ----------------------
+  Stream<List<Category>> categoriesStream(ShoppingList list) {
+    return db
+        .collection(listCollection)
+        .doc(list.id)
+        .collection(categoriesCollection)
+        .snapshots()
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => Category.fromMap(doc.id, doc.data()))
+              .toList(),
+        );
   }
 
   // ----------------------------------------------------------- ITEM METHODS -------------------------------------------------------------------------------
