@@ -2,7 +2,6 @@
 // IMPORTS
 // --------------------------------------------------------------------------------------------
 // Flutter Imports
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 // App Imports
@@ -10,11 +9,11 @@ import 'package:household_groceries/models/shopping_list.dart';
 import 'package:household_groceries/common_widgets/status_bar_page.dart';
 import 'package:household_groceries/utils/utils.dart';
 import 'package:household_groceries/list/categories/categories.dart';
-import 'package:household_groceries/models/category.dart';
 import 'package:household_groceries/models/item.dart';
 import 'package:household_groceries/list/add_item_dialog.dart';
 import 'package:household_groceries/list/item_card.dart';
 import 'package:household_groceries/list/share/list_share.dart';
+import 'package:household_groceries/list/list_settings.dart';
 
 // --------------------------------------------------------------------------------------------
 // ENUM: LIST OPTIONS
@@ -39,23 +38,6 @@ class _ListPageState extends State<ListPage> {
     super.initState();
   }
 
-  void _handleChecked(Item item, bool? isChecked) async {
-    try {
-      await FirebaseController().updateItemCollectedStatus(
-        widget.list,
-        item,
-        isChecked ?? false,
-      );
-      setState(() {
-        item.isCollected = isChecked ?? false;
-      });
-    } catch (e) {
-      if (mounted) {
-        showMessage(context, "Error updating item status: ${e.toString}");
-      }
-    }
-  }
-
   // ---------------------- METHOD: HANDLE MENU SELECTION ----------------------
   void _handleMenuSelection(ListOptions value) async {
     switch (value) {
@@ -78,7 +60,10 @@ class _ListPageState extends State<ListPage> {
         await FirebaseController().clearAllItems(widget.list);
         break;
       case ListOptions.settings:
-        // TODO: Handle Settings
+        Navigator.push(
+          context,
+          slideTransitionRoute(ListSettings(listId: widget.list.id)),
+        );
         break;
       case ListOptions.leave:
         Navigator.pop(context);
@@ -184,8 +169,9 @@ class _ListPageState extends State<ListPage> {
                             .where((item) => item.categoryId == category.id)
                             .toList();
 
-                        if (categoryItems.isEmpty)
+                        if (categoryItems.isEmpty) {
                           return const SizedBox.shrink();
+                        }
 
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -201,12 +187,7 @@ class _ListPageState extends State<ListPage> {
                               ),
                             ),
                             ...categoryItems.map((item) {
-                              return ItemCard(
-                                item: item,
-                                list: widget.list,
-                                onChecked: (isChecked) =>
-                                    _handleChecked(item, isChecked),
-                              );
+                              return ItemCard(item: item, list: liveList);
                             }),
                           ],
                         );

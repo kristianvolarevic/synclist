@@ -5,6 +5,7 @@ class ShoppingList {
   List<String> joinedUsers;
   String code;
   bool isShared;
+  bool automaticDeletion;
 
   ShoppingList({
     required this.id,
@@ -13,6 +14,7 @@ class ShoppingList {
     this.joinedUsers = const [],
     this.code = '',
     this.isShared = false,
+    this.automaticDeletion = false,
   });
 
   // Convert ShoppingList to Map for Firestore
@@ -23,6 +25,7 @@ class ShoppingList {
       'joinedUsers': joinedUsers,
       'code': code,
       'isShared': isShared,
+      'automaticDeletion': automaticDeletion,
     };
   }
 
@@ -37,6 +40,7 @@ class ShoppingList {
       joinedUsers: List<String>.from(map['joinedUsers'] ?? []),
       code: map['shareCode'] ?? '',
       isShared: map['isShared'] ?? false,
+      automaticDeletion: map['automaticDeletion'] ?? false,
     );
   }
 }

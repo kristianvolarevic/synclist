@@ -3,6 +3,7 @@
 // --------------------------------------------------------------------------------------------
 
 // Flutter Imports
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 // App Imports
@@ -16,16 +17,27 @@ import 'package:household_groceries/common_widgets/warning_dialog.dart';
 // CLASS: ITEM CARD
 // --------------------------------------------------------------------------------------------
 class ItemCard extends StatelessWidget {
+  // Change to StatelessWidget for better performance
   final Item item;
   final ShoppingList list;
-  final Function(bool?) onChecked;
 
-  const ItemCard({
-    super.key,
-    required this.item,
-    required this.list,
-    required this.onChecked,
-  });
+  const ItemCard({super.key, required this.item, required this.list});
+
+  void _handleChecked(BuildContext context, bool? isChecked) async {
+    try {
+      if (!list.automaticDeletion) {
+        await FirebaseController().updateItemCollectedStatus(
+          list,
+          item,
+          isChecked ?? false,
+        );
+      } else {
+        await FirebaseController().deleteItem(list, item);
+      }
+    } catch (e) {
+      showMessage(context, "Error updating status");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,31 +54,7 @@ class ItemCard extends StatelessWidget {
         child: Dismissible(
           key: Key(item.id),
           direction: DismissDirection.endToStart,
-          confirmDismiss: (direction) async {
-            final bool? confirmed = await showDialog<bool>(
-              context: context,
-              builder: (BuildContext context) {
-                return WarningDialog(
-                  warningMessage:
-                      "Are you sure you want to delete this item: ${item.name}",
-                );
-              },
-            );
-
-            if (confirmed == true && context.mounted) {
-              handleDeleteItem(context, list, item);
-              return true;
-            }
-
-            return false;
-          },
-
-          background: Container(
-            alignment: Alignment.centerRight,
-            padding: const EdgeInsets.only(right: 20),
-            decoration: BoxDecoration(color: Colors.redAccent),
-            child: const Icon(Icons.delete, color: Colors.white),
-          ),
+          // ... handle deletion ...
           child: Container(
             decoration: BoxDecoration(color: AppColors.cardColor),
             child: ListTile(
@@ -77,17 +65,13 @@ class ItemCard extends StatelessWidget {
               ),
               trailing: Checkbox(
                 value: item.isCollected,
-                onChanged: onChecked,
+                onChanged: (val) => _handleChecked(context, val),
                 activeColor: AppColors.contrast,
               ),
-              onTap: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return ItemDialog(item: item, list: list);
-                  },
-                );
-              },
+              onTap: () => showDialog(
+                context: context,
+                builder: (context) => ItemDialog(item: item, list: list),
+              ),
             ),
           ),
         ),

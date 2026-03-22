@@ -332,6 +332,14 @@ class FirebaseController {
     }
   }
 
+  Future<void> updateList(ShoppingList list) async {
+    try {
+      await db.collection(listCollection).doc(list.id).update(list.toMap());
+    } catch (e) {
+      throw CustomExceptions(ExceptionType.failedToUpdateDatabase);
+    }
+  }
+
   // ---------------------- METHOD: Remove User From List ----------------------
   Future<void> removeUserFromList(String listId, String userId) async {
     try {
