@@ -12,13 +12,12 @@ import 'package:household_groceries/list/categories/categories.dart';
 import 'package:household_groceries/models/item.dart';
 import 'package:household_groceries/list/add_item_dialog.dart';
 import 'package:household_groceries/list/item_card.dart';
-import 'package:household_groceries/list/share/list_share.dart';
 import 'package:household_groceries/list/list_settings.dart';
 
 // --------------------------------------------------------------------------------------------
 // ENUM: LIST OPTIONS
 // --------------------------------------------------------------------------------------------
-enum ListOptions { categories, share, clearSelected, clearAll, settings, leave }
+enum ListOptions { categories, clearSelected, clearAll, settings, leave }
 
 // --------------------------------------------------------------------------------------------
 // CLASS: LIST PAGE
@@ -45,12 +44,6 @@ class _ListPageState extends State<ListPage> {
         Navigator.push(
           context,
           slideTransitionRoute(Categories(list: widget.list)),
-        );
-        break;
-      case ListOptions.share:
-        Navigator.push(
-          context,
-          slideTransitionRoute(ListShare(listId: widget.list.id)),
         );
         break;
       case ListOptions.clearSelected:
@@ -232,12 +225,6 @@ class _ListPageState extends State<ListPage> {
             value: ListOptions.categories,
             child: Text('Categories'),
           ),
-
-          if (isOwner)
-            const PopupMenuItem<ListOptions>(
-              value: ListOptions.share,
-              child: Text('Share'),
-            ),
           const PopupMenuItem<ListOptions>(
             value: ListOptions.clearSelected,
             child: Text('Clear Selected'),
