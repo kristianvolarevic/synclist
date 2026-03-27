@@ -51,27 +51,25 @@ class ItemCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(12),
-        child: Dismissible(
-          key: Key(item.id),
-          direction: DismissDirection.endToStart,
-          // ... handle deletion ...
-          child: Container(
-            decoration: BoxDecoration(color: AppColors.cardColor),
-            child: ListTile(
-              title: Text(item.name, style: AppFonts.blackCardHeaderText),
-              leading: Text(
-                "$amountDisplay$unitSuffix",
-                style: AppFonts.blackCardSubHeadingText,
-              ),
-              trailing: Checkbox(
-                value: item.isCollected,
-                onChanged: (val) => _handleChecked(context, val),
-                activeColor: AppColors.contrast,
-              ),
-              onTap: () => showDialog(
-                context: context,
-                builder: (context) => ItemDialog(item: item, list: list),
-              ),
+
+        key: Key(item.id),
+
+        child: Container(
+          decoration: BoxDecoration(color: AppColors.cardColor),
+          child: ListTile(
+            title: Text(item.name, style: AppFonts.blackCardHeaderText),
+            leading: Text(
+              "$amountDisplay$unitSuffix",
+              style: AppFonts.blackCardSubHeadingText,
+            ),
+            trailing: Checkbox(
+              value: item.isCollected,
+              onChanged: (val) => _handleChecked(context, val),
+              activeColor: AppColors.contrast,
+            ),
+            onTap: () => showDialog(
+              context: context,
+              builder: (context) => ItemDialog(item: item, list: list),
             ),
           ),
         ),

@@ -4,7 +4,7 @@ class UserDetails {
   String id;
   String email;
   String fullName;
-  List<ShoppingList> lists = [];
+  List<String> lists = [];
 
   UserDetails({required this.id, required this.email, required this.fullName});
 
@@ -13,6 +13,14 @@ class UserDetails {
   }
 
   factory UserDetails.fromMap(String id, Map<String, dynamic> map) {
-    return UserDetails(id: id, email: map['email'], fullName: map['fullName']);
+    final user = UserDetails(
+      id: id,
+      email: map['email'],
+      fullName: map['fullName'],
+    );
+
+    user.lists = List<String>.from(map['lists'] ?? []);
+
+    return user;
   }
 }

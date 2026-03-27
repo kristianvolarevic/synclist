@@ -196,6 +196,15 @@ class FirebaseController {
     }
   }
 
+  Stream<UserDetails> userDetailsStream(String userID) {
+    return db.collection(userCollection).doc(userID).snapshots().map((doc) {
+      if (!doc.exists) {
+        throw CustomExceptions(ExceptionType.failedToFetchFromDatabase);
+      }
+      return UserDetails.fromMap(doc.id, doc.data()!);
+    });
+  }
+
   // ----------------------------------------------------------- LIST METHODS -------------------------------------------------------------------------------
 
   // ---------------------- METHOD: Add New List ----------------------

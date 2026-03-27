@@ -9,6 +9,7 @@ import 'package:household_groceries/home/add_list_dialog.dart';
 // App Imports
 import 'package:household_groceries/utils/utils.dart';
 import 'package:household_groceries/common_widgets/list_card.dart';
+import 'package:household_groceries/profile.dart';
 
 // --------------------------------------------------------------------------------------------
 // CLASS: HOME
@@ -35,7 +36,7 @@ class _HomeState extends State<Home> {
       title: "Home",
       leading: IconButton(
         onPressed: () {
-          print("Profile button pressed");
+          Navigator.push(context, slideTransitionRoute(Profile()));
         },
         icon: const Icon(Icons.account_circle, size: 30),
       ),

@@ -4,6 +4,9 @@
 // Flutter Imports
 import 'package:flutter/material.dart';
 
+// App Imports
+import 'package:household_groceries/utils/utils.dart';
+
 class WarningDialog extends StatefulWidget {
   final String warningMessage;
 
@@ -24,12 +27,20 @@ class _WarningDialogState extends State<WarningDialog> {
           onPressed: () {
             Navigator.pop(context, true);
           },
+          style: TextButton.styleFrom(
+            textStyle: AppFonts.blackSubHeadingText,
+            foregroundColor: AppColors.primary,
+          ),
           child: const Text("Yes"),
         ),
-        TextButton(
+        ElevatedButton(
           onPressed: () {
             Navigator.pop(context, false);
           },
+          style: TextButton.styleFrom(
+            textStyle: AppFonts.blackSubHeadingText,
+            foregroundColor: AppColors.primary,
+          ),
           child: const Text("No"),
         ),
       ],
