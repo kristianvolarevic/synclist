@@ -3,7 +3,6 @@
 // --------------------------------------------------------------------------------------------
 
 // Flutter Imports
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 // App Imports
@@ -11,7 +10,6 @@ import 'package:household_groceries/models/item.dart';
 import 'package:household_groceries/models/shopping_list.dart';
 import 'package:household_groceries/utils/utils.dart';
 import 'package:household_groceries/list/item_dialog.dart';
-import 'package:household_groceries/common_widgets/warning_dialog.dart';
 
 // --------------------------------------------------------------------------------------------
 // CLASS: ITEM CARD
@@ -35,6 +33,9 @@ class ItemCard extends StatelessWidget {
         await FirebaseController().deleteItem(list, item);
       }
     } catch (e) {
+      if (!context.mounted) {
+        return;
+      }
       showMessage(context, "Error updating status");
     }
   }

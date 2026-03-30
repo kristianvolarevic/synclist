@@ -1,5 +1,3 @@
-import 'shopping_list.dart';
-
 class UserDetails {
   String id;
   String email;

@@ -27,7 +27,6 @@ class ListSettings extends StatefulWidget {
 class _ListSettingsState extends State<ListSettings> {
   // ----------------- METHOD: HANDLE AUTOMATIC DELETION SWITCH ---------------
   void _handleAutomaticDeltionSwitch(ShoppingList list) async {
-    print('test');
     try {
       await FirebaseController().updateList(list);
     } catch (e) {
@@ -39,7 +38,7 @@ class _ListSettingsState extends State<ListSettings> {
   void _toggleShare(ShoppingList list) async {
     try {
       if (!list.isShared) {
-        final code = await FirebaseController().generateUniqueCode(list);
+        await FirebaseController().generateUniqueCode(list);
       } else {
         await FirebaseController().deleteUniqueCode(list);
       }
@@ -69,6 +68,7 @@ class _ListSettingsState extends State<ListSettings> {
                   userId,
                 );
               } catch (e) {
+                if (!context.mounted) return;
                 showMessage(context, "Could not remove user.");
               }
             },
