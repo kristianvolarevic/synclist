@@ -4,7 +4,7 @@
 // Flutter Imports
 import 'package:flutter/material.dart';
 import 'package:household_groceries/common_widgets/list_card.dart';
-import 'package:image_picker/image_picker.dart';
+//import 'package:image_picker/image_picker.dart';
 
 // App Imports
 import 'package:household_groceries/common_widgets/status_bar_page.dart';
@@ -21,15 +21,15 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
-  Future<void> _pickImage() async {
+  // Leave this here for now, will implement in the future when we have a backend to upload the image to
+  /* Future<void> _pickImage() async {
     final ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
 
     if (image != null) {
-      // TODO: Implement image upload and update user profile picture in Firebase
       print("Selected image path: ${image.path}");
     }
-  }
+  } */
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +61,7 @@ class _ProfileState extends State<Profile> {
                     clipBehavior: Clip.none,
                     children: [
                       Icon(Icons.account_circle, size: 100),
-                      Positioned(
+                      /* Positioned(
                         bottom: 0,
                         right: -10,
                         child: ElevatedButton(
@@ -76,7 +76,7 @@ class _ProfileState extends State<Profile> {
                             color: Colors.black,
                           ),
                         ),
-                      ),
+                      ), */
                     ],
                   ),
                 ),
