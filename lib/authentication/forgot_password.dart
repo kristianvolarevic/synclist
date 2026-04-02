@@ -126,7 +126,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                       key: const ValueKey('email'),
                       decoration: InputDecoration(
                         labelText: 'Email Address',
-                        labelStyle: AppFonts.blackTextFieldUnfocussed,
+                        labelStyle: AppFonts.textUnfocused(context),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),

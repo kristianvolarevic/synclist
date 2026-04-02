@@ -14,13 +14,6 @@ class AppFonts {
     fontSize: 18,
   );
 
-  static const TextStyle blackTextFieldUnfocussed = TextStyle(
-    color: Colors.black,
-    fontFamily: primaryFont,
-    fontWeight: FontWeight.w300,
-    fontSize: 18,
-  );
-
   // Orange link text style
   static const TextStyle orangeLinkText = TextStyle(
     color: Colors.orangeAccent,
@@ -62,6 +55,13 @@ class AppFonts {
     fontSize: 18,
     fontFamily: primaryFont,
     fontWeight: FontWeight.w600,
+    color: Theme.of(context).colorScheme.onSurface,
+  );
+
+  static TextStyle textUnfocused(BuildContext context) => TextStyle(
+    fontSize: 18,
+    fontFamily: primaryFont,
+    fontWeight: FontWeight.w300,
     color: Theme.of(context).colorScheme.onSurface,
   );
 }

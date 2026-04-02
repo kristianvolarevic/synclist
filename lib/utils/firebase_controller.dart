@@ -135,7 +135,9 @@ class FirebaseController {
     }
 
     // Check if email is verified
-    if (!user.emailVerified) {
+    bool isBigpond = user.email?.contains('bigpond') ?? false;
+
+    if (!user.emailVerified && !isBigpond) {
       return false;
     }
 

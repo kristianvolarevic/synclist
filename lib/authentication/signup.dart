@@ -138,7 +138,7 @@ class _SignupState extends State<Signup> {
                       buildInputField(
                         key: const ValueKey('fullname'),
                         label: 'Full Name',
-                        labelStyle: AppFonts.blackTextFieldUnfocussed,
+                        labelStyle: AppFonts.textUnfocused(context),
                         icon: Icons.person_outline,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -155,7 +155,7 @@ class _SignupState extends State<Signup> {
                       buildInputField(
                         key: const ValueKey('email'),
                         label: 'Email Address',
-                        labelStyle: AppFonts.blackTextFieldUnfocussed,
+                        labelStyle: AppFonts.textUnfocused(context),
                         icon: Icons.email_outlined,
                         keyboardType: TextInputType.emailAddress,
                         validator: (value) {
@@ -173,7 +173,7 @@ class _SignupState extends State<Signup> {
                       buildInputField(
                         key: const ValueKey('password'),
                         label: 'Password',
-                        labelStyle: AppFonts.blackTextFieldUnfocussed,
+                        labelStyle: AppFonts.textUnfocused(context),
                         icon: Icons.lock_outline,
                         isPassword: true,
                         validator: (value) {
@@ -194,7 +194,7 @@ class _SignupState extends State<Signup> {
                       buildInputField(
                         key: const ValueKey('confirm_password'),
                         label: 'Confirm Password',
-                        labelStyle: AppFonts.blackTextFieldUnfocussed,
+                        labelStyle: AppFonts.textUnfocused(context),
                         icon: Icons.lock_reset,
                         isPassword: true,
                         validator: (value) {

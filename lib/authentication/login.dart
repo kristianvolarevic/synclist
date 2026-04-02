@@ -96,7 +96,7 @@ class _LoginState extends State<Login> {
                       key: const ValueKey('email'),
                       decoration: InputDecoration(
                         labelText: 'Email Address',
-                        labelStyle: AppFonts.blackTextFieldUnfocussed,
+                        labelStyle: AppFonts.textUnfocused(context),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
@@ -121,7 +121,7 @@ class _LoginState extends State<Login> {
                       key: const ValueKey('password'),
                       decoration: InputDecoration(
                         labelText: 'Password',
-                        labelStyle: AppFonts.blackTextFieldUnfocussed,
+                        labelStyle: AppFonts.textUnfocused(context),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
