@@ -47,10 +47,10 @@ class _CategoriesState extends State<Categories> {
 
           final categories = categorySnapshot.data!;
           if (categories.isEmpty) {
-            const Center(
+            Center(
               child: Text(
                 "No categories yet. Click the + button to add one!",
-                style: AppFonts.blackSubHeadingText,
+                style: AppFonts.subHeadingText(context),
                 textAlign: TextAlign.center,
               ),
             );
@@ -93,7 +93,7 @@ class _CategoriesState extends State<Categories> {
               child: FittedBox(
                 child: FloatingActionButton.large(
                   foregroundColor: Colors.white, // Match background color
-                  backgroundColor: AppColors.contrast,
+                  backgroundColor: AppColors.secondary(context),
                   onPressed: () {
                     // ---------------------------------------------------------------------------------------- ADD NEW LIST DIALOG
                     /* showDialog(

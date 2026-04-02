@@ -611,8 +611,8 @@ class FirebaseController {
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        title: Text(title, style: AppFonts.blackHeaderText),
-        content: Text(text, style: AppFonts.blackSubHeadingText),
+        title: Text(title, style: AppFonts.headerText(context)),
+        content: Text(text, style: AppFonts.subHeadingText(context)),
         actions: [
           TextButton(
             onPressed: () {

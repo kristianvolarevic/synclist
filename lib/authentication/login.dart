@@ -76,9 +76,9 @@ class _LoginState extends State<Login> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     // ---------------------------------------------------------------------------------------- HEADER
-                    const Text(
+                    Text(
                       "Login to your account",
-                      style: AppFonts.blackHeaderText,
+                      style: AppFonts.headerText(context),
                     ),
 
                     const SizedBox(height: 10),
@@ -86,7 +86,7 @@ class _LoginState extends State<Login> {
                     // ---------------------------------------------------------------------------------------- SUBHEADER
                     Text(
                       "Welcome back! Please enter your details.",
-                      style: AppFonts.blackSubHeadingText,
+                      style: AppFonts.subHeadingText(context),
                     ),
 
                     const SizedBox(height: 40),
@@ -183,7 +183,7 @@ class _LoginState extends State<Login> {
                       children: <Widget>[
                         Text(
                           "Don't have an account?",
-                          style: AppFonts.blackSubHeadingText,
+                          style: AppFonts.subHeadingText(context),
                         ),
                         TextButton(
                           onPressed: () {

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'colors.dart';
 
 class AppFonts {
   AppFonts._();
@@ -22,57 +21,9 @@ class AppFonts {
     fontSize: 18,
   );
 
-  // Black header text style
-  static const TextStyle blackHeaderText = TextStyle(
-    fontSize: 30,
-    fontFamily: primaryFont,
-    fontWeight: FontWeight.bold,
-    color: Colors.black,
-  );
-
-  // Black card header text style
-  static const TextStyle blackCardHeaderText = TextStyle(
-    fontSize: 20,
-    fontFamily: primaryFont,
-    fontWeight: FontWeight.bold,
-    color: Colors.black,
-  );
-
-  // White header text style
-  static const TextStyle whiteHeaderText = TextStyle(
-    fontSize: 30,
-    fontFamily: primaryFont,
-    fontWeight: FontWeight.bold,
-    color: Colors.white,
-  );
-
-  // Black sub-heading text style
-  static const TextStyle blackSubHeadingText = TextStyle(
-    fontSize: 15,
-    fontFamily: primaryFont,
-    fontWeight: FontWeight.w600,
-    color: AppColors.grey700,
-  );
-
-  // Black card sub-heading text style
-  static const TextStyle blackCardSubHeadingText = TextStyle(
-    fontSize: 12,
-    fontFamily: primaryFont,
-    fontWeight: FontWeight.w600,
-    color: AppColors.grey700,
-  );
-
-  // White sub-heading text style
-  static const TextStyle whiteSubHeadingText = TextStyle(
-    fontSize: 15,
-    fontFamily: primaryFont,
-    fontWeight: FontWeight.normal,
-    color: Colors.white70,
-  );
-
   // Orange link text style
   static const TextStyle orangeLinkText = TextStyle(
-    color: AppColors.contrast,
+    color: Colors.orangeAccent,
     fontFamily: primaryFont,
     fontWeight: FontWeight.bold,
     fontSize: 15,
@@ -84,5 +35,33 @@ class AppFonts {
     fontFamily: primaryFont,
     fontWeight: FontWeight.bold,
     fontSize: 22,
+  );
+
+  static TextStyle cardHeaderText(BuildContext context) => TextStyle(
+    fontSize: 20,
+    fontFamily: primaryFont,
+    fontWeight: FontWeight.bold,
+    color: Theme.of(context).colorScheme.onSurface,
+  );
+
+  static TextStyle cardSubHeadingText(BuildContext context) => TextStyle(
+    fontSize: 15,
+    fontFamily: primaryFont,
+    fontWeight: FontWeight.w600,
+    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+  );
+
+  static TextStyle headerText(BuildContext context) => TextStyle(
+    fontSize: 30,
+    fontFamily: primaryFont,
+    fontWeight: FontWeight.bold,
+    color: Theme.of(context).colorScheme.onSurface,
+  );
+
+  static TextStyle subHeadingText(BuildContext context) => TextStyle(
+    fontSize: 18,
+    fontFamily: primaryFont,
+    fontWeight: FontWeight.w600,
+    color: Theme.of(context).colorScheme.onSurface,
   );
 }

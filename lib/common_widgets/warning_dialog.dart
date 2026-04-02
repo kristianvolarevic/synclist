@@ -28,7 +28,7 @@ class _WarningDialogState extends State<WarningDialog> {
             Navigator.pop(context, true);
           },
           style: TextButton.styleFrom(
-            textStyle: AppFonts.blackSubHeadingText,
+            textStyle: AppFonts.subHeadingText(context),
             foregroundColor: AppColors.primary,
           ),
           child: const Text("Yes"),
@@ -38,7 +38,7 @@ class _WarningDialogState extends State<WarningDialog> {
             Navigator.pop(context, false);
           },
           style: TextButton.styleFrom(
-            textStyle: AppFonts.blackSubHeadingText,
+            textStyle: AppFonts.subHeadingText(context),
             foregroundColor: AppColors.primary,
           ),
           child: const Text("No"),

@@ -86,7 +86,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text("Add New Item", style: AppFonts.blackHeaderText),
+      title: Text("Add New Item", style: AppFonts.headerText(context)),
       content: _isLoading
           ? const SizedBox(
               height: 100,
@@ -100,22 +100,22 @@ class _AddItemDialogState extends State<AddItemDialog> {
                   children: [
                     // Item Name Field
                     TextFormField(
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         labelText: "Item Name",
-                        labelStyle: AppFonts.blackSubHeadingText,
+                        labelStyle: AppFonts.subHeadingText(context),
                       ),
                       validator: (value) =>
                           (value == null || value.isEmpty) ? 'Required' : null,
                       onSaved: (value) => _itemName = value!,
-                      style: AppFonts.blackSubHeadingText,
+                      style: AppFonts.subHeadingText(context),
                     ),
                     const SizedBox(height: 16),
 
                     // Category Dropdown
                     DropdownButtonFormField<String>(
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         labelText: "Category",
-                        labelStyle: AppFonts.blackSubHeadingText,
+                        labelStyle: AppFonts.subHeadingText(context),
                       ),
 
                       initialValue: _selectedCategoryId,
@@ -129,7 +129,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
                           setState(() => _selectedCategoryId = val),
                       validator: (val) =>
                           val == null ? 'Please select a category' : null,
-                      style: AppFonts.blackSubHeadingText,
+                      style: AppFonts.subHeadingText(context),
                     ),
                     const SizedBox(height: 16),
 
@@ -137,10 +137,10 @@ class _AddItemDialogState extends State<AddItemDialog> {
                     SwitchListTile(
                       title: Text(
                         _isQuantityBased ? "Mode: Quantity" : "Mode: Weight",
-                        style: AppFonts.blackSubHeadingText,
+                        style: AppFonts.subHeadingText(context),
                       ),
                       value: _isQuantityBased,
-                      activeThumbColor: AppColors.contrast,
+                      activeThumbColor: AppColors.secondary(context),
                       onChanged: (val) =>
                           setState(() => _isQuantityBased = val),
                       contentPadding: EdgeInsets.zero,
@@ -149,12 +149,12 @@ class _AddItemDialogState extends State<AddItemDialog> {
                     // Dynamic Number Field
                     TextFormField(
                       key: ValueKey(_isQuantityBased),
-                      style: AppFonts.blackSubHeadingText,
+                      style: AppFonts.subHeadingText(context),
                       decoration: InputDecoration(
                         labelText: _isQuantityBased ? "Quantity" : "Weight",
                         suffixText: _isQuantityBased ? "pcs" : "kg",
-                        labelStyle: AppFonts.blackSubHeadingText,
-                        suffixStyle: AppFonts.blackSubHeadingText,
+                        labelStyle: AppFonts.subHeadingText(context),
+                        suffixStyle: AppFonts.subHeadingText(context),
                       ),
                       keyboardType: const TextInputType.numberWithOptions(
                         decimal: true,
@@ -171,7 +171,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
         TextButton(
           onPressed: () => Navigator.pop(context),
           style: TextButton.styleFrom(
-            textStyle: AppFonts.blackSubHeadingText,
+            textStyle: AppFonts.subHeadingText(context),
             foregroundColor: AppColors.primary,
           ),
           child: const Text("Cancel"),
@@ -179,7 +179,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
         ElevatedButton(
           onPressed: _addNewItem,
           style: TextButton.styleFrom(
-            textStyle: AppFonts.blackSubHeadingText,
+            textStyle: AppFonts.subHeadingText(context),
             foregroundColor: AppColors.primary,
           ),
           child: const Text("Create"),

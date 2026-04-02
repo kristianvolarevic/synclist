@@ -104,9 +104,9 @@ class _ListSettingsState extends State<ListSettings> {
                 children: [
                   Row(
                     children: [
-                      const Text(
+                      Text(
                         'Automatic Deletion',
-                        style: AppFonts.blackSubHeadingText,
+                        style: AppFonts.subHeadingText(context),
                       ),
                       const SizedBox(width: 12),
                       Switch(
@@ -115,20 +115,20 @@ class _ListSettingsState extends State<ListSettings> {
                           list.automaticDeletion = val;
                           _handleAutomaticDeltionSwitch(list);
                         },
-                        activeThumbColor: AppColors.contrast,
+                        activeThumbColor: AppColors.secondary(context),
                       ),
                     ],
                   ),
                   Row(
                     children: [
-                      const Text(
+                      Text(
                         "Share List",
-                        style: AppFonts.blackSubHeadingText,
+                        style: AppFonts.subHeadingText(context),
                       ),
                       const SizedBox(width: 12),
                       Switch(
                         value: list.isShared,
-                        activeThumbColor: AppColors.contrast,
+                        activeThumbColor: AppColors.secondary(context),
                         onChanged: (val) {
                           _toggleShare(list);
                           setState(() => list.isShared = val);
@@ -141,17 +141,14 @@ class _ListSettingsState extends State<ListSettings> {
                           children: [
                             Text(
                               'Share ID: ${list.code}',
-                              style: AppFonts.blackSubHeadingText,
+                              style: AppFonts.subHeadingText(context),
                             ),
                           ],
                         )
                       : Row(),
 
                   const SizedBox(height: 20),
-                  const Text(
-                    "Joined Users",
-                    style: AppFonts.blackSubHeadingText,
-                  ),
+                  Text("Joined Users", style: AppFonts.subHeadingText(context)),
                   const Divider(),
                   if (list.joinedUsers.isEmpty)
                     const Padding(
@@ -188,7 +185,7 @@ class _ListSettingsState extends State<ListSettings> {
                             leading: const Icon(Icons.person_outline, size: 25),
                             title: Text(
                               user!.fullName,
-                              style: AppFonts.blackCardSubHeadingText,
+                              style: AppFonts.cardSubHeadingText(context),
                             ),
                             trailing: IconButton(
                               icon: const Icon(

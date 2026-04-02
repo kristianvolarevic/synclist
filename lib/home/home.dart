@@ -57,10 +57,10 @@ class _HomeState extends State<Home> {
             final allLists = snapshot.data ?? [];
 
             if (allLists.isEmpty) {
-              return const Center(
+              return Center(
                 child: Text(
                   "No lists yet. Click the + button to add one!",
-                  style: AppFonts.blackSubHeadingText,
+                  style: AppFonts.subHeadingText(context),
                 ),
               );
             }
@@ -82,7 +82,7 @@ class _HomeState extends State<Home> {
           child: FittedBox(
             child: FloatingActionButton.large(
               foregroundColor: Colors.white, // Match background color
-              backgroundColor: AppColors.contrast,
+              backgroundColor: AppColors.secondary(context),
               onPressed: () {
                 // ---------------------------------------------------------------------------------------- ADD NEW LIST DIALOG
                 showDialog(

@@ -61,4 +61,26 @@ class SharedPreferencesController {
       throw CustomExceptions(ExceptionType.failedToAddToDatabase);
     }
   }
+
+  // ---------------------- METHOD: SAVE THEME ----------------------
+  Future<void> saveTheme(bool isDark) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('isDark', isDark);
+    } catch (e) {
+      throw CustomExceptions(ExceptionType.failedToAddToDatabase);
+    }
+  }
+
+  // ---------------------- METHOD: FETCH THEME ----------------------
+  Future<bool?> fetchTheme() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      bool? isDark = prefs.getBool('isDark');
+
+      return isDark;
+    } catch (e) {
+      throw CustomExceptions(ExceptionType.failedToFetchFromDatabase);
+    }
+  }
 }

@@ -3,12 +3,13 @@
 // ----------------------------------------------------------------------------
 // Flutter Imports
 import 'package:flutter/material.dart';
-import 'package:household_groceries/common_widgets/list_card.dart';
 //import 'package:image_picker/image_picker.dart';
 
 // App Imports
 import 'package:household_groceries/common_widgets/status_bar_page.dart';
+import 'package:household_groceries/settings.dart';
 import 'package:household_groceries/utils/utils.dart';
+import 'package:household_groceries/common_widgets/list_card.dart';
 
 // ----------------------------------------------------------------------------
 // CLASS: PROFILE
@@ -51,6 +52,11 @@ class _ProfileState extends State<Profile> {
             onPressed: () => Navigator.pop(context),
             icon: Icon(Icons.arrow_back_ios, size: 20),
           ),
+          trailing: IconButton(
+            onPressed: () =>
+                Navigator.push(context, slideTransitionRoute(Settings())),
+            icon: Icon(Icons.settings),
+          ),
           body: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
@@ -81,7 +87,7 @@ class _ProfileState extends State<Profile> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                const Text('Owned Lists', style: AppFonts.blackSubHeadingText),
+                Text('Owned Lists', style: AppFonts.subHeadingText(context)),
                 const Divider(),
 
                 if (user.lists.isEmpty)
@@ -102,8 +108,11 @@ class _ProfileState extends State<Profile> {
                       builder: (context, snapshot) {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
-                          return const LinearProgressIndicator(
+                          return LinearProgressIndicator(
                             color: AppColors.primary,
+                            backgroundColor: AppColors.onInverseSurface(
+                              context,
+                            ),
                           );
                         }
 

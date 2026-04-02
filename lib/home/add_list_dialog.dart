@@ -72,7 +72,7 @@ class _AddListDialogState extends State<AddListDialog> {
     return AlertDialog(
       title: Text(
         _currentAction == ListAction.create ? "Create New List" : "Join List",
-        style: AppFonts.blackHeaderText,
+        style: AppFonts.headerText(context),
       ),
       content: SingleChildScrollView(
         child: Form(
@@ -102,9 +102,9 @@ class _AddListDialogState extends State<AddListDialog> {
                 },
                 // Styling to match your AppColors
                 style: SegmentedButton.styleFrom(
-                  selectedBackgroundColor: AppColors.contrast,
+                  selectedBackgroundColor: AppColors.secondary(context),
                   selectedForegroundColor: Colors.white,
-                  textStyle: AppFonts.blackSubHeadingText,
+                  textStyle: AppFonts.subHeadingText(context),
                 ),
               ),
               const SizedBox(height: 24),
@@ -121,7 +121,7 @@ class _AddListDialogState extends State<AddListDialog> {
                       ? "e.g. Weekly Shop"
                       : "e.g. H7K2P9",
                 ),
-                style: AppFonts.blackSubHeadingText,
+                style: AppFonts.subHeadingText(context),
                 // Only capitalize for the join code
                 textCapitalization: _currentAction == ListAction.join
                     ? TextCapitalization.characters
@@ -151,14 +151,14 @@ class _AddListDialogState extends State<AddListDialog> {
         TextButton(
           onPressed: () => Navigator.pop(context),
           style: TextButton.styleFrom(
-            textStyle: AppFonts.blackSubHeadingText,
+            textStyle: AppFonts.subHeadingText(context),
             foregroundColor: AppColors.primary,
           ),
           child: const Text("Cancel"),
         ),
         ElevatedButton(
           style: TextButton.styleFrom(
-            textStyle: AppFonts.blackSubHeadingText,
+            textStyle: AppFonts.subHeadingText(context),
             foregroundColor: AppColors.primary,
           ),
           onPressed: _currentAction == ListAction.create

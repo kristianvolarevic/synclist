@@ -146,10 +146,10 @@ class _ListPageState extends State<ListPage> {
                     final allItems = snapshot.data ?? [];
 
                     if (allItems.isEmpty) {
-                      return const Center(
+                      return Center(
                         child: Text(
                           "No items yet. Click the + button!",
-                          style: AppFonts.blackSubHeadingText,
+                          style: AppFonts.subHeadingText(context),
                         ),
                       );
                     }
@@ -176,7 +176,7 @@ class _ListPageState extends State<ListPage> {
                               ),
                               child: Text(
                                 category.name,
-                                style: AppFonts.blackCardHeaderText,
+                                style: AppFonts.cardHeaderText(context),
                               ),
                             ),
                             ...categoryItems.map((item) {
@@ -195,7 +195,7 @@ class _ListPageState extends State<ListPage> {
                 FloatingActionButtonLocation.centerFloat,
             floatingActionButton: FloatingActionButton.large(
               foregroundColor: Colors.white,
-              backgroundColor: AppColors.contrast,
+              backgroundColor: AppColors.secondary(context),
               onPressed: () {
                 showDialog(
                   context: context,

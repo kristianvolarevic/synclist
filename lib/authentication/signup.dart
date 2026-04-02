@@ -119,9 +119,9 @@ class _SignupState extends State<Signup> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       // ---------------------------------------------------------------------------------------- HEADER
-                      const Text(
+                      Text(
                         "Create your account",
-                        style: AppFonts.blackHeaderText,
+                        style: AppFonts.headerText(context),
                       ),
 
                       const SizedBox(height: 10),
@@ -129,7 +129,7 @@ class _SignupState extends State<Signup> {
                       // ---------------------------------------------------------------------------------------- SUBHEADER
                       Text(
                         "Sign up now to get started!",
-                        style: AppFonts.blackSubHeadingText,
+                        style: AppFonts.subHeadingText(context),
                       ),
 
                       const SizedBox(height: 40),
@@ -230,7 +230,7 @@ class _SignupState extends State<Signup> {
                         children: <Widget>[
                           Text(
                             "Already have an account?",
-                            style: AppFonts.blackSubHeadingText,
+                            style: AppFonts.subHeadingText(context),
                           ),
                           TextButton(
                             onPressed: () {

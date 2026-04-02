@@ -74,9 +74,14 @@ class CategoryCard extends StatelessWidget {
             child: const Icon(Icons.delete, color: Colors.white),
           ),
           child: Container(
-            decoration: BoxDecoration(color: AppColors.cardColor),
+            decoration: BoxDecoration(
+              color: AppColors.onInverseSurface(context),
+            ),
             child: ListTile(
-              title: Text(category.name, style: AppFonts.blackCardHeaderText),
+              title: Text(
+                category.name,
+                style: AppFonts.cardHeaderText(context),
+              ),
               trailing: ReorderableDragStartListener(
                 index: index,
                 child: const Icon(Icons.drag_handle),

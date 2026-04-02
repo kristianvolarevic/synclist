@@ -30,7 +30,23 @@ Future<List<Category>?> loadCategories(
 }
 
 void showMessage(BuildContext context, String message) {
-  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+  final colorScheme = Theme.of(context).colorScheme;
+
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      backgroundColor: colorScheme.inverseSurface,
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      content: Text(
+        message,
+        style: TextStyle(
+          color:
+              colorScheme.onSurface, // Ensures text contrast on the background
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+    ),
+  );
 }
 
 void handleDeleteItem(

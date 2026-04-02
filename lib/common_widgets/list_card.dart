@@ -24,7 +24,7 @@ class ListCard extends StatelessWidget {
       await FirebaseController().deleteList(list);
 
       if (context.mounted) {
-        showMessage(context, "List Successfully Delted");
+        showMessage(context, "List Successfully Deleted");
       }
     } catch (e) {
       if (context.mounted) {
@@ -67,24 +67,26 @@ class ListCard extends StatelessWidget {
             child: const Icon(Icons.delete, color: Colors.white),
           ),
           child: Container(
-            decoration: BoxDecoration(color: AppColors.cardColor),
+            decoration: BoxDecoration(
+              color: AppColors.onInverseSurface(context),
+            ),
             child: ListTile(
-              title: Text(list.name, style: AppFonts.blackCardHeaderText),
+              title: Text(list.name, style: AppFonts.cardHeaderText(context)),
               subtitle: FutureBuilder(
                 future: FirebaseController().fetchUserDetails(list.owner),
                 builder: (context, asyncSnapshot) {
                   if (asyncSnapshot.connectionState ==
                       ConnectionState.waiting) {
-                    return const Text(
+                    return Text(
                       'Loading owner...',
-                      style: AppFonts.blackCardSubHeadingText,
+                      style: AppFonts.cardSubHeadingText(context),
                     );
                   }
 
                   final userName = asyncSnapshot.data?.fullName ?? "Unknown";
                   return Text(
                     'Owner: $userName',
-                    style: AppFonts.blackCardSubHeadingText,
+                    style: AppFonts.cardSubHeadingText(context),
                   );
                 },
               ),

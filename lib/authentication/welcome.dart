@@ -51,14 +51,14 @@ class Welcome extends StatelessWidget {
                       // Column for the text widgets
                       // ---------------------------------------------------------------------------------------- TITLE
                       children: <Widget>[
-                        const Text("Welcome", style: AppFonts.whiteHeaderText),
+                        Text("Welcome", style: AppFonts.headerText(context)),
                         const SizedBox(height: 20),
 
                         // ---------------------------------------------------------------------------------------- SUBTITLE
                         Text(
                           "Collaborate with your household members and manage your groceries efficiently!",
                           textAlign: TextAlign.center,
-                          style: AppFonts.whiteSubHeadingText,
+                          style: AppFonts.subHeadingText(context),
                         ),
                       ],
                     ),
@@ -86,7 +86,7 @@ class Welcome extends StatelessWidget {
                               slideTransitionRoute(const Login()),
                             );
                           },
-                          color: AppColors.contrast,
+                          color: AppColors.secondary(context),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(50),
                           ),

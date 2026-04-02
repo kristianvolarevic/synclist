@@ -66,10 +66,10 @@ class _ForgotPasswordState extends State<ForgotPassword> {
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        title: Text("Email Sent", style: AppFonts.blackHeaderText),
+        title: Text("Email Sent", style: AppFonts.headerText(context)),
         content: Text(
           "A password reset link has been sent to $email. Please check your inbox and spam folder.",
-          style: AppFonts.blackSubHeadingText,
+          style: AppFonts.subHeadingText(context),
         ),
         actions: [
           TextButton(
@@ -106,9 +106,9 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     // ---------------------------------------------------------------------------------------- HEADER
-                    const Text(
+                    Text(
                       "Reset your password",
-                      style: AppFonts.blackHeaderText,
+                      style: AppFonts.headerText(context),
                     ),
 
                     const SizedBox(height: 10),
@@ -116,7 +116,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                     // ---------------------------------------------------------------------------------------- SUBHEADER
                     Text(
                       "Enter your email address and we'll send you a link to reset your password.",
-                      style: AppFonts.blackSubHeadingText,
+                      style: AppFonts.subHeadingText(context),
                     ),
 
                     const SizedBox(height: 40),
