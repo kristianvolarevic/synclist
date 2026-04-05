@@ -44,7 +44,9 @@ class _ListPageState extends State<ListPage> {
         Navigator.push(
           context,
           slideTransitionRoute(Categories(list: widget.list)),
-        );
+        ).then((_) {
+          setState(() {});
+        });
         break;
       case ListOptions.clearSelected:
         await FirebaseController().clearSelectedItems(widget.list);
@@ -154,35 +156,53 @@ class _ListPageState extends State<ListPage> {
                       );
                     }
 
-                    return ListView.builder(
-                      itemCount: categories.length,
-                      itemBuilder: (context, categoryIndex) {
-                        final category = categories[categoryIndex];
-                        final categoryItems = allItems
-                            .where((item) => item.categoryId == category.id)
-                            .toList();
-
-                        if (categoryItems.isEmpty) {
-                          return const SizedBox.shrink();
+                    return FutureBuilder(
+                      future: SharedPreferencesController()
+                          .fetchCategoriesOrder(categories, widget.list.id),
+                      builder: (context, sortedCategoriesSnapshot) {
+                        if (sortedCategoriesSnapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                            child: CircularProgressIndicator(
+                              color: AppColors.primary,
+                            ),
+                          );
                         }
 
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 8,
-                              ),
-                              child: Text(
-                                category.name,
-                                style: AppFonts.cardHeaderText(context),
-                              ),
-                            ),
-                            ...categoryItems.map((item) {
-                              return ItemCard(item: item, list: liveList);
-                            }),
-                          ],
+                        final sortedCategories =
+                            sortedCategoriesSnapshot.data ?? categories;
+
+                        return ListView.builder(
+                          itemCount: sortedCategories.length,
+                          itemBuilder: (context, categoryIndex) {
+                            final category = sortedCategories[categoryIndex];
+                            final categoryItems = allItems
+                                .where((item) => item.categoryId == category.id)
+                                .toList();
+
+                            if (categoryItems.isEmpty) {
+                              return const SizedBox.shrink();
+                            }
+
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 8,
+                                  ),
+                                  child: Text(
+                                    category.name,
+                                    style: AppFonts.cardHeaderText(context),
+                                  ),
+                                ),
+                                ...categoryItems.map((item) {
+                                  return ItemCard(item: item, list: liveList);
+                                }),
+                              ],
+                            );
+                          },
                         );
                       },
                     );

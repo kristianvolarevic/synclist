@@ -25,6 +25,8 @@ class Categories extends StatefulWidget {
 }
 
 class _CategoriesState extends State<Categories> {
+  List<Category>? _localCategories;
+
   @override
   Widget build(BuildContext context) {
     return StatusBarPage(
@@ -56,63 +58,84 @@ class _CategoriesState extends State<Categories> {
             );
           }
 
-          return Scaffold(
-            body: ReorderableListView.builder(
-              itemCount: categories.length,
-              onReorder: (oldIndex, newIndex) {
-                setState(() {
-                  if (newIndex > oldIndex) {
-                    newIndex -= 1;
-                  }
-                  final Category item = categories.removeAt(oldIndex);
-                  categories.insert(newIndex, item);
-                });
-
-                // Save the new order to shared preferences
-                SharedPreferencesController().saveCategoriesOrder(
-                  categories,
-                  widget.list.id,
-                );
-              },
-              itemBuilder: (context, index) {
-                final category = categories[index];
-                return CategoryCard(
-                  key: ValueKey(category.id),
-                  category: category,
-                  list: widget.list,
-                  index: index,
-                );
-              },
+          return FutureBuilder<List<Category>>(
+            future: SharedPreferencesController().fetchCategoriesOrder(
+              categories,
+              widget.list.id,
             ),
+            builder: (context, asyncSnapshot) {
+              if (!asyncSnapshot.hasData && _localCategories == null) {
+                return const Center(
+                  child: CircularProgressIndicator(color: AppColors.primary),
+                );
+              }
 
-            floatingActionButtonLocation:
-                FloatingActionButtonLocation.centerFloat,
-            floatingActionButton: SizedBox(
-              width: 75,
-              height: 75,
-              child: FittedBox(
-                child: FloatingActionButton.large(
-                  foregroundColor: Colors.white, // Match background color
-                  backgroundColor: AppColors.secondary(context),
-                  onPressed: () {
-                    // ---------------------------------------------------------------------------------------- ADD NEW LIST DIALOG
-                    /* showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AddListDialog(fetchLists: _fetchLists);
-                      },
-                    ); */
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AddCategoryDialog(list: widget.list);
-                      },
+              if (_localCategories == null ||
+                  _localCategories!.length != categories.length) {
+                _localCategories = asyncSnapshot.data;
+              }
+
+              return Scaffold(
+                body: ReorderableListView.builder(
+                  itemCount: _localCategories!.length,
+                  onReorder: (oldIndex, newIndex) {
+                    setState(() {
+                      if (newIndex > oldIndex) {
+                        newIndex -= 1;
+                      }
+                      final Category item = _localCategories!.removeAt(
+                        oldIndex,
+                      );
+                      _localCategories!.insert(newIndex, item);
+                    });
+
+                    // Save the new order to shared preferences
+                    SharedPreferencesController().saveCategoriesOrder(
+                      categories,
+                      widget.list.id,
                     );
                   },
-                  child: Icon(Icons.add),
+                  itemBuilder: (context, index) {
+                    final category = _localCategories![index];
+                    return CategoryCard(
+                      key: ValueKey(category.id),
+                      category: category,
+                      list: widget.list,
+                      index: index,
+                    );
+                  },
                 ),
-              ),
-            ),
+
+                floatingActionButtonLocation:
+                    FloatingActionButtonLocation.centerFloat,
+                floatingActionButton: SizedBox(
+                  width: 75,
+                  height: 75,
+                  child: FittedBox(
+                    child: FloatingActionButton.large(
+                      foregroundColor: Colors.white, // Match background color
+                      backgroundColor: AppColors.secondary(context),
+                      onPressed: () {
+                        // ---------------------------------------------------------------------------------------- ADD NEW LIST DIALOG
+                        /* showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AddListDialog(fetchLists: _fetchLists);
+                          },
+                        ); */
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AddCategoryDialog(list: widget.list);
+                          },
+                        );
+                      },
+                      child: Icon(Icons.add),
+                    ),
+                  ),
+                ),
+              );
+            },
           );
         },
       ),
