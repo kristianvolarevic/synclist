@@ -7,9 +7,13 @@ import 'home/home.dart';
 import 'utils/licenses.dart';
 import 'package:household_groceries/utils/utils.dart';
 import 'package:household_groceries/utils/theme_controller.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Mobile Ads SDK
+  await MobileAds.instance.initialize();
 
   // Initialize firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);

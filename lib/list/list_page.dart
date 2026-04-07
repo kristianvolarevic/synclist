@@ -13,6 +13,7 @@ import 'package:household_groceries/models/item.dart';
 import 'package:household_groceries/list/add_item_dialog.dart';
 import 'package:household_groceries/list/item_card.dart';
 import 'package:household_groceries/list/list_settings.dart';
+import 'package:household_groceries/utils/ad_helper.dart';
 
 // --------------------------------------------------------------------------------------------
 // ENUM: LIST OPTIONS
@@ -32,9 +33,12 @@ class ListPage extends StatefulWidget {
 }
 
 class _ListPageState extends State<ListPage> {
+  final AdHelper _adHelper = AdHelper();
+
   @override
   void initState() {
     super.initState();
+    _adHelper.loadInterstitialAd();
   }
 
   // ---------------------- METHOD: HANDLE MENU SELECTION ----------------------
@@ -52,7 +56,9 @@ class _ListPageState extends State<ListPage> {
         await FirebaseController().clearSelectedItems(widget.list);
         break;
       case ListOptions.clearAll:
-        await FirebaseController().clearAllItems(widget.list);
+        _adHelper.showAdIfAvailable(() async {
+          await FirebaseController().clearAllItems(widget.list);
+        });
         break;
       case ListOptions.settings:
         Navigator.push(
