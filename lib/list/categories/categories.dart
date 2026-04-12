@@ -78,6 +78,7 @@ class _CategoriesState extends State<Categories> {
               return Scaffold(
                 body: ReorderableListView.builder(
                   itemCount: _localCategories!.length,
+                  padding: EdgeInsets.only(bottom: 100),
                   onReorder: (oldIndex, newIndex) {
                     setState(() {
                       if (newIndex > oldIndex) {

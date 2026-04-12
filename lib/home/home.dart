@@ -40,59 +40,63 @@ class _HomeState extends State<Home> {
         },
         icon: const Icon(Icons.account_circle, size: 30),
       ),
-      body: Scaffold(
-        body: StreamBuilder(
-          stream: FirebaseController().userListsStream(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: CircularProgressIndicator(color: AppColors.primary),
-              );
-            }
-
-            if (snapshot.hasError) {
-              return Center(child: Text("Error: ${snapshot.error}"));
-            }
-
-            final allLists = snapshot.data ?? [];
-
-            if (allLists.isEmpty) {
-              return Center(
-                child: Text(
-                  "No lists yet. Click the + button to add one!",
-                  style: AppFonts.subHeadingText(context),
-                ),
-              );
-            }
-
-            return ListView.builder(
-              itemCount: allLists.length,
-              itemBuilder: (context, index) {
-                return ListCard(
-                  list: allLists[index],
-                ); // Now receives a ShoppingList object
-              },
-            );
-          },
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: SizedBox(
-          width: 75,
-          height: 75,
-          child: FittedBox(
-            child: FloatingActionButton.large(
-              foregroundColor: Colors.white, // Match background color
-              backgroundColor: AppColors.secondary(context),
-              onPressed: () {
-                // ---------------------------------------------------------------------------------------- ADD NEW LIST DIALOG
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AddListDialog();
-                  },
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Scaffold(
+          body: StreamBuilder(
+            stream: FirebaseController().userListsStream(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: CircularProgressIndicator(color: AppColors.primary),
                 );
-              },
-              child: Icon(Icons.add),
+              }
+        
+              if (snapshot.hasError) {
+                return Center(child: Text("Error: ${snapshot.error}"));
+              }
+        
+              final allLists = snapshot.data ?? [];
+        
+              if (allLists.isEmpty) {
+                return Center(
+                  child: Text(
+                    "No lists yet. Click the + button to create or join one!",
+                    style: AppFonts.subHeadingText(context), textAlign: TextAlign.center,
+                  ),
+                );
+              }
+        
+              return ListView.builder(
+                itemCount: allLists.length,
+                padding: EdgeInsets.only(bottom: 100),
+                itemBuilder: (context, index) {
+                  return ListCard(
+                    list: allLists[index],
+                  ); // Now receives a ShoppingList object
+                },
+              );
+            },
+          ),
+          floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+          floatingActionButton: SizedBox(
+            width: 75,
+            height: 75,
+            child: FittedBox(
+              child: FloatingActionButton.large(
+                foregroundColor: Colors.white, // Match background color
+                backgroundColor: AppColors.secondary(context),
+                onPressed: () {
+                  // ---------------------------------------------------------------------------------------- ADD NEW LIST DIALOG
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AddListDialog();
+                    },
+                  );
+                },
+                child: Icon(Icons.add),
+              ),
             ),
           ),
         ),

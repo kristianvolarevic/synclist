@@ -529,14 +529,13 @@ class FirebaseController {
           .where('isCollected', isEqualTo: true)
           .get();
 
+      final WriteBatch batch = db.batch();
+
       for (final doc in itemsSnapshot.docs) {
-        await db
-            .collection(listCollection)
-            .doc(list.id)
-            .collection(itemsCollection)
-            .doc(doc.id)
-            .delete();
+        batch.delete(doc.reference);
       }
+
+      await batch.commit();
     } catch (e) {
       throw CustomExceptions(ExceptionType.failedToDeleteFromDatabase);
     }

@@ -182,7 +182,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
             textStyle: AppFonts.subHeadingText(context),
             foregroundColor: AppColors.primary,
           ),
-          child: const Text("Create"),
+          child: const Text("Add"),
         ),
       ],
     );

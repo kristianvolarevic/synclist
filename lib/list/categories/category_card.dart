@@ -55,7 +55,7 @@ class CategoryCard extends StatelessWidget {
               builder: (BuildContext context) {
                 return WarningDialog(
                   warningMessage:
-                      "Are you sure you want to delete this category: ${category.name}",
+                      "Are you sure you want to delete this category: ${category.name}?",
                 );
               },
             );

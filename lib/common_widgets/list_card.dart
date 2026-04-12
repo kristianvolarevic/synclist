@@ -48,7 +48,7 @@ class ListCard extends StatelessWidget {
               builder: (BuildContext context) {
                 return WarningDialog(
                   warningMessage:
-                      "Are you sure you want to delete this item: ${list.name}",
+                      "Are you sure you want to delete this list: ${list.name}?",
                 );
               },
             );

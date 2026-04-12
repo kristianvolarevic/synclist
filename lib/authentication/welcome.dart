@@ -51,14 +51,14 @@ class Welcome extends StatelessWidget {
                       // Column for the text widgets
                       // ---------------------------------------------------------------------------------------- TITLE
                       children: <Widget>[
-                        Text("Welcome", style: AppFonts.headerText(context)),
+                        Text("Welcome", style: AppFonts.headerText(context).copyWith(color: Colors.white)),
                         const SizedBox(height: 20),
 
                         // ---------------------------------------------------------------------------------------- SUBTITLE
                         Text(
                           "Collaborate with your household members and manage your groceries efficiently!",
                           textAlign: TextAlign.center,
-                          style: AppFonts.subHeadingText(context),
+                          style: AppFonts.subHeadingText(context).copyWith(color: Colors.white),
                         ),
                       ],
                     ),

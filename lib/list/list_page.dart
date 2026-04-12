@@ -129,7 +129,7 @@ class _ListPageState extends State<ListPage> {
                   stream: FirebaseController().itemsStream(widget.list),
                   builder: (context, snapshot) {
                     // 1. Handle Loading
-                    if (snapshot.connectionState == ConnectionState.waiting) {
+                    if (!snapshot.hasData && snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(
                         child: CircularProgressIndicator(
                           color: AppColors.primary,
@@ -166,7 +166,7 @@ class _ListPageState extends State<ListPage> {
                       future: SharedPreferencesController()
                           .fetchCategoriesOrder(categories, widget.list.id),
                       builder: (context, sortedCategoriesSnapshot) {
-                        if (sortedCategoriesSnapshot.connectionState ==
+                        if (!sortedCategoriesSnapshot.hasData && sortedCategoriesSnapshot.connectionState ==
                             ConnectionState.waiting) {
                           return const Center(
                             child: CircularProgressIndicator(
@@ -180,6 +180,7 @@ class _ListPageState extends State<ListPage> {
 
                         return ListView.builder(
                           itemCount: sortedCategories.length,
+                          padding: const EdgeInsets.only(bottom: 120),
                           itemBuilder: (context, categoryIndex) {
                             final category = sortedCategories[categoryIndex];
                             final categoryItems = allItems
@@ -204,7 +205,7 @@ class _ListPageState extends State<ListPage> {
                                   ),
                                 ),
                                 ...categoryItems.map((item) {
-                                  return ItemCard(item: item, list: liveList);
+                                  return ItemCard(key: ValueKey(item.id), item: item, list: liveList);
                                 }),
                               ],
                             );

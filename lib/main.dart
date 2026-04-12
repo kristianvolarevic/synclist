@@ -12,17 +12,14 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Mobile Ads SDK
-  await MobileAds.instance.initialize();
-
-  // Initialize firebase
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await Future.wait([
+    Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform),
+    MobileAds.instance.initialize(),
+    ThemeController.init()
+  ]);
 
   // Register licenses
   AppLicenses.registerAllLicenses();
-
-  // Initialize theme mode
-  await ThemeController.init();
 
   runApp(const MyApp());
 }

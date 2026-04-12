@@ -80,7 +80,7 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
             textStyle: AppFonts.subHeadingText(context),
             foregroundColor: AppColors.primary,
           ),
-          child: const Text("Create"),
+          child: const Text("Add"),
           onPressed: () {
             // Logic to add the item goes here
             _addNewCategory();
