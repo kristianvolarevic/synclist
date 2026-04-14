@@ -56,6 +56,7 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
             }
             return null;
           },
+          textCapitalization: TextCapitalization.words,
           onSaved: (value) {
             _categoryName = value!;
           },

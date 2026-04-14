@@ -106,6 +106,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
                       ),
                       validator: (value) =>
                           (value == null || value.isEmpty) ? 'Required' : null,
+                      textCapitalization: TextCapitalization.words,
                       onSaved: (value) => _itemName = value!,
                       style: AppFonts.subHeadingText(context),
                     ),

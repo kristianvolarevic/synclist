@@ -10,6 +10,7 @@ import 'package:household_groceries/common_widgets/status_bar_page.dart';
 import 'package:household_groceries/settings.dart';
 import 'package:household_groceries/utils/utils.dart';
 import 'package:household_groceries/common_widgets/list_card.dart';
+import 'package:household_groceries/models/shopping_list.dart';
 
 // ----------------------------------------------------------------------------
 // CLASS: PROFILE
@@ -102,6 +103,7 @@ class _ProfileState extends State<Profile> {
                   itemCount: user.lists.length,
                   itemBuilder: (context, index) {
                     final listId = user.lists[index];
+                    final currentUserId = FirebaseController().auth.currentUser!.uid;
 
                     return FutureBuilder(
                       future: FirebaseController().fetchListWithId(listId),
@@ -121,6 +123,11 @@ class _ProfileState extends State<Profile> {
                         }
 
                         final shoppingList = snapshot.data!;
+
+                        if(shoppingList.owner != currentUserId){
+                          return const SizedBox.shrink();
+                        }
+                        
                         return ListCard(list: shoppingList);
                       },
                     );
