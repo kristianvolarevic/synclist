@@ -5,15 +5,15 @@
 import 'package:flutter/material.dart';
 
 // App Imports
-import 'package:household_groceries/models/shopping_list.dart';
-import 'package:household_groceries/common_widgets/status_bar_page.dart';
-import 'package:household_groceries/utils/utils.dart';
-import 'package:household_groceries/list/categories/categories.dart';
-import 'package:household_groceries/models/item.dart';
-import 'package:household_groceries/list/add_item_dialog.dart';
-import 'package:household_groceries/list/item_card.dart';
-import 'package:household_groceries/list/list_settings.dart';
-import 'package:household_groceries/utils/ad_helper.dart';
+import 'package:synclist/models/shopping_list.dart';
+import 'package:synclist/common_widgets/status_bar_page.dart';
+import 'package:synclist/utils/utils.dart';
+import 'package:synclist/list/categories/categories.dart';
+import 'package:synclist/models/item.dart';
+import 'package:synclist/list/add_item_dialog.dart';
+import 'package:synclist/list/item_card.dart';
+import 'package:synclist/list/list_settings.dart';
+import 'package:synclist/utils/ad_helper.dart';
 
 // --------------------------------------------------------------------------------------------
 // ENUM: LIST OPTIONS

@@ -3,13 +3,13 @@
 // --------------------------------------------------------------------------------------------
 // Flutter Imports
 import 'package:flutter/material.dart';
-import 'package:household_groceries/common_widgets/status_bar_page.dart';
-import 'package:household_groceries/home/add_list_dialog.dart';
+import 'package:synclist/common_widgets/status_bar_page.dart';
+import 'package:synclist/home/add_list_dialog.dart';
 
 // App Imports
-import 'package:household_groceries/utils/utils.dart';
-import 'package:household_groceries/common_widgets/list_card.dart';
-import 'package:household_groceries/profile.dart';
+import 'package:synclist/utils/utils.dart';
+import 'package:synclist/common_widgets/list_card.dart';
+import 'package:synclist/profile.dart';
 
 // --------------------------------------------------------------------------------------------
 // CLASS: HOME

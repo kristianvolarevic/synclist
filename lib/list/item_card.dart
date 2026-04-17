@@ -6,10 +6,10 @@
 import 'package:flutter/material.dart';
 
 // App Imports
-import 'package:household_groceries/models/item.dart';
-import 'package:household_groceries/models/shopping_list.dart';
-import 'package:household_groceries/utils/utils.dart';
-import 'package:household_groceries/list/item_dialog.dart';
+import 'package:synclist/models/item.dart';
+import 'package:synclist/models/shopping_list.dart';
+import 'package:synclist/utils/utils.dart';
+import 'package:synclist/list/item_dialog.dart';
 
 // --------------------------------------------------------------------------------------------
 // CLASS: ITEM CARD

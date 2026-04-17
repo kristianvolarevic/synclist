@@ -7,12 +7,12 @@ import 'dart:async';
 import 'dart:math';
 
 // App Imports
-import 'package:household_groceries/home/home.dart';
-import 'package:household_groceries/models/item.dart';
-import 'package:household_groceries/models/user.dart';
-import 'package:household_groceries/utils/utils.dart';
-import 'package:household_groceries/models/shopping_list.dart';
-import 'package:household_groceries/models/category.dart';
+import 'package:synclist/home/home.dart';
+import 'package:synclist/models/item.dart';
+import 'package:synclist/models/user.dart';
+import 'package:synclist/utils/utils.dart';
+import 'package:synclist/models/shopping_list.dart';
+import 'package:synclist/models/category.dart';
 
 // Firebase Imports
 import 'package:cloud_firestore/cloud_firestore.dart';

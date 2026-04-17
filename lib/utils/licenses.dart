@@ -205,7 +205,7 @@ This Agreement is effective when Customer clicks to accept or otherwise agrees t
   static void registerLogoLicense() {
     LicenseRegistry.addLicense(() async* {
       yield LicenseEntryWithLineBreaks(
-        ["Household Groceries Logo"],
+        ["SyncList Logo"],
         '''The logo for this application was created by Assia Benkerroum and uploaded to Flaticon.
 
 View the original source material at the following link: https://www.flaticon.com/free-icons/shopping-list

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:household_groceries/models/shopping_list.dart';
-import 'package:household_groceries/utils/utils.dart';
+import 'package:synclist/models/shopping_list.dart';
+import 'package:synclist/utils/utils.dart';
 
 class AddCategoryDialog extends StatefulWidget {
   final ShoppingList list;

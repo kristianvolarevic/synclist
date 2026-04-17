@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'authentication/welcome.dart';
 import 'home/home.dart';
 import 'utils/licenses.dart';
-import 'package:household_groceries/utils/utils.dart';
-import 'package:household_groceries/utils/theme_controller.dart';
+import 'package:synclist/utils/utils.dart';
+import 'package:synclist/utils/theme_controller.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 void main() async {
@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
       valueListenable: ThemeController.themeMode,
       builder: (context, currentMode, child) {
         return MaterialApp(
-          title: 'Household Groceries',
+          title: 'SyncList',
           debugShowCheckedModeBanner: false,
           themeMode: currentMode,
           theme: ThemeData(

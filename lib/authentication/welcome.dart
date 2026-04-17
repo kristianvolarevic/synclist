@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 // App Imports
-import 'package:household_groceries/utils/utils.dart';
+import 'package:synclist/utils/utils.dart';
 import 'login.dart';
 import 'signup.dart';
 
@@ -56,7 +56,7 @@ class Welcome extends StatelessWidget {
 
                         // ---------------------------------------------------------------------------------------- SUBTITLE
                         Text(
-                          "Collaborate with your household members and manage your groceries efficiently!",
+                          "Collaborate with your household and manage groceries & supplies efficiently!",
                           textAlign: TextAlign.center,
                           style: AppFonts.subHeadingText(context).copyWith(color: Colors.white),
                         ),

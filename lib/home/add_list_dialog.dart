@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:household_groceries/utils/utils.dart';
+import 'package:synclist/utils/utils.dart';
 
 enum ListAction { create, join }
 

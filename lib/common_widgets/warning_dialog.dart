@@ -5,7 +5,7 @@
 import 'package:flutter/material.dart';
 
 // App Imports
-import 'package:household_groceries/utils/utils.dart';
+import 'package:synclist/utils/utils.dart';
 
 class WarningDialog extends StatefulWidget {
   final String warningMessage;

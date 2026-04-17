@@ -4,10 +4,10 @@
 // Flutter Imports
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:household_groceries/common_widgets/status_bar_page.dart';
+import 'package:synclist/common_widgets/status_bar_page.dart';
 
 // App Imports
-import 'package:household_groceries/utils/utils.dart';
+import 'package:synclist/utils/utils.dart';
 
 // --------------------------------------------------------------------------------------------
 // CLASS: SIGNUP

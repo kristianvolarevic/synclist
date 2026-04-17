@@ -4,12 +4,12 @@
 
 // Flutter Imports
 import 'package:flutter/material.dart';
-import 'package:household_groceries/list/list_page.dart';
+import 'package:synclist/list/list_page.dart';
 
 // App Imports
-import 'package:household_groceries/models/shopping_list.dart';
-import 'package:household_groceries/utils/utils.dart';
-import 'package:household_groceries/common_widgets/warning_dialog.dart';
+import 'package:synclist/models/shopping_list.dart';
+import 'package:synclist/utils/utils.dart';
+import 'package:synclist/common_widgets/warning_dialog.dart';
 
 // --------------------------------------------------------------------------------------------
 // CLASS: LIST CARD

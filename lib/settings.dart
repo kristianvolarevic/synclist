@@ -3,13 +3,13 @@
 // ----------------------------------------------------------------------------
 // Flutter Imports
 import 'package:flutter/material.dart';
-import 'package:household_groceries/authentication/welcome.dart';
+import 'package:synclist/authentication/welcome.dart';
 
 // App Imports
-import 'package:household_groceries/common_widgets/status_bar_page.dart';
-import 'package:household_groceries/utils/theme_controller.dart';
-import 'package:household_groceries/utils/utils.dart';
-import 'package:household_groceries/common_widgets/warning_dialog.dart';
+import 'package:synclist/common_widgets/status_bar_page.dart';
+import 'package:synclist/utils/theme_controller.dart';
+import 'package:synclist/utils/utils.dart';
+import 'package:synclist/common_widgets/warning_dialog.dart';
 
 class Settings extends StatefulWidget {
   const Settings({super.key});
@@ -42,6 +42,9 @@ class _SettingsState extends State<Settings> {
     }
   }
 
+  void _showAbout() {
+    showLicensePage(context: context, applicationLegalese: "@ 2026 Kristian Volarevic");
+  }
   @override
   Widget build(BuildContext context) {
     return StatusBarPage(
@@ -71,6 +74,11 @@ class _SettingsState extends State<Settings> {
                   ],
                 );
               },
+            ),
+            Row(
+              children: [
+                ElevatedButton(onPressed: _showAbout, child: Text("About")),
+              ],
             ),
             Spacer(),
             ElevatedButton(onPressed: _signOut, child: Text("Sign Out")),

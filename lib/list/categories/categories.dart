@@ -5,12 +5,12 @@
 import 'package:flutter/material.dart';
 
 // App Imports
-import 'package:household_groceries/common_widgets/status_bar_page.dart';
-import 'package:household_groceries/list/categories/category_card.dart';
-import 'package:household_groceries/models/shopping_list.dart';
-import 'package:household_groceries/models/category.dart';
-import 'package:household_groceries/utils/utils.dart';
-import 'package:household_groceries/list/categories/add_category_dialog.dart';
+import 'package:synclist/common_widgets/status_bar_page.dart';
+import 'package:synclist/list/categories/category_card.dart';
+import 'package:synclist/models/shopping_list.dart';
+import 'package:synclist/models/category.dart';
+import 'package:synclist/utils/utils.dart';
+import 'package:synclist/list/categories/add_category_dialog.dart';
 
 // --------------------------------------------------------------------------------------------
 // CLASS: LIST PAGE

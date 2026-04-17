@@ -5,8 +5,8 @@
 import 'package:flutter/material.dart';
 
 // App Imports
-import 'package:household_groceries/common_widgets/status_bar_page.dart';
-import 'package:household_groceries/utils/utils.dart';
+import 'package:synclist/common_widgets/status_bar_page.dart';
+import 'package:synclist/utils/utils.dart';
 
 // Firebase Imports
 import 'package:firebase_auth/firebase_auth.dart';

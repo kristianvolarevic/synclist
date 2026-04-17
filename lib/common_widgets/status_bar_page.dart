@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:household_groceries/utils/utils.dart';
+import 'package:synclist/utils/utils.dart';
 
 class StatusBarPage extends StatelessWidget {
   final String title;

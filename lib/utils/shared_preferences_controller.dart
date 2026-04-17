@@ -5,8 +5,8 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 // App Imports
-import 'package:household_groceries/models/category.dart';
-import 'package:household_groceries/utils/custom_exceptions.dart';
+import 'package:synclist/models/category.dart';
+import 'package:synclist/utils/custom_exceptions.dart';
 
 class SharedPreferencesController {
   // --------------------------------------------------------------------------------------------

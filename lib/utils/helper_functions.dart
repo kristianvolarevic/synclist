@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:household_groceries/models/category.dart';
-import 'package:household_groceries/models/shopping_list.dart';
-import 'package:household_groceries/utils/firebase_controller.dart';
-import 'package:household_groceries/utils/shared_preferences_controller.dart';
-import 'package:household_groceries/models/item.dart';
+import 'package:synclist/models/category.dart';
+import 'package:synclist/models/shopping_list.dart';
+import 'package:synclist/utils/firebase_controller.dart';
+import 'package:synclist/utils/shared_preferences_controller.dart';
+import 'package:synclist/models/item.dart';
 
 Future<List<Category>?> loadCategories(
   BuildContext context,

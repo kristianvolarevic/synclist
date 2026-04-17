@@ -6,11 +6,10 @@ import 'package:flutter/material.dart';
 //import 'package:image_picker/image_picker.dart';
 
 // App Imports
-import 'package:household_groceries/common_widgets/status_bar_page.dart';
-import 'package:household_groceries/settings.dart';
-import 'package:household_groceries/utils/utils.dart';
-import 'package:household_groceries/common_widgets/list_card.dart';
-import 'package:household_groceries/models/shopping_list.dart';
+import 'package:synclist/common_widgets/status_bar_page.dart';
+import 'package:synclist/settings.dart';
+import 'package:synclist/utils/utils.dart';
+import 'package:synclist/common_widgets/list_card.dart';
 
 // ----------------------------------------------------------------------------
 // CLASS: PROFILE
