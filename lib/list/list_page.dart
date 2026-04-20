@@ -34,6 +34,7 @@ class ListPage extends StatefulWidget {
 
 class _ListPageState extends State<ListPage> {
   final AdHelper _adHelper = AdHelper();
+  List<Item> _currentItems = [];
 
   @override
   void initState() {
@@ -53,7 +54,18 @@ class _ListPageState extends State<ListPage> {
         });
         break;
       case ListOptions.clearSelected:
-        await FirebaseController().clearSelectedItems(widget.list);
+        bool isAllCollected =
+            _currentItems.isNotEmpty &&
+            _currentItems.every((item) => item.isCollected);
+
+        if (isAllCollected) {
+          _adHelper.showAdIfAvailable(() async {
+            await FirebaseController().clearSelectedItems(widget.list);
+          });
+        } else {
+          await FirebaseController().clearSelectedItems(widget.list);
+        }
+
         break;
       case ListOptions.clearAll:
         _adHelper.showAdIfAvailable(() async {
@@ -129,7 +141,8 @@ class _ListPageState extends State<ListPage> {
                   stream: FirebaseController().itemsStream(widget.list),
                   builder: (context, snapshot) {
                     // 1. Handle Loading
-                    if (!snapshot.hasData && snapshot.connectionState == ConnectionState.waiting) {
+                    if (!snapshot.hasData &&
+                        snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(
                         child: CircularProgressIndicator(
                           color: AppColors.primary,
@@ -151,9 +164,9 @@ class _ListPageState extends State<ListPage> {
                     }
 
                     // 4. Handle Data
-                    final allItems = snapshot.data ?? [];
+                    _currentItems = snapshot.data ?? [];
 
-                    if (allItems.isEmpty) {
+                    if (_currentItems.isEmpty) {
                       return Center(
                         child: Text(
                           "No items yet. Click the + button!",
@@ -166,8 +179,9 @@ class _ListPageState extends State<ListPage> {
                       future: SharedPreferencesController()
                           .fetchCategoriesOrder(categories, widget.list.id),
                       builder: (context, sortedCategoriesSnapshot) {
-                        if (!sortedCategoriesSnapshot.hasData && sortedCategoriesSnapshot.connectionState ==
-                            ConnectionState.waiting) {
+                        if (!sortedCategoriesSnapshot.hasData &&
+                            sortedCategoriesSnapshot.connectionState ==
+                                ConnectionState.waiting) {
                           return const Center(
                             child: CircularProgressIndicator(
                               color: AppColors.primary,
@@ -183,7 +197,7 @@ class _ListPageState extends State<ListPage> {
                           padding: const EdgeInsets.only(bottom: 120),
                           itemBuilder: (context, categoryIndex) {
                             final category = sortedCategories[categoryIndex];
-                            final categoryItems = allItems
+                            final categoryItems = _currentItems
                                 .where((item) => item.categoryId == category.id)
                                 .toList();
 
@@ -205,7 +219,11 @@ class _ListPageState extends State<ListPage> {
                                   ),
                                 ),
                                 ...categoryItems.map((item) {
-                                  return ItemCard(key: ValueKey(item.id), item: item, list: liveList);
+                                  return ItemCard(
+                                    key: ValueKey(item.id),
+                                    item: item,
+                                    list: liveList,
+                                  );
                                 }),
                               ],
                             );

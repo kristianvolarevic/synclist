@@ -92,7 +92,7 @@ class _CategoriesState extends State<Categories> {
 
                     // Save the new order to shared preferences
                     SharedPreferencesController().saveCategoriesOrder(
-                      categories,
+                      _localCategories!,
                       widget.list.id,
                     );
                   },
