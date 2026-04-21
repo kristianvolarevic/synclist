@@ -1,4 +1,4 @@
-package com.example.household_groceries
+package com.kristianvolarevic.synclist
 
 import io.flutter.embedding.android.FlutterActivity
 

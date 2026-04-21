@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:262681398698:android:0f3f5232403ceda77eafd3",
+        "mobilesdk_app_id": "1:262681398698:android:328041fe95a3ec207eafd3",
         "android_client_info": {
-          "package_name": "com.example.household_groceries"
+          "package_name": "com.kristianvolarevic.synclist"
         }
       },
       "oauth_client": [],
