@@ -82,6 +82,64 @@ class _AddItemDialogState extends State<AddItemDialog> {
     }
   }
 
+  // ---------------------- METHOD: CREATE NEW CATEGORY ----------------------
+  Future<void> _handleCreateNewCategory() async {
+    String newCatName = "";
+
+    final String? createdId = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("New Category", style: AppFonts.headerText(context)),
+        content: TextField(
+          autofocus: true,
+          textCapitalization: TextCapitalization.words,
+          decoration: const InputDecoration(hintText: "e.g. Snacks"),
+          onChanged: (val) => newCatName = val,
+          style: AppFonts.subHeadingText(context),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            style: TextButton.styleFrom(
+              textStyle: AppFonts.subHeadingText(context),
+              foregroundColor: AppColors.primary,
+            ),
+            child: const Text("Cancel"),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              if (newCatName.trim().isEmpty) return;
+
+              // Re-use your existing Firebase logic
+              // Note: Update this to return the ID if possible, or refetch
+              await FirebaseController().addNewCategory(
+                newCatName,
+                widget.list,
+              );
+              Navigator.pop(context, "REFRESH");
+            },
+            style: TextButton.styleFrom(
+              textStyle: AppFonts.subHeadingText(context),
+              foregroundColor: AppColors.primary,
+            ),
+            child: const Text("Create"),
+          ),
+        ],
+      ),
+    );
+
+    if (createdId == "REFRESH") {
+      // Reload categories and try to pick the newest one
+      await _loadCategories();
+      setState(() {
+        // Logic to auto-select the one you just made based on name
+        _selectedCategoryId = _categories
+            .firstWhere((c) => c.name == newCatName)
+            .id;
+      });
+    }
+  }
+
   // ---------------------- BUILD METHOD ----------------------
   @override
   Widget build(BuildContext context) {
@@ -120,14 +178,40 @@ class _AddItemDialogState extends State<AddItemDialog> {
                       ),
 
                       initialValue: _selectedCategoryId,
-                      items: _categories.map((cat) {
-                        return DropdownMenuItem(
-                          value: cat.id,
-                          child: Text(cat.name),
-                        );
-                      }).toList(),
-                      onChanged: (val) =>
-                          setState(() => _selectedCategoryId = val),
+                      items: [
+                        ..._categories.map((cat) {
+                          return DropdownMenuItem(
+                            value: cat.id,
+                            child: Text(cat.name),
+                          );
+                        }),
+
+                        const DropdownMenuItem(
+                          value: "ADD_NEW",
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.add,
+                                size: 18,
+                                color: AppColors.primary,
+                              ),
+                              SizedBox(width: 8),
+                              Text(
+                                "Create New Category",
+                                style: TextStyle(color: AppColors.primary),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+
+                      onChanged: (val) {
+                        if (val == "ADD_NEW") {
+                          _handleCreateNewCategory();
+                        } else {
+                          setState(() => _selectedCategoryId = val);
+                        }
+                      },
                       validator: (val) =>
                           val == null ? 'Please select a category' : null,
                       style: AppFonts.subHeadingText(context),

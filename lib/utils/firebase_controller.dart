@@ -31,6 +31,13 @@ class FirebaseController {
   final itemsCollection = 'items';
   final shareCollection = 'share_codes';
 
+  final List<String> defaultCategories = [
+    "Fruit",
+    "Vegatables",
+    "Dairy",
+    "Meat",
+  ];
+
   // ----------------------------------------------------------- AUTHENTICATION METHODS -------------------------------------------------------------------------------
   // ---------------------- METHOD: LOGIN ----------------------
   Future<void> login(
@@ -221,6 +228,19 @@ class FirebaseController {
 
       // Add the list to Firestore
       final docRef = await db.collection(listCollection).add(newList.toMap());
+
+      await docRef.update({'id': docRef.id});
+
+      // Loop through default categories and add them
+      for (String categoryName in defaultCategories) {
+        Category newCategory = Category(id: '', name: categoryName);
+
+        await db
+            .collection(listCollection)
+            .doc(docRef.id)
+            .collection(categoriesCollection)
+            .add(newCategory.toMap());
+      }
 
       // Store the list in the users collection under the current user
       await db.collection(userCollection).doc(auth.currentUser!.uid).update({

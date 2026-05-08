@@ -3,6 +3,7 @@
 // --------------------------------------------------------------------------------------------
 // Flutter Imports
 import 'package:flutter/material.dart';
+import 'dart:ui';
 
 // App Imports
 import 'package:synclist/common_widgets/status_bar_page.dart';
@@ -79,6 +80,41 @@ class _CategoriesState extends State<Categories> {
                 body: ReorderableListView.builder(
                   itemCount: _localCategories!.length,
                   padding: EdgeInsets.only(bottom: 100),
+                  proxyDecorator:
+                      (Widget child, int index, Animation<double> animation) {
+                        return AnimatedBuilder(
+                          animation: animation,
+                          builder: (BuildContext context, Widget? child) {
+                            // We use a slight scale and elevation to make it "pop"
+                            final double animValue = Curves.easeInOut.transform(
+                              animation.value,
+                            );
+                            final double elevation = lerpDouble(
+                              0,
+                              8,
+                              animValue,
+                            )!;
+                            final double scale = lerpDouble(
+                              1,
+                              1.02,
+                              animValue,
+                            )!;
+
+                            return Transform.scale(
+                              scale: scale,
+                              child: Material(
+                                elevation: elevation,
+                                color: Colors
+                                    .transparent, // Keeps your card's original color
+                                shadowColor: Colors.black.withOpacity(0.5),
+                                borderRadius: BorderRadius.circular(12),
+                                child: child,
+                              ),
+                            );
+                          },
+                          child: child,
+                        );
+                      },
                   onReorder: (oldIndex, newIndex) {
                     setState(() {
                       if (newIndex > oldIndex) {

@@ -4,6 +4,7 @@
 
 // Flutter Imports
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 // App Imports
 import 'package:synclist/models/category.dart';
@@ -84,7 +85,17 @@ class CategoryCard extends StatelessWidget {
               ),
               trailing: ReorderableDragStartListener(
                 index: index,
-                child: const Icon(Icons.drag_handle),
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onPanDown: (_) {
+                    HapticFeedback.lightImpact();
+                    print("Haptic Feedback triggered");
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: const Icon(Icons.drag_indicator),
+                  ),
+                ),
               ),
             ),
           ),
