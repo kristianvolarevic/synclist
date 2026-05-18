@@ -6,6 +6,7 @@ class ShoppingList {
   String code;
   bool isShared;
   bool automaticDeletion;
+  bool hasSavedItems;
 
   ShoppingList({
     required this.id,
@@ -15,6 +16,7 @@ class ShoppingList {
     this.code = '',
     this.isShared = false,
     this.automaticDeletion = false,
+    this.hasSavedItems = false,
   });
 
   // Convert ShoppingList to Map for Firestore
@@ -26,6 +28,7 @@ class ShoppingList {
       'code': code,
       'isShared': isShared,
       'automaticDeletion': automaticDeletion,
+      'hasSavedItems': hasSavedItems,
     };
   }
 
@@ -41,6 +44,7 @@ class ShoppingList {
       code: map['shareCode'] ?? '',
       isShared: map['isShared'] ?? false,
       automaticDeletion: map['automaticDeletion'] ?? false,
+      hasSavedItems: map['hasSavedItems'] ?? false,
     );
   }
 }

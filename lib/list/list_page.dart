@@ -3,6 +3,7 @@
 // --------------------------------------------------------------------------------------------
 // Flutter Imports
 import 'package:flutter/material.dart';
+import 'package:synclist/common_widgets/warning_dialog.dart';
 
 // App Imports
 import 'package:synclist/models/shopping_list.dart';
@@ -18,7 +19,15 @@ import 'package:synclist/utils/ad_helper.dart';
 // --------------------------------------------------------------------------------------------
 // ENUM: LIST OPTIONS
 // --------------------------------------------------------------------------------------------
-enum ListOptions { categories, clearSelected, clearAll, settings, leave }
+enum ListOptions {
+  categories,
+  clearSelected,
+  clearAll,
+  saveItems,
+  loadItems,
+  settings,
+  leave,
+}
 
 // --------------------------------------------------------------------------------------------
 // CLASS: LIST PAGE
@@ -71,6 +80,37 @@ class _ListPageState extends State<ListPage> {
         _adHelper.showAdIfAvailable(() async {
           await FirebaseController().clearAllItems(widget.list);
         });
+        break;
+      case ListOptions.saveItems:
+        if (_currentItems.isEmpty) {
+          showMessage(context, "No items to save, try adding an item first!");
+          break;
+        }
+
+        if (widget.list.hasSavedItems) {
+          final bool? confirmed = await showDialog<bool>(
+            context: context,
+            builder: (BuildContext context) {
+              return WarningDialog(
+                warningMessage:
+                    'Items already saved! Do you want to overwrite the current save?',
+              );
+            },
+          );
+
+          if (confirmed == false) break;
+        }
+        await FirebaseController().saveItemsInList(widget.list.id);
+        break;
+      case ListOptions.loadItems:
+        if (widget.list.hasSavedItems == false) {
+          showMessage(
+            context,
+            "No items have been saved yet, try again after saving some items!",
+          );
+          break;
+        }
+        await FirebaseController().loadSavedItemsFromList(widget.list.id);
         break;
       case ListOptions.settings:
         Navigator.push(
@@ -277,6 +317,14 @@ class _ListPageState extends State<ListPage> {
           const PopupMenuItem<ListOptions>(
             value: ListOptions.clearAll,
             child: Text('Clear All'),
+          ),
+          const PopupMenuItem<ListOptions>(
+            value: ListOptions.saveItems,
+            child: Text('Save Items'),
+          ),
+          const PopupMenuItem<ListOptions>(
+            value: ListOptions.loadItems,
+            child: Text('Load Items'),
           ),
           if (isOwner)
             const PopupMenuItem<ListOptions>(

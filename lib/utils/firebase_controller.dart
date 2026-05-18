@@ -29,6 +29,7 @@ class FirebaseController {
   final listCollection = 'lists';
   final categoriesCollection = 'categories';
   final itemsCollection = 'items';
+  final savedItemsCollection = 'saved_items';
   final shareCollection = 'share_codes';
 
   final List<String> defaultCategories = [
@@ -383,6 +384,94 @@ class FirebaseController {
       });
     } catch (e) {
       throw CustomExceptions(ExceptionType.failedToDeleteFromDatabase);
+    }
+  }
+
+  // ---------------------- METHOD: Save Items In List ----------------------
+  Future<void> saveItemsInList(String listId) async {
+    try {
+      // Get the items from the list
+      final itemsSnapshot = await db
+          .collection(listCollection)
+          .doc(listId)
+          .collection(itemsCollection)
+          .get();
+
+      final oldSavedSnapshot = await db
+          .collection(listCollection)
+          .doc(listId)
+          .collection(savedItemsCollection)
+          .get();
+
+      // Initialise batch write
+      final WriteBatch batch = db.batch();
+
+      // Wipe out old saved items
+      for (var oldDoc in oldSavedSnapshot.docs) {
+        batch.delete(oldDoc.reference);
+      }
+
+      // Loop through the items and copy them into saved items
+      for (var itemDoc in itemsSnapshot.docs) {
+        final DocumentReference savedItemRef = db
+            .collection(listCollection)
+            .doc(listId)
+            .collection(savedItemsCollection)
+            .doc();
+
+        Map<String, dynamic> itemData = itemDoc.data();
+
+        // Updates item fields
+        itemData['id'] = savedItemRef.id;
+        itemData['isCollected'] = false;
+
+        batch.set(savedItemRef, itemData);
+      }
+
+      await batch.commit();
+
+      await db.collection(listCollection).doc(listId).update({
+        'hasSavedItems': true,
+      });
+
+      // Save those items into saved items collection
+    } catch (e) {
+      throw CustomExceptions(ExceptionType.failedToAddToDatabase);
+    }
+  }
+
+  // ---------------------- METHOD: Load Saved Items From List ----------------------
+  Future<void> loadSavedItemsFromList(String listId) async {
+    try {
+      // Get the saved items
+      final savedItemsSnapshot = await db
+          .collection(listCollection)
+          .doc(listId)
+          .collection(savedItemsCollection)
+          .get();
+
+      // Initialise batch write
+      final WriteBatch batch = db.batch();
+
+      // Loop through the saved items and copy them into current items
+      for (var savedItemDoc in savedItemsSnapshot.docs) {
+        final DocumentReference itemRef = db
+            .collection(listCollection)
+            .doc(listId)
+            .collection(itemsCollection)
+            .doc();
+
+        Map<String, dynamic> savedItemData = savedItemDoc.data();
+
+        // Update item ID
+        savedItemData['id'] = itemRef.id;
+
+        batch.set(itemRef, savedItemData);
+      }
+
+      await batch.commit();
+    } catch (e) {
+      throw CustomExceptions(ExceptionType.failedToFetchFromDatabase);
     }
   }
 
