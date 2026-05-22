@@ -3,6 +3,7 @@
 // --------------------------------------------------------------------------------------------
 // Flutter Imports
 import 'package:flutter/material.dart';
+import 'dart:async';
 
 // App Imports
 import 'package:synclist/models/category.dart';
@@ -25,8 +26,10 @@ class _AddItemDialogState extends State<AddItemDialog> {
   // ---------------------- STATE VARIABLES ----------------------
   List<Category> _categories = [];
   bool _isLoading = true;
+  Timer? _debounce;
 
   // ---------------------- FORM FIELDS ----------------------
+  final TextEditingController _itemNameController = TextEditingController();
   String _itemName = '';
   String? _selectedCategoryId;
   bool _isQuantityBased = true;
@@ -36,6 +39,15 @@ class _AddItemDialogState extends State<AddItemDialog> {
   void initState() {
     super.initState();
     _loadCategories();
+    _itemNameController.addListener(_onItemNameChanged);
+  }
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    _itemNameController.removeListener(_onItemNameChanged);
+    _itemNameController.dispose();
+    super.dispose();
   }
 
   // ---------------------- METHOD: LOAD CATEGORIES ----------------------
@@ -68,6 +80,11 @@ class _AddItemDialogState extends State<AddItemDialog> {
 
     try {
       await FirebaseController().addNewItem(newItem, widget.list);
+      await SharedPreferencesController().saveItemCategory(
+        widget.list.id,
+        newItem.name,
+        newItem.categoryId,
+      );
 
       if (!mounted) return;
 
@@ -140,6 +157,32 @@ class _AddItemDialogState extends State<AddItemDialog> {
     }
   }
 
+  // ---------------------- METHOD: ON ITEM NAME CHANGED --------------------
+  Future<void> _onItemNameChanged() async {
+    final String text = _itemNameController.text.trim().toLowerCase();
+    if (text.isEmpty) return;
+
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+
+    _debounce = Timer(const Duration(milliseconds: 500), () async {
+      debugPrint("Debounce complete! Running SharedPrefs looking for: $text");
+    });
+
+    String? matchedCategoryId = await SharedPreferencesController()
+        .fetchItemCategory(widget.list.id, text);
+
+    if (matchedCategoryId == null || matchedCategoryId.isEmpty) return;
+
+    if (matchedCategoryId == _selectedCategoryId) return;
+
+    bool categoryExists = _categories.any((c) => c.id == matchedCategoryId);
+    if (categoryExists) {
+      setState(() {
+        _selectedCategoryId = matchedCategoryId;
+      });
+    }
+  }
+
   // ---------------------- BUILD METHOD ----------------------
   @override
   Widget build(BuildContext context) {
@@ -158,6 +201,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
                   children: [
                     // Item Name Field
                     TextFormField(
+                      controller: _itemNameController,
                       decoration: InputDecoration(
                         labelText: "Item Name",
                         labelStyle: AppFonts.subHeadingText(context),
@@ -165,7 +209,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
                       validator: (value) =>
                           (value == null || value.isEmpty) ? 'Required' : null,
                       textCapitalization: TextCapitalization.words,
-                      onSaved: (value) => _itemName = value!,
+                      onSaved: (value) => _itemName = _itemNameController.text,
                       style: AppFonts.subHeadingText(context),
                     ),
                     const SizedBox(height: 16),

@@ -83,4 +83,46 @@ class SharedPreferencesController {
       throw CustomExceptions(ExceptionType.failedToFetchFromDatabase);
     }
   }
+
+  // ---------------------- METHOD: SAVE ITEM CATEGORY -----------------------
+  Future<void> saveItemCategory(
+    String listId,
+    String itemName,
+    String categoryId,
+  ) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(
+        'category_${listId}_${itemName.toLowerCase()}',
+        categoryId,
+      );
+    } catch (e) {
+      throw CustomExceptions(ExceptionType.failedToAddToDatabase);
+    }
+  }
+
+  // ---------------------- METHOD: FETCH ITEM CATEGORY -----------------------
+  Future<String?> fetchItemCategory(String listId, String itemName) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      String? categoryId = prefs.getString(
+        'category_${listId}_${itemName.toLowerCase()}',
+      );
+
+      return categoryId;
+    } catch (e) {
+      throw CustomExceptions(ExceptionType.failedToFetchFromDatabase);
+    }
+  }
+
+  // ---------------------- METHOD: CLEAR SHARED PREFERENCES -------------------
+  Future<void> clearSharedPreferences() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+
+      await prefs.clear();
+    } catch (e) {
+      throw CustomExceptions(ExceptionType.failedToUpdateDatabase);
+    }
+  }
 }

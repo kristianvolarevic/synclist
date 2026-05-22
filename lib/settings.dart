@@ -43,8 +43,35 @@ class _SettingsState extends State<Settings> {
   }
 
   void _showAbout() {
-    showLicensePage(context: context, applicationLegalese: "@ 2026 Kristian Volarevic");
+    showLicensePage(
+      context: context,
+      applicationLegalese: "@ 2026 Kristian Volarevic",
+    );
   }
+
+  void _clearData() async {
+    try {
+      final bool? confirmed = await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return WarningDialog(
+            warningMessage: "Are you sure you want to clear app data?",
+          );
+        },
+      );
+
+      if (confirmed != true || !mounted) return;
+
+      await SharedPreferencesController().clearSharedPreferences();
+
+      if (!mounted) return;
+      showMessage(context, "Data successfully cleared!");
+    } catch (e) {
+      if (!mounted) return;
+      showMessage(context, "Unable to clear data: ${e.toString()}");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return StatusBarPage(
@@ -75,13 +102,58 @@ class _SettingsState extends State<Settings> {
                 );
               },
             ),
+            const SizedBox(height: 8),
+
             Row(
               children: [
-                ElevatedButton(onPressed: _showAbout, child: Text("About")),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Clear Data",
+                        style: AppFonts.subHeadingText(context),
+                      ),
+                      Text(
+                        "This will clear all data stored on your device, including: Custom category order, theme & item category.",
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(width: 12),
+                ElevatedButton(
+                  onPressed: _clearData,
+                  style: TextButton.styleFrom(
+                    textStyle: AppFonts.subHeadingText(context),
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.red,
+                  ),
+                  child: Text("Clear Data"),
+                ),
               ],
             ),
             Spacer(),
-            ElevatedButton(onPressed: _signOut, child: Text("Sign Out")),
+
+            ElevatedButton(
+              onPressed: _showAbout,
+              style: TextButton.styleFrom(
+                textStyle: AppFonts.subHeadingText(context),
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
+              ),
+              child: Text("About"),
+            ),
+
+            const SizedBox(height: 8),
+            ElevatedButton(
+              onPressed: _signOut,
+              style: TextButton.styleFrom(
+                textStyle: AppFonts.subHeadingText(context),
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.red,
+              ),
+              child: Text("Sign Out"),
+            ),
           ],
         ),
       ),
