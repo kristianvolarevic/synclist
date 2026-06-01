@@ -9,6 +9,9 @@ import 'package:synclist/common_widgets/status_bar_page.dart';
 // App Imports
 import 'package:synclist/utils/utils.dart';
 
+// SVG
+import 'package:flutter_svg/flutter_svg.dart';
+
 // --------------------------------------------------------------------------------------------
 // CLASS: SIGNUP
 // --------------------------------------------------------------------------------------------
@@ -61,6 +64,16 @@ class _SignupState extends State<Signup> {
       }
 
       showMessage(context, "Error signing up: ${e.toString()}");
+    }
+  }
+
+  // ---------------------- METHOD: GOOGLE SIGN IN ----------------------
+  void _handleGoogleSignIn() async {
+    try {
+      await FirebaseController().signInWithGoogle(context);
+    } catch (e) {
+      if (!mounted) return;
+      showMessage(context, "Google login failed: ${e.toString()}");
     }
   }
 
@@ -250,6 +263,70 @@ class _SignupState extends State<Signup> {
                         child: const Text(
                           "Sign Up",
                           style: AppFonts.whiteTextField,
+                        ),
+                      ),
+
+                      const SizedBox(height: 30),
+
+                      // ---------------------------------------------------------------------------------------- NEW: OR DIVIDER
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 20),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Divider(
+                                color: Colors.grey.shade300,
+                                thickness: 1,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                              ),
+                              child: Text(
+                                "OR",
+                                style: AppFonts.textUnfocused(context),
+                              ),
+                            ),
+                            Expanded(
+                              child: Divider(
+                                color: Colors.grey.shade300,
+                                thickness: 1,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      // ---------------------------------------------------------------------------------------- NEW: GOOGLE SIGN IN BUTTON
+                      OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          minimumSize: const Size(double.infinity, 60),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          side: BorderSide(
+                            color: Colors.grey.shade300,
+                            width: 1.5,
+                          ),
+                        ),
+                        onPressed: _handleGoogleSignIn,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SvgPicture.asset(
+                              'assets/icons/google_logo.svg',
+                              height: 24,
+                              width: 24,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              "Continue with Google",
+                              style: AppFonts.subHeadingText(
+                                context,
+                              ).copyWith(fontWeight: FontWeight.bold),
+                            ),
+                          ],
                         ),
                       ),
 

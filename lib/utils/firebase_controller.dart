@@ -17,6 +17,7 @@ import 'package:synclist/models/category.dart';
 // Firebase Imports
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 // --------------------------------------------------------------------------------------------
 // CLASS: FIREBASE CONTROLLER
@@ -24,6 +25,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 class FirebaseController {
   final db = FirebaseFirestore.instance;
   final auth = FirebaseAuth.instance;
+  final GoogleSignIn _googleSignIn = GoogleSignIn.instance;
 
   final userCollection = 'users';
   final listCollection = 'lists';
@@ -215,6 +217,74 @@ class FirebaseController {
     });
   }
 
+  Future<void> initializeGoogleSignIn() async {
+    await _googleSignIn.initialize(
+      clientId:
+          '262681398698-ljpvqh5u5hhtn7vahtokkbboutbjssds.apps.googleusercontent.com',
+    );
+  }
+
+  Future<UserCredential?> signInWithGoogle(BuildContext context) async {
+    try {
+      // 1. Trigger account identity picker
+      final GoogleSignInAccount? googleUser = await _googleSignIn
+          .authenticate();
+
+      if (googleUser == null) return null; // User cancelled the selection
+
+      // 2. Fetch the authentication payload directly
+      // (This automatically brings back standard email and profile values safely)
+      final GoogleSignInAuthentication googleAuth = googleUser.authentication;
+      final String? idToken = googleAuth.idToken;
+
+      final clientAuth = await googleUser.authorizationClient
+          .authorizationForScopes(['email', 'profile']);
+      final String? accessToken = clientAuth!.accessToken;
+
+      // 3. Construct your Firebase network pipeline credential
+      final OAuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: accessToken,
+        idToken: idToken,
+      );
+
+      // 4. Sign into Firebase Auth
+      UserCredential userCredential = await auth.signInWithCredential(
+        credential,
+      );
+      User? user = userCredential.user;
+
+      if (user == null) {
+        throw CustomExceptions(ExceptionType.userNotFound);
+      }
+
+      // 5. Check/Set up Firestore user profile mapping documentation
+      final userDoc = await db.collection(userCollection).doc(user.uid).get();
+
+      if (!userDoc.exists) {
+        await db.collection(userCollection).doc(user.uid).set({
+          'fullName': user.displayName ?? 'Google User',
+          'email': user.email ?? '',
+          'lists': [],
+        });
+      }
+
+      if (!context.mounted) {
+        throw CustomExceptions(ExceptionType.contextNotFound);
+      }
+
+      Navigator.pushAndRemoveUntil(
+        context,
+        slideTransitionRoute(const Home()),
+        (route) => false,
+      );
+
+      return userCredential;
+    } catch (e, stackTrace) {
+      debugPrint("⛔ GOOGLE AUTH CRASH DETAILS: $e");
+      debugPrint("STACK TRACE: $stackTrace");
+      throw CustomExceptions(ExceptionType.failedToFetchFromDatabase);
+    }
+  }
   // ----------------------------------------------------------- LIST METHODS -------------------------------------------------------------------------------
 
   // ---------------------- METHOD: Add New List ----------------------

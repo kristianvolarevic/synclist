@@ -12,7 +12,20 @@
           "package_name": "com.kristianvolarevic.synclist"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "262681398698-7robt35l6efp523k3l9rrkmp5btntne8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.kristianvolarevic.synclist",
+            "certificate_hash": "82d9d2dda7701c3f2388061cbb66c421423d4173"
+          }
+        },
+        {
+          "client_id": "262681398698-ljpvqh5u5hhtn7vahtokkbboutbjssds.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDy-Wy9G9O_sA2QnCRDgGH6QzdAJgjxeIM"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "262681398698-ljpvqh5u5hhtn7vahtokkbboutbjssds.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "262681398698-75icgc75fnh2ql9cjdirgoha9abiknkb.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.householdGroceries"
+              }
+            }
+          ]
         }
       }
     }

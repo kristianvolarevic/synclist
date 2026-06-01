@@ -14,14 +14,19 @@ void main() async {
 
   await Future.wait([
     Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform),
+    //FirebaseController().initializeGoogleSignIn(),
     MobileAds.instance.initialize(),
-    ThemeController.init()
+    ThemeController.init(),
   ]);
 
   // Register licenses
   AppLicenses.registerAllLicenses();
 
   runApp(const MyApp());
+
+  FirebaseController().initializeGoogleSignIn().catchError((error) {
+    debugPrint("Background Google Sign-In init failed: $error");
+  });
 }
 
 class MyApp extends StatelessWidget {
