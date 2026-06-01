@@ -89,7 +89,43 @@ class _SettingsState extends State<Settings> {
               builder: (context, themeMode, child) {
                 return Row(
                   children: [
-                    Text('Dark Mode', style: AppFonts.subHeadingText(context)),
+                    Text('Theme', style: AppFonts.subHeadingText(context)),
+                    const SizedBox(width: 24),
+                    Expanded(
+                      child: DropdownButtonFormField(
+                        initialValue: themeMode,
+                        style: AppFonts.subHeadingText(context),
+                        decoration: InputDecoration(
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        items: const [
+                          DropdownMenuItem(
+                            value: ThemeMode.system,
+                            child: Text('System (Default)'),
+                          ),
+                          DropdownMenuItem(
+                            value: ThemeMode.light,
+                            child: Text('Light'),
+                          ),
+                          DropdownMenuItem(
+                            value: ThemeMode.dark,
+                            child: Text('Dark'),
+                          ),
+                        ],
+                        onChanged: (ThemeMode? newMode) {
+                          if (newMode != null) {
+                            ThemeController.updateTheme(newMode);
+                          }
+                        },
+                      ),
+                    ),
+                    /* Text('Dark Mode', style: AppFonts.subHeadingText(context)),
                     const SizedBox(width: 12),
                     Switch(
                       value: themeMode == ThemeMode.dark,
@@ -97,7 +133,7 @@ class _SettingsState extends State<Settings> {
                         ThemeController.toggleTheme(value);
                       },
                       activeThumbColor: AppColors.secondary(context),
-                    ),
+                    ), */
                   ],
                 );
               },

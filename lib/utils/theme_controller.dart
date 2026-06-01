@@ -11,14 +11,22 @@ class ThemeController {
   );
 
   static Future<void> init() async {
-    bool? isDark = await SharedPreferencesController().fetchTheme();
-    if (isDark != null) {
-      themeMode.value = isDark ? ThemeMode.dark : ThemeMode.light;
+    String? currentTheme = await SharedPreferencesController().fetchTheme();
+    if (currentTheme == null) {
+      return;
+    }
+
+    if (currentTheme == 'light') {
+      themeMode.value = ThemeMode.light;
+    } else if (currentTheme == 'dark') {
+      themeMode.value = ThemeMode.dark;
+    } else {
+      themeMode.value = ThemeMode.system;
     }
   }
 
-  static void toggleTheme(bool isDark) {
-    themeMode.value = isDark ? ThemeMode.dark : ThemeMode.light;
-    SharedPreferencesController().saveTheme(isDark);
+  static void updateTheme(ThemeMode newTheme) {
+    themeMode.value = newTheme;
+    SharedPreferencesController().saveTheme(newTheme.name);
   }
 }
