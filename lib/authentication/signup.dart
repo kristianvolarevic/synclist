@@ -29,6 +29,10 @@ class _SignupState extends State<Signup> {
   String _password = '';
   Timer? _timer;
 
+  // Password visibilities
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
+
   @override
   void dispose() {
     _timer?.cancel();
@@ -68,6 +72,9 @@ class _SignupState extends State<Signup> {
     required ValueKey key,
     TextInputType keyboardType = TextInputType.text,
     bool isPassword = false,
+    bool obscureTextValue = false,
+    bool showToggle = false,
+    VoidCallback? onTogglePressed,
     String? Function(String?)? validator,
     void Function(String?)? onSaved,
   }) {
@@ -82,9 +89,19 @@ class _SignupState extends State<Signup> {
             labelStyle: labelStyle,
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
             prefixIcon: Icon(icon),
+            suffixIcon: showToggle
+                ? IconButton(
+                    onPressed: onTogglePressed,
+                    icon: Icon(
+                      obscureTextValue
+                          ? Icons.visibility_off_outlined
+                          : Icons.visibility_outlined,
+                    ),
+                  )
+                : null,
           ),
           keyboardType: keyboardType,
-          obscureText: isPassword,
+          obscureText: isPassword ? obscureTextValue : false,
           validator: validator,
           onSaved: onSaved,
         ),
@@ -176,6 +193,13 @@ class _SignupState extends State<Signup> {
                         labelStyle: AppFonts.textUnfocused(context),
                         icon: Icons.lock_outline,
                         isPassword: true,
+                        obscureTextValue: _obscurePassword,
+                        showToggle: true,
+                        onTogglePressed: () {
+                          setState(() {
+                            _obscurePassword = !_obscurePassword;
+                          });
+                        },
                         validator: (value) {
                           _password =
                               value ??
@@ -197,6 +221,13 @@ class _SignupState extends State<Signup> {
                         labelStyle: AppFonts.textUnfocused(context),
                         icon: Icons.lock_reset,
                         isPassword: true,
+                        obscureTextValue: _obscureConfirmPassword,
+                        showToggle: true,
+                        onTogglePressed: () {
+                          setState(() {
+                            _obscureConfirmPassword = !_obscureConfirmPassword;
+                          });
+                        },
                         validator: (value) {
                           if (value != _password) {
                             return 'Passwords do not match.';

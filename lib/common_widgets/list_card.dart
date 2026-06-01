@@ -3,7 +3,6 @@
 // --------------------------------------------------------------------------------------------
 
 // Flutter Imports
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:synclist/list/list_page.dart';
 

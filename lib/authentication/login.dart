@@ -27,6 +27,7 @@ class _LoginState extends State<Login> {
   final _formKey = GlobalKey<FormState>();
   String _email = '';
   String _password = '';
+  bool _obscurePassword = true;
 
   // ---------------------- METHOD: TRY SUBMIT ----------------------
   void _trySubmit() async {
@@ -126,8 +127,20 @@ class _LoginState extends State<Login> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         prefixIcon: const Icon(Icons.lock_outline),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscurePassword
+                                ? Icons.visibility_off_outlined
+                                : Icons.visibility_outlined,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _obscurePassword = !_obscurePassword;
+                            });
+                          },
+                        ),
                       ),
-                      obscureText: true,
+                      obscureText: _obscurePassword,
                       validator: (value) {
                         if (value == null || value.length < 6) {
                           return 'Password must be at least 6 characters long.';
