@@ -10,6 +10,10 @@ import 'package:synclist/home/add_list_dialog.dart';
 import 'package:synclist/utils/utils.dart';
 import 'package:synclist/common_widgets/list_card.dart';
 import 'package:synclist/profile.dart';
+import 'package:synclist/utils/ad_helper.dart';
+
+// Google Imports
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 // --------------------------------------------------------------------------------------------
 // CLASS: HOME
@@ -25,9 +29,29 @@ class Home extends StatefulWidget {
 // CLASS: _HOME STATE (Page Layout & Logic)
 // --------------------------------------------------------------------------------------------
 class _HomeState extends State<Home> {
+  BannerAd? _bannerAd;
+  bool _isBannerAdLoaded = false;
+  final AdHelper _adHelper = AdHelper();
+
   @override
   initState() {
     super.initState();
+
+    //Load Ad
+    _bannerAd = _adHelper.loadBannerAd(
+      onAdLoaded: () {
+        setState(() => _isBannerAdLoaded = true);
+      },
+      onAdFailedToLoad: (error) {
+        debugPrint("❌ UI Layer caught Banner Error: $error");
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    _bannerAd?.dispose();
+    super.dispose();
   }
 
   @override
@@ -51,22 +75,23 @@ class _HomeState extends State<Home> {
                   child: CircularProgressIndicator(color: AppColors.primary),
                 );
               }
-        
+
               if (snapshot.hasError) {
                 return Center(child: Text("Error: ${snapshot.error}"));
               }
-        
+
               final allLists = snapshot.data ?? [];
-        
+
               if (allLists.isEmpty) {
                 return Center(
                   child: Text(
                     "No lists yet. Click the + button to create or join one!",
-                    style: AppFonts.subHeadingText(context), textAlign: TextAlign.center,
+                    style: AppFonts.subHeadingText(context),
+                    textAlign: TextAlign.center,
                   ),
                 );
               }
-        
+
               return ListView.builder(
                 itemCount: allLists.length,
                 padding: EdgeInsets.only(bottom: 100),
@@ -78,7 +103,8 @@ class _HomeState extends State<Home> {
               );
             },
           ),
-          floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerFloat,
           floatingActionButton: SizedBox(
             width: 75,
             height: 75,
@@ -99,6 +125,14 @@ class _HomeState extends State<Home> {
               ),
             ),
           ),
+          bottomNavigationBar: _isBannerAdLoaded
+              ? Container(
+                  alignment: Alignment.center,
+                  width: _bannerAd!.size.width.toDouble(),
+                  height: _bannerAd!.size.height.toDouble(),
+                  child: AdWidget(ad: _bannerAd!),
+                )
+              : const SizedBox.shrink(),
         ),
       ),
     );

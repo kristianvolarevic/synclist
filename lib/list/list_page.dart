@@ -77,6 +77,16 @@ class _ListPageState extends State<ListPage> {
 
         break;
       case ListOptions.clearAll:
+        final bool? confirmed = await showDialog<bool>(
+          context: context,
+          builder: (BuildContext context) {
+            return WarningDialog(
+              warningMessage:
+                  "This action will remove all items! Are you sure you want to clear all?",
+            );
+          },
+        );
+        if (confirmed == false) break;
         _adHelper.showAdIfAvailable(() async {
           await FirebaseController().clearAllItems(widget.list);
         });
