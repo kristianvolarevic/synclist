@@ -106,7 +106,7 @@ class _CategoriesState extends State<Categories> {
                                 elevation: elevation,
                                 color: Colors
                                     .transparent, // Keeps your card's original color
-                                shadowColor: Colors.black.withOpacity(0.5),
+                                shadowColor: Colors.black.withValues(alpha: 0.5),
                                 borderRadius: BorderRadius.circular(12),
                                 child: child,
                               ),
@@ -115,7 +115,7 @@ class _CategoriesState extends State<Categories> {
                           child: child,
                         );
                       },
-                  onReorder: (oldIndex, newIndex) {
+                  onReorderItem: (oldIndex, newIndex) {
                     setState(() {
                       if (newIndex > oldIndex) {
                         newIndex -= 1;

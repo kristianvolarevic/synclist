@@ -133,6 +133,8 @@ class _AddItemDialogState extends State<AddItemDialog> {
                 newCatName,
                 widget.list,
               );
+
+              if(!context.mounted) return;
               Navigator.pop(context, "REFRESH");
             },
             style: TextButton.styleFrom(

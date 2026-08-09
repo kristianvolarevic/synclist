@@ -227,10 +227,8 @@ class FirebaseController {
   Future<UserCredential?> signInWithGoogle(BuildContext context) async {
     try {
       // 1. Trigger account identity picker
-      final GoogleSignInAccount? googleUser = await _googleSignIn
+      final GoogleSignInAccount googleUser = await _googleSignIn
           .authenticate();
-
-      if (googleUser == null) return null; // User cancelled the selection
 
       // 2. Fetch the authentication payload directly
       // (This automatically brings back standard email and profile values safely)
@@ -239,7 +237,7 @@ class FirebaseController {
 
       final clientAuth = await googleUser.authorizationClient
           .authorizationForScopes(['email', 'profile']);
-      final String? accessToken = clientAuth!.accessToken;
+      final String accessToken = clientAuth!.accessToken;
 
       // 3. Construct your Firebase network pipeline credential
       final OAuthCredential credential = GoogleAuthProvider.credential(

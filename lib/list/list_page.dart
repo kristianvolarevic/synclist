@@ -14,7 +14,6 @@ import 'package:synclist/models/item.dart';
 import 'package:synclist/list/add_item_dialog.dart';
 import 'package:synclist/list/item_card.dart';
 import 'package:synclist/list/list_settings.dart';
-import 'package:synclist/utils/ad_helper.dart';
 
 // --------------------------------------------------------------------------------------------
 // ENUM: LIST OPTIONS
@@ -42,13 +41,11 @@ class ListPage extends StatefulWidget {
 }
 
 class _ListPageState extends State<ListPage> {
-  final AdHelper _adHelper = AdHelper();
   List<Item> _currentItems = [];
 
   @override
   void initState() {
     super.initState();
-    _adHelper.loadInterstitialAd();
   }
 
   // ---------------------- METHOD: HANDLE MENU SELECTION ----------------------
@@ -63,21 +60,11 @@ class _ListPageState extends State<ListPage> {
         });
         break;
       case ListOptions.clearSelected:
-        bool isAllCollected =
-            _currentItems.isNotEmpty &&
-            _currentItems.every((item) => item.isCollected);
-
-        if (isAllCollected) {
-          _adHelper.showAdIfAvailable(() async {
-            await FirebaseController().clearSelectedItems(widget.list);
-          });
-        } else {
-          await FirebaseController().clearSelectedItems(widget.list);
-        }
+        await FirebaseController().clearSelectedItems(widget.list);
 
         break;
       case ListOptions.clearAll:
-        final bool? confirmed = await showDialog<bool>(
+        await showDialog<bool>(
           context: context,
           builder: (BuildContext context) {
             return WarningDialog(
@@ -86,10 +73,6 @@ class _ListPageState extends State<ListPage> {
             );
           },
         );
-        if (confirmed == false) break;
-        _adHelper.showAdIfAvailable(() async {
-          await FirebaseController().clearAllItems(widget.list);
-        });
         break;
       case ListOptions.saveItems:
         if (_currentItems.isEmpty) {

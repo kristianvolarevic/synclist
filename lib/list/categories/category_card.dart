@@ -89,7 +89,6 @@ class CategoryCard extends StatelessWidget {
                   behavior: HitTestBehavior.opaque,
                   onPanDown: (_) {
                     HapticFeedback.lightImpact();
-                    print("Haptic Feedback triggered");
                   },
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
