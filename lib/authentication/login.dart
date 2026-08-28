@@ -2,6 +2,8 @@
 // IMPORTS
 // --------------------------------------------------------------------------------------------
 // Flutter Imports
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 // App Imports
@@ -202,65 +204,70 @@ class _LoginState extends State<Login> {
                     ),
 
                     const SizedBox(height: 30),
-                    // ---------------------------------------------------------------------------------------- NEW: OR DIVIDER
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 20),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Divider(
-                              color: Colors.grey.shade300,
-                              thickness: 1,
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
-                            child: Text(
-                              "OR",
-                              style: AppFonts.textUnfocused(context),
-                            ),
-                          ),
-                          Expanded(
-                            child: Divider(
-                              color: Colors.grey.shade300,
-                              thickness: 1,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
 
-                    // ---------------------------------------------------------------------------------------- NEW: GOOGLE SIGN IN BUTTON
-                    OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        minimumSize: const Size(double.infinity, 60),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        side: BorderSide(
-                          color: Colors.grey.shade300,
-                          width: 1.5,
+                    if (!Platform.isIOS) ...[
+                      // ---------------------------------------------------------------------------------------- NEW: OR DIVIDER
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 20),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Divider(
+                                color: Colors.grey.shade300,
+                                thickness: 1,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                              ),
+                              child: Text(
+                                "OR",
+                                style: AppFonts.textUnfocused(context),
+                              ),
+                            ),
+                            Expanded(
+                              child: Divider(
+                                color: Colors.grey.shade300,
+                                thickness: 1,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      onPressed: _handleGoogleSignIn,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SvgPicture.asset(
-                            'assets/icons/google_logo.svg',
-                            height: 24,
-                            width: 24,
+
+                      // ---------------------------------------------------------------------------------------- NEW: GOOGLE SIGN IN BUTTON
+                      OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          minimumSize: const Size(double.infinity, 60),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
                           ),
-                          const SizedBox(width: 8),
-                          Text(
-                            "Continue with Google",
-                            style: AppFonts.subHeadingText(
-                              context,
-                            ).copyWith(fontWeight: FontWeight.bold),
+                          side: BorderSide(
+                            color: Colors.grey.shade300,
+                            width: 1.5,
                           ),
-                        ],
+                        ),
+                        onPressed: _handleGoogleSignIn,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SvgPicture.asset(
+                              'assets/icons/google_logo.svg',
+                              height: 24,
+                              width: 24,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              "Continue with Google",
+                              style: AppFonts.subHeadingText(
+                                context,
+                              ).copyWith(fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
+                    ],
 
                     const SizedBox(height: 30),
                     // ---------------------------------------------------------------------------------------- SIGNUP LINK

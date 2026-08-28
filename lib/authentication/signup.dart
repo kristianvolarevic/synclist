@@ -2,7 +2,10 @@
 // IMPORTS
 // --------------------------------------------------------------------------------------------
 // Flutter Imports
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'dart:async';
 import 'package:synclist/common_widgets/status_bar_page.dart';
 
@@ -74,6 +77,16 @@ class _SignupState extends State<Signup> {
     } catch (e) {
       if (!mounted) return;
       showMessage(context, "Google login failed: ${e.toString()}");
+    }
+  }
+
+  // ---------------------- METHOD: APPLE SIGN IN ----------------------
+  void _handleAppleSignIn() async {
+    try {
+      await FirebaseController().signInWithApple(context);
+    } catch (e) {
+      if (!mounted) return;
+      showMessage(context, "Apple sign in failed: ${e.toString()}");
     }
   }
 
@@ -268,67 +281,69 @@ class _SignupState extends State<Signup> {
 
                       const SizedBox(height: 30),
 
-                      // ---------------------------------------------------------------------------------------- NEW: OR DIVIDER
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 20),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Divider(
-                                color: Colors.grey.shade300,
-                                thickness: 1,
+                      if (!Platform.isIOS) ...[
+                        // ---------------------------------------------------------------------------------------- NEW: OR DIVIDER
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 20),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Divider(
+                                  color: Colors.grey.shade300,
+                                  thickness: 1,
+                                ),
                               ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                ),
+                                child: Text(
+                                  "OR",
+                                  style: AppFonts.textUnfocused(context),
+                                ),
                               ),
-                              child: Text(
-                                "OR",
-                                style: AppFonts.textUnfocused(context),
+                              Expanded(
+                                child: Divider(
+                                  color: Colors.grey.shade300,
+                                  thickness: 1,
+                                ),
                               ),
-                            ),
-                            Expanded(
-                              child: Divider(
-                                color: Colors.grey.shade300,
-                                thickness: 1,
-                              ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
 
-                      // ---------------------------------------------------------------------------------------- NEW: GOOGLE SIGN IN BUTTON
-                      OutlinedButton(
-                        style: OutlinedButton.styleFrom(
-                          minimumSize: const Size(double.infinity, 60),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+                        // ---------------------------------------------------------------------------------------- GOOGLE SIGN IN BUTTON
+                        OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            minimumSize: const Size(double.infinity, 60),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            side: BorderSide(
+                              color: Colors.grey.shade300,
+                              width: 1.5,
+                            ),
                           ),
-                          side: BorderSide(
-                            color: Colors.grey.shade300,
-                            width: 1.5,
+                          onPressed: _handleGoogleSignIn,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SvgPicture.asset(
+                                'assets/icons/google_logo.svg',
+                                height: 24,
+                                width: 24,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                "Continue with Google",
+                                style: AppFonts.subHeadingText(
+                                  context,
+                                ).copyWith(fontWeight: FontWeight.bold),
+                              ),
+                            ],
                           ),
                         ),
-                        onPressed: _handleGoogleSignIn,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SvgPicture.asset(
-                              'assets/icons/google_logo.svg',
-                              height: 24,
-                              width: 24,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              "Continue with Google",
-                              style: AppFonts.subHeadingText(
-                                context,
-                              ).copyWith(fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
-                      ),
+                      ],
 
                       const SizedBox(height: 30),
 

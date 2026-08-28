@@ -3,6 +3,7 @@
 // --------------------------------------------------------------------------------------------
 // Flutter Imports
 import 'package:flutter/material.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'dart:async';
 import 'dart:math';
 
@@ -227,8 +228,7 @@ class FirebaseController {
   Future<UserCredential?> signInWithGoogle(BuildContext context) async {
     try {
       // 1. Trigger account identity picker
-      final GoogleSignInAccount googleUser = await _googleSignIn
-          .authenticate();
+      final GoogleSignInAccount googleUser = await _googleSignIn.authenticate();
 
       // 2. Fetch the authentication payload directly
       // (This automatically brings back standard email and profile values safely)
@@ -283,6 +283,96 @@ class FirebaseController {
       throw CustomExceptions(ExceptionType.failedToFetchFromDatabase);
     }
   }
+
+  Future<UserCredential?> signInWithApple(BuildContext context) async {
+    try {
+      // 1. Get Credentials from iOS
+      debugPrint("Step 1");
+
+      // final appleCredential = await SignInWithApple.getAppleIDCredential(
+      //   scopes: [
+      //     AppleIDAuthorizationScopes.email,
+      //     AppleIDAuthorizationScopes.fullName,
+      //   ],
+      // );
+
+      AuthorizationCredentialAppleID appleCredential;
+      try {
+        appleCredential = await SignInWithApple.getAppleIDCredential(
+          scopes: [
+            AppleIDAuthorizationScopes.email,
+            AppleIDAuthorizationScopes.fullName,
+          ],
+        );
+      } catch (e) {
+        debugPrint("⛔ Native Apple Sign-In Exception: $e");
+        rethrow;
+      }
+
+      // 2. Create Oauth for firebase
+      debugPrint("Step 2");
+
+      final OAuthProvider oAuthProvider = OAuthProvider('apple.com');
+      final AuthCredential credential = oAuthProvider.credential(
+        idToken: appleCredential.identityToken,
+        accessToken: appleCredential.authorizationCode,
+      );
+
+      // 3. Authenticate with firebase
+      debugPrint("Step 3");
+
+      UserCredential userCredential = await auth.signInWithCredential(
+        credential,
+      );
+      User? user = userCredential.user;
+
+      if (user == null) {
+        debugPrint("ERROR");
+
+        throw CustomExceptions(ExceptionType.userNotFound);
+      }
+
+      // 4. Get full name from apple
+      debugPrint("Step 4");
+
+      String displayName = 'Apple User';
+      if (appleCredential.givenName != null ||
+          appleCredential.familyName != null) {
+        displayName =
+            '${appleCredential.givenName ?? ''} ${appleCredential.familyName ?? ''}'
+                .trim();
+        await user.updateDisplayName(displayName);
+      } else if (user.displayName != null && user.displayName!.isNotEmpty) {
+        displayName = user.displayName!;
+      }
+
+      // 5. Create or confrim user in firebase.
+      final userDoc = await db.collection(userCollection).doc(user.uid).get();
+
+      if (!userDoc.exists) {
+        await db.collection(userCollection).doc(user.uid).set({
+          'fullName': displayName,
+          'email': user.email ?? appleCredential.email ?? '',
+          'lists': [],
+        });
+      }
+
+      if (!context.mounted) {
+        throw CustomExceptions(ExceptionType.contextNotFound);
+      }
+
+      // 6. Navigate home
+      Navigator.pushAndRemoveUntil(
+        context,
+        slideTransitionRoute(const Home()),
+        (route) => false,
+      );
+      return userCredential;
+    } catch (e) {
+      throw CustomExceptions(ExceptionType.failedToFetchFromDatabase);
+    }
+  }
+
   // ----------------------------------------------------------- LIST METHODS -------------------------------------------------------------------------------
 
   // ---------------------- METHOD: Add New List ----------------------
@@ -315,7 +405,9 @@ class FirebaseController {
       await db.collection(userCollection).doc(auth.currentUser!.uid).update({
         'lists': FieldValue.arrayUnion([docRef.id]),
       });
-    } catch (e) {
+    } catch (e, stackTrace) {
+      debugPrint("⛔ GOOGLE AUTH CRASH DETAILS: $e");
+      debugPrint("STACK TRACE: $stackTrace");
       throw CustomExceptions(ExceptionType.failedToAddToDatabase);
     }
   }
