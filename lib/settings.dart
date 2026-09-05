@@ -2,6 +2,7 @@
 // IMPORTS
 // ----------------------------------------------------------------------------
 // Flutter Imports
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:synclist/authentication/welcome.dart';
 
@@ -69,6 +70,54 @@ class _SettingsState extends State<Settings> {
     } catch (e) {
       if (!mounted) return;
       showMessage(context, "Unable to clear data: ${e.toString()}");
+    }
+  }
+
+  void _deleteAccount() async {
+    final bool? confirmed = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return WarningDialog(
+          warningMessage:
+              "Are you sure you want to delete your account? This action cannot be undone.",
+        );
+      },
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    try {
+      final user = FirebaseController().auth.currentUser;
+
+      if (user != null) {
+        await user.delete();
+
+        await SharedPreferencesController().clearSharedPreferences();
+
+        if (!mounted) return;
+
+        showMessage(context, "Your account has been deleted.");
+
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const Welcome()),
+          (route) => false,
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      if (!mounted) return;
+
+      if (e.code == 'requires-recent-login') {
+        showMessage(
+          context,
+          "For security reasons, please log out and log back in before deleting your account.",
+        );
+      } else {
+        showMessage(context, "Error deleting account: ${e.message}");
+      }
+    } catch (e) {
+      if (!mounted) return;
+      showMessage(context, "An unexpected error occured: ${e.toString()}");
     }
   }
 
@@ -180,6 +229,16 @@ class _SettingsState extends State<Settings> {
               child: Text("About"),
             ),
 
+            const SizedBox(height: 8),
+            ElevatedButton(
+              onPressed: _deleteAccount,
+              style: TextButton.styleFrom(
+                textStyle: AppFonts.subHeadingText(context),
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.red,
+              ),
+              child: Text("Delete Account"),
+            ),
             const SizedBox(height: 8),
             ElevatedButton(
               onPressed: _signOut,
