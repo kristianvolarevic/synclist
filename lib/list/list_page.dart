@@ -49,22 +49,22 @@ class _ListPageState extends State<ListPage> {
   }
 
   // ---------------------- METHOD: HANDLE MENU SELECTION ----------------------
-  void _handleMenuSelection(ListOptions value) async {
+  void _handleMenuSelection(ListOptions value, ShoppingList liveList) async {
     switch (value) {
       case ListOptions.categories:
         Navigator.push(
           context,
-          slideTransitionRoute(Categories(list: widget.list)),
+          slideTransitionRoute(Categories(list: liveList)),
         ).then((_) {
           setState(() {});
         });
         break;
       case ListOptions.clearSelected:
-        await FirebaseController().clearSelectedItems(widget.list);
+        await FirebaseController().clearSelectedItems(liveList);
 
         break;
       case ListOptions.clearAll:
-        await showDialog<bool>(
+        final bool? confirmed = await showDialog<bool>(
           context: context,
           builder: (BuildContext context) {
             return WarningDialog(
@@ -73,6 +73,9 @@ class _ListPageState extends State<ListPage> {
             );
           },
         );
+        if (confirmed == true) {
+          await FirebaseController().clearAllItems(liveList);
+        }
         break;
       case ListOptions.saveItems:
         if (_currentItems.isEmpty) {
@@ -80,7 +83,7 @@ class _ListPageState extends State<ListPage> {
           break;
         }
 
-        if (widget.list.hasSavedItems) {
+        if (liveList.hasSavedItems) {
           final bool? confirmed = await showDialog<bool>(
             context: context,
             builder: (BuildContext context) {
@@ -93,27 +96,27 @@ class _ListPageState extends State<ListPage> {
 
           if (confirmed == false) break;
         }
-        await FirebaseController().saveItemsInList(widget.list.id);
+        await FirebaseController().saveItemsInList(liveList.id);
         break;
       case ListOptions.loadItems:
-        if (widget.list.hasSavedItems == false) {
+        if (!liveList.hasSavedItems) {
           showMessage(
             context,
             "No items have been saved yet, try again after saving some items!",
           );
           break;
         }
-        await FirebaseController().loadSavedItemsFromList(widget.list.id);
+        await FirebaseController().loadSavedItemsFromList(liveList.id);
         break;
       case ListOptions.settings:
         Navigator.push(
           context,
-          slideTransitionRoute(ListSettings(listId: widget.list.id)),
+          slideTransitionRoute(ListSettings(listId: liveList.id)),
         );
         break;
       case ListOptions.leave:
         Navigator.pop(context);
-        await FirebaseController().leaveListWithId(widget.list.id);
+        await FirebaseController().leaveListWithId(liveList.id);
         break;
     }
   }
@@ -156,7 +159,7 @@ class _ListPageState extends State<ListPage> {
           ),
 
           // ---------------------- Right side menu for list options ----------------------
-          trailing: _buildPopupMenu(),
+          trailing: _buildPopupMenu(liveList),
 
           body: Scaffold(
             body: StreamBuilder(
@@ -291,9 +294,9 @@ class _ListPageState extends State<ListPage> {
   }
 
   // ---------------------- WIDGET: POPUP MENU ----------------------
-  Widget _buildPopupMenu() {
+  Widget _buildPopupMenu(ShoppingList liveList) {
     return PopupMenuButton<ListOptions>(
-      onSelected: _handleMenuSelection,
+      onSelected: (value) => _handleMenuSelection(value, liveList),
       itemBuilder: (BuildContext context) {
         final isOwner =
             FirebaseController().auth.currentUser!.uid == widget.list.owner;

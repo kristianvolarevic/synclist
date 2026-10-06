@@ -85,6 +85,9 @@ class _AddItemDialogState extends State<AddItemDialog> {
         newItem.name,
         newItem.categoryId,
       );
+      debugPrint(
+        "Saving item category for '${newItem.name}': ${newItem.categoryId}",
+      );
 
       if (!mounted) return;
 
@@ -134,7 +137,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
                 widget.list,
               );
 
-              if(!context.mounted) return;
+              if (!context.mounted) return;
               Navigator.pop(context, "REFRESH");
             },
             style: TextButton.styleFrom(
@@ -164,25 +167,27 @@ class _AddItemDialogState extends State<AddItemDialog> {
     final String text = _itemNameController.text.trim().toLowerCase();
     if (text.isEmpty) return;
 
+    debugPrint("Item name changed: $text");
+
     if (_debounce?.isActive ?? false) _debounce!.cancel();
 
     _debounce = Timer(const Duration(milliseconds: 500), () async {
-      debugPrint("Debounce complete! Running SharedPrefs looking for: $text");
+      String? matchedCategoryId = await SharedPreferencesController()
+          .fetchItemCategory(widget.list.id, text);
+
+      if (matchedCategoryId == null || matchedCategoryId.isEmpty) return;
+
+      if (matchedCategoryId == _selectedCategoryId) return;
+
+      debugPrint("Auto-selecting category for '$text': $matchedCategoryId");
+
+      bool categoryExists = _categories.any((c) => c.id == matchedCategoryId);
+      if (categoryExists) {
+        setState(() {
+          _selectedCategoryId = matchedCategoryId;
+        });
+      }
     });
-
-    String? matchedCategoryId = await SharedPreferencesController()
-        .fetchItemCategory(widget.list.id, text);
-
-    if (matchedCategoryId == null || matchedCategoryId.isEmpty) return;
-
-    if (matchedCategoryId == _selectedCategoryId) return;
-
-    bool categoryExists = _categories.any((c) => c.id == matchedCategoryId);
-    if (categoryExists) {
-      setState(() {
-        _selectedCategoryId = matchedCategoryId;
-      });
-    }
   }
 
   // ---------------------- BUILD METHOD ----------------------
@@ -222,7 +227,6 @@ class _AddItemDialogState extends State<AddItemDialog> {
                         labelText: "Category",
                         labelStyle: AppFonts.subHeadingText(context),
                       ),
-
                       initialValue: _selectedCategoryId,
                       items: [
                         ..._categories.map((cat) {

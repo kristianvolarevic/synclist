@@ -5,7 +5,6 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'dart:async';
 import 'package:synclist/common_widgets/status_bar_page.dart';
 
@@ -77,16 +76,6 @@ class _SignupState extends State<Signup> {
     } catch (e) {
       if (!mounted) return;
       showMessage(context, "Google login failed: ${e.toString()}");
-    }
-  }
-
-  // ---------------------- METHOD: APPLE SIGN IN ----------------------
-  void _handleAppleSignIn() async {
-    try {
-      await FirebaseController().signInWithApple(context);
-    } catch (e) {
-      if (!mounted) return;
-      showMessage(context, "Apple sign in failed: ${e.toString()}");
     }
   }
 

@@ -93,7 +93,7 @@ class SharedPreferencesController {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(
-        'category_${listId}_${itemName.toLowerCase()}',
+        'category_${listId}_${itemName.trimRight().toLowerCase()}',
         categoryId,
       );
     } catch (e) {
