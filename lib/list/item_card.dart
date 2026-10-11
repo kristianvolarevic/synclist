@@ -57,20 +57,23 @@ class ItemCard extends StatelessWidget {
 
         child: Container(
           decoration: BoxDecoration(color: AppColors.onInverseSurface(context)),
-          child: ListTile(
-            title: Text(item.name, style: AppFonts.cardHeaderText(context)),
-            leading: Text(
-              "$amountDisplay$unitSuffix",
-              style: AppFonts.cardSubHeadingText(context),
-            ),
-            trailing: Checkbox(
-              value: item.isCollected,
-              onChanged: (val) => _handleChecked(context, val),
-              activeColor: AppColors.secondary(context),
-            ),
-            onTap: () => showDialog(
-              context: context,
-              builder: (context) => ItemDialog(item: item, list: list),
+          child: Material(
+            color: Colors.transparent,
+            child: ListTile(
+              title: Text(item.name, style: AppFonts.cardHeaderText(context)),
+              leading: Text(
+                "$amountDisplay$unitSuffix",
+                style: AppFonts.cardSubHeadingText(context),
+              ),
+              trailing: Checkbox(
+                value: item.isCollected,
+                onChanged: (val) => _handleChecked(context, val),
+                activeColor: AppColors.secondary(context),
+              ),
+              onTap: () => showDialog(
+                context: context,
+                builder: (context) => ItemDialog(item: item, list: list),
+              ),
             ),
           ),
         ),

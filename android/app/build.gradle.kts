@@ -1,10 +1,10 @@
 import java.util.Properties
-import java.io.FileInputStream // Fixed this import path
+import java.io.FileInputStream
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id("com.android.application")
     id("com.google.gms.google-services")
-    id("kotlin-android")
     id("dev.flutter.flutter-gradle-plugin")
 }
 
@@ -24,12 +24,6 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    // Modern way to set jvmTarget to clear that deprecation warning
-    kotlinOptions {
-        jvmTarget = "17" 
-    }
-
-    // You need this block so buildTypes knows what "release" is
     signingConfigs {
         create("release") {
             keyAlias = keystoreProperties["keyAlias"] as String?
@@ -49,12 +43,16 @@ android {
 
     buildTypes {
         release {
-            // Updated syntax to match the signingConfigs block above
             signingConfig = signingConfigs.getByName("release")
-            
             isMinifyEnabled = false
             isShrinkResources = false
         }
+    }
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget = JvmTarget.fromTarget("17")
     }
 }
 

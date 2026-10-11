@@ -532,6 +532,130 @@ class FirebaseController {
     }
   }
 
+  Future<void> createWelcomeList() async {
+    try {
+      String userId = auth.currentUser?.uid ?? '';
+
+      // Create the welcome list
+      ShoppingList welcomeList = ShoppingList(
+        id: '',
+        name: 'Welcome List',
+        owner: userId,
+      );
+
+      // Add the list to Firestore
+      final docRef = await db
+          .collection(listCollection)
+          .add(welcomeList.toMap());
+
+      await docRef.update({'id': docRef.id});
+
+      // Create categories for the welcome list
+      final Map<String, String> welcomeCategories = {
+        "Quick Start Guide": " ",
+        "Reordering Categories": " ",
+        "Roomate Collab": " ",
+        "Example Items": " ",
+        "Get Started": " ",
+      };
+
+      for (String categoryName in welcomeCategories.keys) {
+        Category newCategory = Category(id: '', name: categoryName);
+
+        final collectionRef = await db
+            .collection(listCollection)
+            .doc(docRef.id)
+            .collection(categoriesCollection)
+            .add(newCategory.toMap());
+
+        welcomeCategories[categoryName] = collectionRef.id;
+      }
+
+      await SharedPreferencesController().saveCategoriesOrder(
+        welcomeCategories.entries
+            .map((entry) => Category(id: entry.value, name: entry.key))
+            .toList(),
+        docRef.id,
+      );
+
+      // Create items for the welcome list
+      final List<Item> welcomeItems = [
+        Item(
+          id: '',
+          name: 'Tap the checkmark to mark items as collected',
+          categoryId: welcomeCategories["Quick Start Guide"] ?? '',
+        ),
+        Item(
+          id: '',
+          name: 'Tap an item to edit or delete it',
+          categoryId: welcomeCategories["Quick Start Guide"] ?? '',
+        ),
+        Item(
+          id: '',
+          name: 'Use the + button to add new items',
+          categoryId: welcomeCategories["Quick Start Guide"] ?? '',
+        ),
+        Item(
+          id: '',
+          name: 'Press the menu button to access categories and other settings',
+          categoryId: welcomeCategories["Reordering Categories"] ?? '',
+        ),
+        Item(
+          id: '',
+          name: 'Drag and drop categories to reorder them',
+          categoryId: welcomeCategories["Reordering Categories"] ?? '',
+        ),
+        Item(
+          id: '',
+          name: 'Visit the settings page to invite others to your list',
+          categoryId: welcomeCategories["Roomate Collab"] ?? '',
+        ),
+        Item(
+          id: '',
+          name: 'Share your list code with roommates or family members',
+          categoryId: welcomeCategories["Roomate Collab"] ?? '',
+        ),
+        Item(
+          id: '',
+          name: 'Milk',
+          categoryId: welcomeCategories["Example Items"] ?? '',
+        ),
+        Item(
+          id: '',
+          name: 'Eggs',
+          categoryId: welcomeCategories["Example Items"] ?? '',
+          quantity: 12,
+        ),
+        Item(
+          id: '',
+          name: 'Bread',
+          categoryId: welcomeCategories["Example Items"] ?? '',
+          isCollected: true,
+        ),
+        Item(
+          id: '',
+          name: 'Delete this list and create your own!',
+          categoryId: welcomeCategories["Get Started"] ?? '',
+        ),
+      ];
+
+      for (Item item in welcomeItems) {
+        await db
+            .collection(listCollection)
+            .doc(docRef.id)
+            .collection(itemsCollection)
+            .add(item.toMap());
+      }
+
+      // ADD the welcome list to the user's lists
+      await db.collection(userCollection).doc(userId).update({
+        'lists': FieldValue.arrayUnion([docRef.id]),
+      });
+    } catch (e) {
+      throw CustomExceptions(ExceptionType.failedToAddToDatabase);
+    }
+  }
+
   // ---------------------- METHOD: Remove User From List ----------------------
   Future<void> removeUserFromList(String listId, String userId) async {
     try {

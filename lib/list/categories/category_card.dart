@@ -78,21 +78,24 @@ class CategoryCard extends StatelessWidget {
             decoration: BoxDecoration(
               color: AppColors.onInverseSurface(context),
             ),
-            child: ListTile(
-              title: Text(
-                category.name,
-                style: AppFonts.cardHeaderText(context),
-              ),
-              trailing: ReorderableDragStartListener(
-                index: index,
-                child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onPanDown: (_) {
-                    HapticFeedback.lightImpact();
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: const Icon(Icons.drag_indicator),
+            child: Material(
+              color: Colors.transparent,
+              child: ListTile(
+                title: Text(
+                  category.name,
+                  style: AppFonts.cardHeaderText(context),
+                ),
+                trailing: ReorderableDragStartListener(
+                  index: index,
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onPanDown: (_) {
+                      HapticFeedback.lightImpact();
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: const Icon(Icons.drag_indicator),
+                    ),
                   ),
                 ),
               ),

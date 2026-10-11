@@ -102,42 +102,45 @@ class ListCard extends StatelessWidget {
             decoration: BoxDecoration(
               color: AppColors.onInverseSurface(context),
             ),
-            child: ListTile(
-              title: Text(list.name, style: AppFonts.cardHeaderText(context)),
-              subtitle: FutureBuilder(
-                future: FirebaseController().fetchUserDetails(list.owner),
-                builder: (context, asyncSnapshot) {
-                  if (asyncSnapshot.connectionState ==
-                      ConnectionState.waiting) {
+            child: Material(
+              color: Colors.transparent,
+              child: ListTile(
+                title: Text(list.name, style: AppFonts.cardHeaderText(context)),
+                subtitle: FutureBuilder(
+                  future: FirebaseController().fetchUserDetails(list.owner),
+                  builder: (context, asyncSnapshot) {
+                    if (asyncSnapshot.connectionState ==
+                        ConnectionState.waiting) {
+                      return Text(
+                        'Loading owner...',
+                        style: AppFonts.cardSubHeadingText(context),
+                      );
+                    }
+
+                    final userName = asyncSnapshot.data?.fullName ?? "Unknown";
                     return Text(
-                      'Loading owner...',
+                      'Owner: $userName',
                       style: AppFonts.cardSubHeadingText(context),
                     );
-                  }
-
-                  final userName = asyncSnapshot.data?.fullName ?? "Unknown";
-                  return Text(
-                    'Owner: $userName',
-                    style: AppFonts.cardSubHeadingText(context),
+                  },
+                ),
+                trailing: IconButton(
+                  onPressed: () {
+                    _confirmAndExecuteAction(context);
+                  },
+                  icon: Icon(
+                    _isOwner ? Icons.delete : Icons.exit_to_app,
+                    color: _isOwner ? Colors.red : Colors.grey,
+                  ),
+                  tooltip: _isOwner ? "Delete List" : "Leave List",
+                ),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    slideTransitionRoute(ListPage(list: list)),
                   );
                 },
               ),
-              trailing: IconButton(
-                onPressed: () {
-                  _confirmAndExecuteAction(context);
-                },
-                icon: Icon(
-                  _isOwner ? Icons.delete : Icons.exit_to_app,
-                  color: _isOwner ? Colors.red : Colors.grey,
-                ),
-                tooltip: _isOwner ? "Delete List" : "Leave List",
-              ),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  slideTransitionRoute(ListPage(list: list)),
-                );
-              },
             ),
           ),
         ),

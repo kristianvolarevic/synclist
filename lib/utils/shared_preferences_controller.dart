@@ -115,6 +115,28 @@ class SharedPreferencesController {
     }
   }
 
+  // ---------------------- METHOD: SET ONBOARDING COMPLETED -----------------------
+  Future<void> setOnboardingCompleted(bool completed) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('hasCompletedOnboarding', completed);
+    } catch (e) {
+      throw CustomExceptions(ExceptionType.failedToAddToDatabase);
+    }
+  }
+
+  // ---------------------- METHOD: FETCH ONBOARDING COMPLETED -----------------------
+  Future<bool> getOnboardingCompleted() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      bool? completed = prefs.getBool('hasCompletedOnboarding');
+
+      return completed ?? false;
+    } catch (e) {
+      throw CustomExceptions(ExceptionType.failedToFetchFromDatabase);
+    }
+  }
+
   // ---------------------- METHOD: CLEAR SHARED PREFERENCES -------------------
   Future<void> clearSharedPreferences() async {
     try {
