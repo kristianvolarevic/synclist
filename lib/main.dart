@@ -7,15 +7,12 @@ import 'home/home.dart';
 import 'utils/licenses.dart';
 import 'package:synclist/utils/utils.dart';
 import 'package:synclist/utils/theme_controller.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Future.wait([
     Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform),
-    //FirebaseController().initializeGoogleSignIn(),
-    MobileAds.instance.initialize(),
     ThemeController.init(),
   ]);
 

@@ -25,8 +25,6 @@ class Home extends StatefulWidget {
 // CLASS: _HOME STATE (Page Layout & Logic)
 // --------------------------------------------------------------------------------------------
 class _HomeState extends State<Home> {
-  bool _isLoading = true;
-
   @override
   initState() {
     super.initState();
@@ -45,6 +43,8 @@ class _HomeState extends State<Home> {
           .getOnboardingCompleted();
 
       if (!onboardingCompleted) {
+        await SharedPreferencesController().setOnboardingCompleted(true);
+
         final existingLists = await FirebaseController()
             .userListsStream()
             .first;
@@ -55,27 +55,15 @@ class _HomeState extends State<Home> {
         if (!hasWelcomeList) {
           await FirebaseController().createWelcomeList();
         }
-
-        await SharedPreferencesController().setOnboardingCompleted(true);
       }
     } catch (e) {
       if (!context.mounted) return;
       showMessage(context, "Error checking onboarding status: ${e.toString()}");
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return const Center(
-        child: CircularProgressIndicator(color: AppColors.primary),
-      );
-    }
-
     return StatusBarPage(
       title: "Home",
       leading: IconButton(

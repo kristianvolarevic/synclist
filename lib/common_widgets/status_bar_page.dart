@@ -32,7 +32,7 @@ class StatusBarPage extends StatelessWidget {
           foregroundColor: Colors.white,
           elevation: 0,
           leading: leading,
-          actions: [if (trailing != null) trailing!],
+          actions: [?trailing],
         ),
         body: body,
       ),
